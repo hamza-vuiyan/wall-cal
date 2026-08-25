@@ -5,14 +5,9 @@ import { DayCell } from './DayCell'
 
 interface CalendarGridProps {
   days: CalendarDay[]
-  /** Map of dateKey → DayEntry from the app store */
   dayEntries?: Record<string, DayEntry>
-  /** Called when the user selects or removes a mark */
   onMarkChange?: (dateKey: string, mark: MarkType | null) => void
-  /**
-   * Optional render prop for additional day content.
-   * Phase 4+: pass tasks/notes/habits/etc.
-   */
+  onOpenNotes?: (dateKey: string) => void
   renderDayContent?: (day: CalendarDay) => ReactNode
 }
 
@@ -20,20 +15,19 @@ export function CalendarGrid({
   days,
   dayEntries,
   onMarkChange,
+  onOpenNotes,
   renderDayContent,
 }: CalendarGridProps) {
   return (
-    <div
-      role="grid"
-      aria-label="Monthly calendar"
-      className="calendar-grid"
-    >
+    <div role="grid" aria-label="Monthly calendar" className="calendar-grid">
       {days.map((day) => (
         <DayCell
           key={day.key}
           day={day}
           mark={dayEntries?.[day.key]?.mark}
+          notes={dayEntries?.[day.key]?.notes}
           onMarkChange={onMarkChange}
+          onOpenNotes={onOpenNotes}
         >
           {renderDayContent?.(day)}
         </DayCell>
