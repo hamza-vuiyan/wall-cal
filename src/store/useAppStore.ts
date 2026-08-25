@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type { User } from 'firebase/auth'
 import { signInWithGoogle, signOut, onAuthStateChange } from '@/services/auth'
 import { persistenceService } from '@/services/storage'
-import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType } from '@/services/storage'
+import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note } from '@/services/storage'
 import { createEmptyData } from '@/services/storage'
 
 // ── Auth state ────────────────────────────────────────────────────
@@ -36,6 +36,12 @@ interface AppState {
   updateDay: (key: string, entry: Partial<DayEntry>) => void
   /** Set or remove a mark on a specific date. Pass null to clear. */
   setMark: (dateKey: string, mark: MarkType | null) => void
+  /** Add a new note to a date. Returns the generated note ID. */
+  addNote: (dateKey: string, text: string) => string
+  /** Update the text of an existing note. */
+  updateNote: (dateKey: string, noteId: string, text: string) => void
+  /** Delete a note from a date. */
+  deleteNote: (dateKey: string, noteId: string) => void
 
   // Internal
   _setData: (data: WallCalData) => void
@@ -153,6 +159,81 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ data: updated })
     persistenceService.save(updated).catch((err) =>
       console.error('[WallCal] Failed to save mark:', err)
+    )
+  },
+
+  addNote: (dateKey, text) => {
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
+    const now = Date.now()
+    const newNote: Note = { id, text: text.trim(), createdAt: now, updatedAt: now }
+    const current = get().data
+    const existing = current.days[dateKey]
+    const updated: WallCalData = {
+      ...current,
+      days: {
+        ...current.days,
+        [dateKey]: {
+          ...existing,
+          key: dateKey,
+          notes: [...(existing?.notes ?? []), newNote],
+          updatedAt: now,
+        },
+      },
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to save note:', err)
+    )
+    return id
+  },
+
+  updateNote: (dateKey, noteId, text) => {
+    const current = get().data
+    const existing = current.days[dateKey]
+    if (!existing?.notes) return
+    const now = Date.now()
+    const updated: WallCalData = {
+      ...current,
+      days: {
+        ...current.days,
+        [dateKey]: {
+          ...existing,
+          notes: existing.notes.map((n) =>
+            n.id === noteId ? { ...n, text: text.trim(), updatedAt: now } : n
+          ),
+          updatedAt: now,
+        },
+      },
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to update note:', err)
+    )
+  },
+
+  deleteNote: (dateKey, noteId) => {
+    const current = get().data
+    const existing = current.days[dateKey]
+    if (!existing) return
+    const now = Date.now()
+    const remainingNotes = (existing.notes ?? []).filter((n) => n.id !== noteId)
+    let updatedDays: Record<string, DayEntry>
+    // Prune day entry if no mark and no notes remain
+    if (remainingNotes.length === 0 && !existing.mark) {
+      const { [dateKey]: _, ...rest } = current.days
+      updatedDays = rest
+    } else {
+      updatedDays = {
+        ...current.days,
+        [dateKey]: { ...existing, notes: remainingNotes.length ? remainingNotes : undefined, updatedAt: now },
+      }
+    }
+    const updated: WallCalData = { ...current, days: updatedDays, updatedAt: now }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to delete note:', err)
     )
   },
 

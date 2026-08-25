@@ -8,6 +8,18 @@
 /** The visual mark types a user can place on a day */
 export type MarkType = 'x' | 'check' | 'circle'
 
+/** A single note written on a calendar day */
+export interface Note {
+  /** Unique ID: base-36 timestamp + random suffix */
+  id: string
+  /** The note text content */
+  text: string
+  /** Unix timestamp (ms) when the note was created */
+  createdAt: number
+  /** Unix timestamp (ms) when the note was last edited */
+  updatedAt: number
+}
+
 /** Per-day data entry. Future phases add optional fields here. */
 export interface DayEntry {
   /** ISO date key: "YYYY-MM-DD" */
@@ -16,7 +28,9 @@ export interface DayEntry {
   updatedAt: number
   /** Optional mark placed on this day */
   mark?: MarkType
-  // Future phases: note, color, taskIds, drawingRef, etc.
+  /** Notes written on this day, ordered by creation time */
+  notes?: Note[]
+  // Future phases: color, taskIds, drawingRef, etc.
 }
 
 /** User-level preferences */
