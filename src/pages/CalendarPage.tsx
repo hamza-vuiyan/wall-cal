@@ -5,7 +5,8 @@ import { CalendarHeader } from '@/components/calendar/CalendarHeader'
 import { WeekdayRow } from '@/components/calendar/WeekdayRow'
 import { CalendarGrid } from '@/components/calendar/CalendarGrid'
 import { NoteEditorModal } from '@/components/calendar/NoteEditorModal'
-import type { MarkType, DayColor } from '@/services/storage'
+import { TaskListModal } from '@/components/calendar/TaskListModal'
+import type { MarkType, DayColor, Task } from '@/services/storage'
 
 /** Format a YYYY-MM-DD key into a human-readable label like "August 25, 2026" */
 function formatDateKey(dateKey: string): string {
@@ -31,16 +32,22 @@ export function CalendarPage() {
     goToYear,
   } = useCalendar()
 
-  const dayEntries  = useAppStore((s) => s.data.days)
+  const dayEntries   = useAppStore((s) => s.data.days)
   const setMark      = useAppStore((s) => s.setMark)
   const setDayColor  = useAppStore((s) => s.setDayColor)
   const addNote      = useAppStore((s) => s.addNote)
   const updateNote   = useAppStore((s) => s.updateNote)
   const deleteNote   = useAppStore((s) => s.deleteNote)
   const reorderNotes = useAppStore((s) => s.reorderNotes)
+  const addTask      = useAppStore((s) => s.addTask)
+  const updateTask   = useAppStore((s) => s.updateTask)
+  const toggleTask   = useAppStore((s) => s.toggleTask)
+  const deleteTask   = useAppStore((s) => s.deleteTask)
 
   // Which day's note modal is open (YYYY-MM-DD or null)
   const [openNoteDateKey, setOpenNoteDateKey] = useState<string | null>(null)
+  // Which day's task modal is open
+  const [openTaskDateKey, setOpenTaskDateKey] = useState<string | null>(null)
 
   const handleMarkChange = useCallback(
     (dateKey: string, mark: MarkType | null) => setMark(dateKey, mark),
@@ -59,8 +66,19 @@ export function CalendarPage() {
 
   const handleCloseNotes = useCallback(() => setOpenNoteDateKey(null), [])
 
+  const handleOpenTasks = useCallback(
+    (dateKey: string) => setOpenTaskDateKey(dateKey),
+    []
+  )
+
+  const handleCloseTasks = useCallback(() => setOpenTaskDateKey(null), [])
+
   const activeNotes = openNoteDateKey
     ? (dayEntries[openNoteDateKey]?.notes ?? [])
+    : []
+
+  const activeTasks = openTaskDateKey
+    ? (dayEntries[openTaskDateKey]?.tasks ?? [])
     : []
 
   return (
@@ -84,11 +102,12 @@ export function CalendarPage() {
             onMarkChange={handleMarkChange}
             onColorChange={handleColorChange}
             onOpenNotes={handleOpenNotes}
+            onOpenTasks={handleOpenTasks}
           />
         </div>
       </div>
 
-      {/* Note editor modal — rendered here so it's outside the grid stacking context */}
+      {/* Note editor modal */}
       {openNoteDateKey && (
         <NoteEditorModal
           dateKey={openNoteDateKey}
@@ -99,6 +118,20 @@ export function CalendarPage() {
           onDelete={(id) => deleteNote(openNoteDateKey, id)}
           onReorder={(from, to) => reorderNotes(openNoteDateKey, from, to)}
           onClose={handleCloseNotes}
+        />
+      )}
+
+      {/* Task list modal */}
+      {openTaskDateKey && (
+        <TaskListModal
+          dateKey={openTaskDateKey}
+          dateLabel={formatDateKey(openTaskDateKey)}
+          tasks={activeTasks}
+          onToggle={(id) => toggleTask(openTaskDateKey, id)}
+          onDelete={(id) => deleteTask(openTaskDateKey, id)}
+          onUpdate={(id, changes) => updateTask(openTaskDateKey, id, changes)}
+          onAdd={(data) => addTask(openTaskDateKey, data as Omit<Task, 'id' | 'createdAt' | 'updatedAt'>)}
+          onClose={handleCloseTasks}
         />
       )}
     </main>

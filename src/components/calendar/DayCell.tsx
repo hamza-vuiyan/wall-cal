@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import type { ReactNode } from 'react'
 import type { CalendarDay } from '@/types'
-import type { MarkType, Note, DayColor } from '@/services/storage'
+import type { MarkType, Note, DayColor, Task } from '@/services/storage'
 import { DayMark } from './DayMark'
 import { MarkPicker } from './MarkPicker'
 import { ColorPicker } from './ColorPicker'
@@ -14,23 +14,26 @@ interface DayCellProps {
   mark?: MarkType
   notes?: Note[]
   color?: DayColor
+  tasks?: Task[]
   onMarkChange?: (dateKey: string, mark: MarkType | null) => void
   onOpenNotes?: (dateKey: string) => void
   onColorChange?: (dateKey: string, color: DayColor | null) => void
+  onOpenTasks?: (dateKey: string) => void
   children?: ReactNode
 }
 
 export function DayCell({
-  day, mark, notes, color,
-  onMarkChange, onOpenNotes, onColorChange,
+  day, mark, notes, color, tasks,
+  onMarkChange, onOpenNotes, onColorChange, onOpenTasks,
   children,
 }: DayCellProps) {
   const { dayNumber, isCurrentMonth, isToday, isWeekend } = day
-  const [pickerOpen, setPickerOpen]           = useState(false) // mark picker
-  const [colorPickerOpen, setColorPickerOpen] = useState(false) // colour picker
+  const [pickerOpen, setPickerOpen]           = useState(false)
+  const [colorPickerOpen, setColorPickerOpen] = useState(false)
 
   const isInteractive = isCurrentMonth
   const hasNotes      = isCurrentMonth && (notes?.length ?? 0) > 0
+  const hasTasks      = isCurrentMonth && (tasks?.length ?? 0) > 0
 
   // ── Mark button ───────────────────────────────────────────────
   const handleMarkBtnClick = useCallback((e: React.MouseEvent) => {
@@ -63,6 +66,14 @@ export function DayCell({
     setColorPickerOpen(false)
     onOpenNotes?.(day.key)
   }, [day.key, onOpenNotes])
+
+  // ── Task button ─────────────────────────────────────────────────
+  const handleTaskOpen = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    setPickerOpen(false)
+    setColorPickerOpen(false)
+    onOpenTasks?.(day.key)
+  }, [day.key, onOpenTasks])
 
   // Close pickers when clicking the cell background
   const handleCellClick = useCallback(() => {
@@ -136,6 +147,31 @@ export function DayCell({
               {color && <span className={`cal-color-dot cal-color-dot--${color}`} aria-hidden="true" />}
             </button>
 
+            {/* Task button */}
+            <button
+              className={[
+                'cal-day-action-btn cal-day-action-btn--task',
+                hasTasks ? 'cal-day-action-btn--has-tasks' : '',
+              ].filter(Boolean).join(' ')}
+              onClick={handleTaskOpen}
+              aria-label={hasTasks
+                ? `${tasks!.length} task${tasks!.length > 1 ? 's' : ''}. Click to view`
+                : 'Add a task'}
+              title={hasTasks ? 'View / manage tasks' : 'Add task'}
+            >
+              {/* Checkbox icon */}
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <rect x="1.5" y="1.5" width="9" height="9" rx="1.5"
+                  stroke="currentColor" strokeWidth="1.3" />
+                {hasTasks && (
+                  <path d="M3.5 6L5 7.5L8.5 4"
+                    stroke="currentColor" strokeWidth="1.3"
+                    strokeLinecap="round" strokeLinejoin="round" />
+                )}
+              </svg>
+              {hasTasks && <span className="cal-note-count">{tasks!.length}</span>}
+            </button>
+
             {/* Note button */}
             <button
               className={[
@@ -163,11 +199,39 @@ export function DayCell({
       {/* ── Mark display ── */}
       {mark && isCurrentMonth && <DayMark type={mark} />}
 
-      {/* ── Note chip preview + children ── */}
+      {/* ── Note chip preview + task chips + children ── */}
       <div className={[
         'cal-day-content',
         hasNotes ? 'cal-day-content--has-notes' : '',
       ].filter(Boolean).join(' ')}>
+        {/* Task chips — shown first (most actionable) */}
+        {hasTasks && (
+          <div
+            className="cal-day-task-list"
+            onClick={handleTaskOpen}
+            role="button"
+            tabIndex={-1}
+            aria-label="Open tasks"
+          >
+            {tasks!.slice(0, 4).map((task) => (
+              <div
+                key={task.id}
+                className={[
+                  'cal-task-chip',
+                  task.completed ? 'cal-task-chip--completed' : '',
+                  task.color ? `cal-task-chip--color-${task.color}` : '',
+                ].filter(Boolean).join(' ')}
+              >
+                {task.time && <span className="cal-task-chip-time">{task.time}</span>}
+                <span className="cal-task-chip-title">{task.title}</span>
+              </div>
+            ))}
+            {tasks!.length > 4 && (
+              <span className="note-chip-more">+{tasks!.length - 4} more</span>
+            )}
+          </div>
+        )}
+        {/* Note chips */}
         {hasNotes && (
           <div
             className="cal-day-note-chip"
