@@ -76,6 +76,28 @@ export interface DayEntry {
   // Future phases: drawing, etc.
 }
 
+/** A multi-day challenge tracked in WallCal */
+export interface Challenge {
+  /** Unique stable ID */
+  id: string
+  /** Display name of the challenge */
+  name: string
+  /** Start date in YYYY-MM-DD format */
+  startDate: string
+  /** End date in YYYY-MM-DD format (inclusive) */
+  endDate: string
+  /** Optional colour accent */
+  color?: DayColor
+  /** Optional longer description */
+  description?: string
+  /** YYYY-MM-DD keys of days the user has marked complete */
+  completedDates: string[]
+  /** Unix timestamp (ms) of creation */
+  createdAt: number
+  /** Unix timestamp (ms) of last edit */
+  updatedAt: number
+}
+
 /** User-level preferences */
 export interface UserSettings {
   /** First day of the week */
@@ -90,6 +112,8 @@ export interface WallCalData {
   version: number
   /** Map of "YYYY-MM-DD" → DayEntry */
   days: Record<string, DayEntry>
+  /** User-level challenges (multi-day goals) */
+  challenges?: Challenge[]
   /** User preferences */
   settings: UserSettings
   /** Unix timestamp (ms) of the last write */

@@ -1,5 +1,5 @@
 export type { StorageAdapter } from './StorageAdapter'
-export type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task } from './types'
+export type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task, Challenge } from './types'
 export { createEmptyData, mergeData, DAY_COLOR_PALETTE } from './types'
 export { LocalStorageAdapter, localStorageAdapter } from './LocalStorageAdapter'
 export { FirestoreAdapter } from './FirestoreAdapter'

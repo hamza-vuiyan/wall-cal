@@ -1714,3 +1714,539 @@ body {
 .task-toggle--on .task-toggle-thumb {
   transform: translateX(1.125rem);
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   CHALLENGES SYSTEM
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Calendar Integration (Dots) ──────────────────────────────── */
+
+.cal-day-number-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.cal-day-challenge-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.1rem 0.25rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.cal-day-challenge-dots:hover {
+  background: var(--color-surface-raised);
+}
+
+.cal-challenge-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-brand-500);
+}
+
+.cal-challenge-dot-more {
+  font-size: 0.5rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  margin-left: 1px;
+}
+
+/* Challenge Dot Colours */
+.cal-challenge-dot--yellow { background: oklch(82% 0.18 95); }
+.cal-challenge-dot--orange { background: oklch(75% 0.20 55); }
+.cal-challenge-dot--red    { background: oklch(65% 0.18 20); }
+.cal-challenge-dot--pink   { background: oklch(72% 0.18 345); }
+.cal-challenge-dot--purple { background: oklch(68% 0.16 300); }
+.cal-challenge-dot--blue   { background: oklch(68% 0.15 250); }
+.cal-challenge-dot--cyan   { background: oklch(70% 0.15 200); }
+.cal-challenge-dot--green  { background: oklch(68% 0.17 145); }
+
+/* ── Challenges Page Layout ───────────────────────────────────── */
+
+.challenges-page {
+  min-height: calc(100vh - 4rem - 3rem);
+  padding: 2rem 1.5rem;
+}
+
+.challenges-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.challenges-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-surface-border);
+}
+
+.challenges-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.challenges-subtitle {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.ch-create-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.challenges-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  padding: 4rem 1rem;
+  color: var(--color-text-secondary);
+}
+
+.challenges-empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+
+.challenges-empty-hint {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  max-width: 300px;
+  margin-bottom: 1rem;
+}
+
+.challenges-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.challenges-section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.challenges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* ── Challenge Card ───────────────────────────────────────────── */
+
+.ch-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+  border-top-width: 4px;
+  border-top-color: var(--color-brand-600);
+}
+
+.ch-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0 0 0 / 0.3);
+  border-color: var(--color-brand-400);
+}
+
+/* Card colour accents */
+.ch-card--yellow { border-top-color: oklch(82% 0.18 95); }
+.ch-card--orange { border-top-color: oklch(75% 0.20 55); }
+.ch-card--red    { border-top-color: oklch(65% 0.18 20); }
+.ch-card--pink   { border-top-color: oklch(72% 0.18 345); }
+.ch-card--purple { border-top-color: oklch(68% 0.16 300); }
+.ch-card--blue   { border-top-color: oklch(68% 0.15 250); }
+.ch-card--cyan   { border-top-color: oklch(70% 0.15 200); }
+.ch-card--green  { border-top-color: oklch(68% 0.17 145); }
+
+.ch-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ch-card-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.ch-card-name {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.ch-status-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  background: var(--color-surface-raised);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.ch-status-badge--lg {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.75rem;
+  align-self: flex-start;
+}
+
+.ch-status--active {
+  background: oklch(62% 0.22 145 / 0.15);
+  color: oklch(75% 0.15 145);
+}
+
+.ch-status--upcoming {
+  background: oklch(68% 0.15 250 / 0.15);
+  color: oklch(80% 0.1 250);
+}
+
+.ch-status--completed {
+  background: var(--color-surface-raised);
+  color: var(--color-text-muted);
+}
+
+.ch-status--expired {
+  background: oklch(60% 0.26 20 / 0.15);
+  color: oklch(75% 0.15 20);
+}
+
+.ch-card-range {
+  font-size: 0.8125rem;
+  color: var(--color-brand-400);
+  margin: 0;
+  font-weight: 500;
+}
+
+.ch-card-desc {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+}
+
+/* ── Challenge Progress Bar ───────────────────────────────────── */
+
+.ch-card-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ch-progress-track {
+  height: 6px;
+  background: var(--color-surface-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ch-progress-track--lg {
+  height: 12px;
+  border-radius: 6px;
+}
+
+.ch-progress-fill {
+  height: 100%;
+  background: var(--color-brand-500);
+  transition: width 300ms ease;
+  border-radius: 3px;
+}
+
+/* Progress colour accents */
+.ch-progress-fill--yellow { background: oklch(82% 0.18 95); }
+.ch-progress-fill--orange { background: oklch(75% 0.20 55); }
+.ch-progress-fill--red    { background: oklch(65% 0.18 20); }
+.ch-progress-fill--pink   { background: oklch(72% 0.18 345); }
+.ch-progress-fill--purple { background: oklch(68% 0.16 300); }
+.ch-progress-fill--blue   { background: oklch(68% 0.15 250); }
+.ch-progress-fill--cyan   { background: oklch(70% 0.15 200); }
+.ch-progress-fill--green  { background: oklch(68% 0.17 145); }
+
+.ch-card-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+/* ── Challenge Detail Page ────────────────────────────────────── */
+
+.ch-detail-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ch-back-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: color 120ms ease;
+}
+
+.ch-back-btn:hover {
+  color: var(--color-text-primary);
+}
+
+.ch-detail-top-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ch-detail-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 2rem;
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 1rem;
+  border-top-width: 6px;
+  border-top-color: var(--color-brand-600);
+}
+
+/* Detail header colour accents */
+.ch-detail-header--yellow { border-top-color: oklch(82% 0.18 95); }
+.ch-detail-header--orange { border-top-color: oklch(75% 0.20 55); }
+.ch-detail-header--red    { border-top-color: oklch(65% 0.18 20); }
+.ch-detail-header--pink   { border-top-color: oklch(72% 0.18 345); }
+.ch-detail-header--purple { border-top-color: oklch(68% 0.16 300); }
+.ch-detail-header--blue   { border-top-color: oklch(68% 0.15 250); }
+.ch-detail-header--cyan   { border-top-color: oklch(70% 0.15 200); }
+.ch-detail-header--green  { border-top-color: oklch(68% 0.17 145); }
+
+.ch-detail-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ch-detail-range {
+  font-size: 1rem;
+  color: var(--color-brand-400);
+  margin: 0;
+  font-weight: 500;
+}
+
+.ch-detail-desc {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0 0 0.5rem 0;
+  white-space: pre-wrap;
+}
+
+.ch-detail-progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 1rem;
+}
+
+.ch-detail-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.ch-detail-stats-row {
+  display: flex;
+  gap: 2rem;
+}
+
+.ch-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ch-stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.ch-stat-label {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ch-stat--highlight .ch-stat-value {
+  color: var(--color-brand-400);
+}
+
+.ch-detail-days-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem;
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 1rem;
+}
+
+.ch-day-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.ch-day-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 0.5rem;
+  transition: border-color 120ms ease;
+}
+
+.ch-day-item:hover {
+  border-color: var(--color-brand-500);
+}
+
+.ch-day-item--future {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.ch-day-item--today {
+  border-color: var(--color-brand-600);
+  background: var(--color-surface-overlay);
+}
+
+.ch-day-label {
+  font-size: 0.9375rem;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ch-day-label--done {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.ch-day-today-badge {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  background: var(--color-brand-600);
+  color: white;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+}
+
+/* ── Challenge Editor Modal Specifics ─────────────────────────── */
+
+.challenge-date-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.challenge-date-arrow {
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.challenge-duration-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.challenge-duration-label strong {
+  color: var(--color-brand-400);
+}
+
+.ch-confirm-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 303;
+  width: min(400px, calc(100vw - 2rem));
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: 0 20px 60px rgba(0 0 0 / 0.6);
+}
+
+.ch-confirm-dialog h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--color-text-primary);
+}
+
+.ch-confirm-dialog p {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}

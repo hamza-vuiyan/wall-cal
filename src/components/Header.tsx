@@ -9,6 +9,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { id: 'home', label: 'Home' },
   { id: 'calendar', label: 'Calendar' },
+  { id: 'challenges', label: 'Challenges' },
   { id: 'settings', label: 'Settings' },
 ]
 
@@ -44,8 +45,11 @@ export function Header({ currentView, onNavigate }: HeaderProps) {
               <rect x="9" y="10" width="2" height="2" rx="0.5" fill="white" />
             </svg>
           </div>
-          <span className="text-lg font-semibold tracking-tight text-[var(--color-text-primary)]">
+          <span className="text-lg font-semibold tracking-tight text-[var(--color-text-primary)] flex items-center gap-2">
             WallCal
+            <span className="text-[0.65rem] tracking-wider font-bold uppercase bg-[var(--color-brand-500)] text-white px-2 py-0.5 rounded-md">
+              Beta
+            </span>
           </span>
         </button>
 

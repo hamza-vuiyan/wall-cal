@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type { User } from 'firebase/auth'
 import { signInWithGoogle, signOut, onAuthStateChange } from '@/services/auth'
 import { persistenceService } from '@/services/storage'
-import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task } from '@/services/storage'
+import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task, Challenge } from '@/services/storage'
 import { createEmptyData } from '@/services/storage'
 
 // ── Auth state ────────────────────────────────────────────────────
@@ -54,6 +54,14 @@ interface AppState {
   toggleTask: (dateKey: string, taskId: string) => void
   /** Delete a task from a date. */
   deleteTask: (dateKey: string, taskId: string) => void
+  /** Add a new challenge. Returns the generated challenge ID. */
+  addChallenge: (data: Omit<Challenge, 'id' | 'completedDates' | 'createdAt' | 'updatedAt'>) => string
+  /** Update fields of an existing challenge. */
+  updateChallenge: (id: string, changes: Partial<Omit<Challenge, 'id' | 'createdAt' | 'completedDates'>>) => void
+  /** Delete a challenge and all its completion data. */
+  deleteChallenge: (id: string) => void
+  /** Toggle completion of a specific date within a challenge. */
+  toggleChallengeDate: (challengeId: string, dateKey: string) => void
 
   // Internal
   _setData: (data: WallCalData) => void
@@ -403,6 +411,79 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ data: updated })
     persistenceService.save(updated).catch((err) =>
       console.error('[WallCal] Failed to delete task:', err)
+    )
+  },
+
+  // ── Challenge actions ─────────────────────────────────────────
+
+  addChallenge: (data) => {
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
+    const now = Date.now()
+    const newChallenge: Challenge = { ...data, id, completedDates: [], createdAt: now, updatedAt: now }
+    const current = get().data
+    const updated: WallCalData = {
+      ...current,
+      challenges: [...(current.challenges ?? []), newChallenge],
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to save challenge:', err)
+    )
+    return id
+  },
+
+  updateChallenge: (id, changes) => {
+    const current = get().data
+    const now = Date.now()
+    const updated: WallCalData = {
+      ...current,
+      challenges: (current.challenges ?? []).map((c) =>
+        c.id === id ? { ...c, ...changes, updatedAt: now } : c
+      ),
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to update challenge:', err)
+    )
+  },
+
+  deleteChallenge: (id) => {
+    const current = get().data
+    const now = Date.now()
+    const updated: WallCalData = {
+      ...current,
+      challenges: (current.challenges ?? []).filter((c) => c.id !== id),
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to delete challenge:', err)
+    )
+  },
+
+  toggleChallengeDate: (challengeId, dateKey) => {
+    const current = get().data
+    const now = Date.now()
+    const updated: WallCalData = {
+      ...current,
+      challenges: (current.challenges ?? []).map((c) => {
+        if (c.id !== challengeId) return c
+        const isComplete = c.completedDates.includes(dateKey)
+        return {
+          ...c,
+          completedDates: isComplete
+            ? c.completedDates.filter((d) => d !== dateKey)
+            : [...c.completedDates, dateKey].sort(),
+          updatedAt: now,
+        }
+      }),
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to toggle challenge date:', err)
     )
   },
 

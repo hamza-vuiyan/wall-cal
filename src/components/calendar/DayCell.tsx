@@ -15,16 +15,18 @@ interface DayCellProps {
   notes?: Note[]
   color?: DayColor
   tasks?: Task[]
+  challengeDots?: { challengeId: string; color?: DayColor }[]
   onMarkChange?: (dateKey: string, mark: MarkType | null) => void
   onOpenNotes?: (dateKey: string) => void
   onColorChange?: (dateKey: string, color: DayColor | null) => void
   onOpenTasks?: (dateKey: string) => void
+  onChallengeClick?: () => void
   children?: ReactNode
 }
 
 export function DayCell({
-  day, mark, notes, color, tasks,
-  onMarkChange, onOpenNotes, onColorChange, onOpenTasks,
+  day, mark, notes, color, tasks, challengeDots,
+  onMarkChange, onOpenNotes, onColorChange, onOpenTasks, onChallengeClick,
   children,
 }: DayCellProps) {
   const { dayNumber, isCurrentMonth, isToday, isWeekend } = day
@@ -102,9 +104,31 @@ export function DayCell({
     >
       {/* ── Header row: date number + action buttons ── */}
       <div className="cal-day-header">
-        <span className={isToday ? 'cal-day-number cal-day-number--today' : 'cal-day-number'}>
-          {dayNumber}
-        </span>
+        <div className="cal-day-number-wrapper">
+          <span className={isToday ? 'cal-day-number cal-day-number--today' : 'cal-day-number'}>
+            {dayNumber}
+          </span>
+          {challengeDots && challengeDots.length > 0 && isCurrentMonth && (
+            <div
+              className="cal-day-challenge-dots"
+              onClick={(e) => {
+                e.stopPropagation()
+                onChallengeClick?.()
+              }}
+              role="button"
+              aria-label={`${challengeDots.length} active challenge${challengeDots.length > 1 ? 's' : ''}`}
+              title={`${challengeDots.length} active challenge${challengeDots.length > 1 ? 's' : ''}`}
+            >
+              {challengeDots.slice(0, 3).map((dot, i) => (
+                <span
+                  key={`${dot.challengeId}-${i}`}
+                  className={`cal-challenge-dot${dot.color ? ` cal-challenge-dot--${dot.color}` : ''}`}
+                />
+              ))}
+              {challengeDots.length > 3 && <span className="cal-challenge-dot-more">+</span>}
+            </div>
+          )}
+        </div>
 
         {isInteractive && (
           <div className="cal-day-actions">
