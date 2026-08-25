@@ -1,4 +1,5 @@
 import type { AppView } from '@/types'
+import { AuthArea } from '@/components/auth/AuthArea'
 
 interface NavItem {
   id: AppView
@@ -19,7 +20,7 @@ interface HeaderProps {
 export function Header({ currentView, onNavigate }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--color-surface-border)] bg-[var(--color-surface-base)]/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-4">
         {/* Logo */}
         <button
           id="header-logo"
@@ -70,6 +71,11 @@ export function Header({ currentView, onNavigate }: HeaderProps) {
             ))}
           </ul>
         </nav>
+
+        {/* Push auth to the far right */}
+        <div className="ml-auto">
+          <AuthArea />
+        </div>
       </div>
     </header>
   )

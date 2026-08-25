@@ -1,7 +1,9 @@
 import { useCalendar } from '@/hooks/useCalendar'
+import { useAppStore } from '@/store/useAppStore'
 import { CalendarHeader } from '@/components/calendar/CalendarHeader'
 import { WeekdayRow } from '@/components/calendar/WeekdayRow'
 import { CalendarGrid } from '@/components/calendar/CalendarGrid'
+import type { MarkType } from '@/services/storage'
 
 export function CalendarPage() {
   const {
@@ -16,6 +18,13 @@ export function CalendarPage() {
     goToMonth,
     goToYear,
   } = useCalendar()
+
+  const dayEntries = useAppStore((s) => s.data.days)
+  const setMark = useAppStore((s) => s.setMark)
+
+  function handleMarkChange(dateKey: string, mark: MarkType | null) {
+    setMark(dateKey, mark)
+  }
 
   return (
     <main id="main-content" className="calendar-page">
@@ -32,7 +41,11 @@ export function CalendarPage() {
         />
         <div className="calendar-body" role="grid" aria-label={`Calendar for ${displayLabel}`}>
           <WeekdayRow />
-          <CalendarGrid days={days} />
+          <CalendarGrid
+            days={days}
+            dayEntries={dayEntries}
+            onMarkChange={handleMarkChange}
+          />
         </div>
       </div>
     </main>
