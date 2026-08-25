@@ -1,0 +1,60 @@
+@import 'tailwindcss';
+
+/* ── Design Tokens ────────────────────────────────────────────── */
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Playfair Display', ui-serif, Georgia, serif;
+
+  /* Brand palette */
+  --color-brand-50: oklch(97% 0.02 260);
+  --color-brand-100: oklch(93% 0.05 260);
+  --color-brand-200: oklch(85% 0.10 260);
+  --color-brand-300: oklch(74% 0.16 260);
+  --color-brand-400: oklch(63% 0.22 260);
+  --color-brand-500: oklch(55% 0.25 260);
+  --color-brand-600: oklch(47% 0.26 260);
+  --color-brand-700: oklch(39% 0.24 260);
+  --color-brand-800: oklch(30% 0.20 260);
+  --color-brand-900: oklch(22% 0.14 260);
+
+  /* Surface / neutral palette */
+  --color-surface-base: oklch(8% 0.02 260);
+  --color-surface-raised: oklch(11% 0.025 260);
+  --color-surface-overlay: oklch(14% 0.03 260);
+  --color-surface-border: oklch(20% 0.04 260);
+
+  /* Text */
+  --color-text-primary: oklch(96% 0.008 260);
+  --color-text-secondary: oklch(72% 0.015 260);
+  --color-text-muted: oklch(50% 0.012 260);
+
+  /* Accent */
+  --color-accent-amber: oklch(78% 0.18 75);
+  --color-accent-rose: oklch(65% 0.22 15);
+  --color-accent-teal: oklch(70% 0.18 185);
+}
+
+/* ── Global Reset / Base ──────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-surface-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+  margin: 0;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
