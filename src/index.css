@@ -76,6 +76,7 @@ body {
 
 .calendar-page {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1.5rem 2rem;
@@ -89,6 +90,7 @@ body {
 
 .calendar-wrapper {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   max-width: 1400px;
@@ -294,6 +296,7 @@ body {
 
 .calendar-body {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
@@ -301,8 +304,10 @@ body {
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(0, 1fr);
   gap: 3px;
   flex: 1;
+  min-height: 0;
 }
 
 /* ── Day Cell ─────────────────────────────────────────────────── */
@@ -311,7 +316,7 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 100px;
+  aspect-ratio: 1;
   border-radius: 3px;
   border: 1px solid var(--color-paper-border);
   background: var(--color-paper);
@@ -319,18 +324,6 @@ body {
   /* Subtle paper texture via inset shadow */
   box-shadow: inset 0 1px 0 rgba(255 255 255 / 0.6), 0 1px 2px rgba(0 0 0 / 0.06);
   transition: box-shadow 120ms ease;
-}
-
-@media (min-width: 768px) {
-  .cal-day-cell {
-    min-height: 120px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .cal-day-cell {
-    min-height: 140px;
-  }
 }
 
 .cal-day-cell:hover {
@@ -495,10 +488,17 @@ body {
 .cal-day-note-chip {
   padding: 0 0.45rem 0.35rem;
   cursor: pointer;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.cal-day-note-chip:hover .note-chip-text {
-  color: var(--color-text-primary);
+.cal-day-note-list {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
 
@@ -506,10 +506,12 @@ body {
 /* ── Day Mark ─────────────────────────────────────────────────── */
 
 .day-mark-wrapper {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.25rem 0.5rem 0.125rem;
+  padding: 1.25rem 0.5rem 0.125rem;
   pointer-events: none; /* clicks fall through to the cell */
 }
 
@@ -609,6 +611,147 @@ body {
   font-weight: 500;
   color: var(--color-text-secondary);
 }
+
+/* ── Day Colour Backgrounds ──────────────────────────────────── */
+/*
+ * Semi-transparent backgrounds at ~0.55 opacity — high enough to be
+ * clearly distinguishable on the dark theme surface while keeping
+ * marks and notes readable.
+ * The inset box-shadow adds a left-side accent without affecting layout.
+ */
+
+.cal-day-cell--color-yellow  { background-color: oklch(90% 0.16 95); box-shadow: inset 3px 0 0 oklch(80% 0.20 95); }
+.cal-day-cell--color-orange  { background-color: oklch(86% 0.16 55); box-shadow: inset 3px 0 0 oklch(75% 0.20 55); }
+.cal-day-cell--color-red     { background-color: oklch(84% 0.14 20); box-shadow: inset 3px 0 0 oklch(70% 0.18 20); }
+.cal-day-cell--color-pink    { background-color: oklch(86% 0.14 345); box-shadow: inset 3px 0 0 oklch(72% 0.18 345); }
+.cal-day-cell--color-purple  { background-color: oklch(86% 0.12 300); box-shadow: inset 3px 0 0 oklch(72% 0.16 300); }
+.cal-day-cell--color-blue    { background-color: oklch(86% 0.11 250); box-shadow: inset 3px 0 0 oklch(72% 0.15 250); }
+.cal-day-cell--color-cyan    { background-color: oklch(86% 0.11 200); box-shadow: inset 3px 0 0 oklch(72% 0.15 200); }
+.cal-day-cell--color-green   { background-color: oklch(86% 0.13 145); box-shadow: inset 3px 0 0 oklch(72% 0.17 145); }
+
+/* Today cell: preserve the brand ring (append to existing box-shadow) */
+.cal-day-cell--color-yellow.cal-day-cell--today  { box-shadow: inset 3px 0 0 oklch(78% 0.24 90),  0 0 0 2px var(--color-brand-500); }
+.cal-day-cell--color-orange.cal-day-cell--today  { box-shadow: inset 3px 0 0 oklch(70% 0.26 55),  0 0 0 2px var(--color-brand-500); }
+.cal-day-cell--color-red.cal-day-cell--today     { box-shadow: inset 3px 0 0 oklch(60% 0.28 20),  0 0 0 2px var(--color-brand-500); }
+.cal-day-cell--color-pink.cal-day-cell--today    { box-shadow: inset 3px 0 0 oklch(66% 0.24 355), 0 0 0 2px var(--color-brand-500); }
+.cal-day-cell--color-purple.cal-day-cell--today  { box-shadow: inset 3px 0 0 oklch(54% 0.26 300), 0 0 0 2px var(--color-brand-500); }
+.cal-day-cell--color-blue.cal-day-cell--today    { box-shadow: inset 3px 0 0 oklch(54% 0.24 250), 0 0 0 2px var(--color-brand-500); }
+.cal-day-cell--color-cyan.cal-day-cell--today    { box-shadow: inset 3px 0 0 oklch(62% 0.22 200), 0 0 0 2px var(--color-brand-500); }
+.cal-day-cell--color-green.cal-day-cell--today   { box-shadow: inset 3px 0 0 oklch(60% 0.24 145), 0 0 0 2px var(--color-brand-500); }
+
+
+/* ── Colour button indicator dot ─────────────────────────────── */
+
+.cal-color-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cal-color-dot--yellow  { background: oklch(78% 0.22 90); }
+.cal-color-dot--orange  { background: oklch(72% 0.24 55); }
+.cal-color-dot--red     { background: oklch(62% 0.26 20); }
+.cal-color-dot--pink    { background: oklch(68% 0.22 355); }
+.cal-color-dot--purple  { background: oklch(58% 0.24 300); }
+.cal-color-dot--blue    { background: oklch(58% 0.22 250); }
+.cal-color-dot--cyan    { background: oklch(65% 0.20 200); }
+.cal-color-dot--green   { background: oklch(65% 0.22 145); }
+
+/* Colour button — show in muted tint when a colour is active */
+.cal-day-action-btn--colored {
+  color: var(--color-text-secondary);
+}
+
+/* ── Colour Picker Popover ───────────────────────────────────── */
+
+.color-picker {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 200;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 0.625rem;
+  box-shadow: 0 8px 24px rgba(0 0 0 / 0.5), 0 2px 6px rgba(0 0 0 / 0.2);
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  animation: picker-in 120ms ease;
+  pointer-events: all;
+}
+
+.color-picker-swatches {
+  display: grid;
+  grid-template-columns: repeat(4, 1.5rem);
+  gap: 0.35rem;
+}
+
+/* Individual colour swatch */
+.color-swatch {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+  flex-shrink: 0;
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 6px rgba(0 0 0 / 0.4);
+}
+
+.color-swatch--active {
+  border-color: white;
+  box-shadow: 0 0 0 1px rgba(255 255 255 / 0.4), 0 2px 6px rgba(0 0 0 / 0.4);
+}
+
+.color-swatch-check {
+  width: 10px;
+  height: 10px;
+  color: white;
+  filter: drop-shadow(0 1px 1px rgba(0 0 0 / 0.5));
+}
+
+/* Swatch backgrounds */
+.color-swatch--yellow  { background: oklch(85% 0.22 90); }
+.color-swatch--orange  { background: oklch(75% 0.24 55); }
+.color-swatch--red     { background: oklch(60% 0.26 20); }
+.color-swatch--pink    { background: oklch(70% 0.22 355); }
+.color-swatch--purple  { background: oklch(55% 0.24 300); }
+.color-swatch--blue    { background: oklch(55% 0.22 250); }
+.color-swatch--cyan    { background: oklch(68% 0.20 200); }
+.color-swatch--green   { background: oklch(62% 0.22 145); }
+
+/* Remove colour button */
+.color-picker-remove {
+  width: 100%;
+  padding: 0.3rem 0.5rem;
+  border: none;
+  border-top: 1px solid var(--color-surface-border);
+  background: none;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 0 0 0.4rem 0.4rem;
+  transition: color 100ms ease, background 100ms ease;
+}
+
+.color-picker-remove:hover {
+  color: var(--color-text-secondary);
+  background: var(--color-surface-overlay);
+}
+
+
 
 /* ── Auth Area ────────────────────────────────────────────────── */
 
@@ -785,7 +928,9 @@ body {
 
 .cal-day-content {
   flex: 1;
-  min-height: 1.5rem;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Note content area — always interactive for current-month cells */
@@ -795,26 +940,31 @@ body {
   padding: 0 0.4rem 0.4rem;
 }
 
-/* Truncated first-line preview */
+/* Truncated note preview */
 .note-chip-text {
   font-family: var(--font-handwriting);
   font-size: clamp(0.75rem, 1.5vw, 0.9rem);
   line-height: 1.3;
-  color: var(--color-text-secondary);
-  /* two-line clamp */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  color: var(--color-paper-text);
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
   margin: 0;
+  flex-shrink: 0;
 }
 
 .note-chip-more {
+  font-family: var(--font-sans);
   font-size: 0.65rem;
-  font-weight: 500;
-  color: var(--color-text-muted);
-  margin-top: 0.1rem;
+  font-weight: 600;
+  color: var(--color-brand-600);
+  margin-top: 0.15rem;
   display: block;
+  flex-shrink: 0;
+  padding: 0.1rem 0.3rem;
+  background: oklch(55% 0.25 260 / 0.12);
+  border-radius: 0.25rem;
+  width: fit-content;
 }
 
 /* '+ note' hint — visible on cell hover */
@@ -922,10 +1072,52 @@ body {
 }
 
 .note-item {
+  position: relative;
   border-radius: 0.5rem;
   border: 1px solid var(--color-surface-border);
   background: var(--color-surface-base);
   overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.note-item--dragging {
+  box-shadow: 0 8px 24px rgba(0 0 0 / 0.55), 0 2px 8px rgba(0 0 0 / 0.3);
+  border-color: var(--color-brand-700);
+  background: var(--color-surface-overlay);
+}
+
+/* ── Drag grip handle ─────────────────────────────────────── */
+
+.note-drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.5rem;
+  background: none;
+  border: none;
+  border-right: 1px solid transparent;
+  color: var(--color-text-muted);
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 120ms ease, color 120ms ease, border-color 120ms ease, background 120ms ease;
+  flex-shrink: 0;
+  touch-action: none;
+}
+
+.note-item:hover .note-drag-handle {
+  opacity: 1;
+  border-right-color: var(--color-surface-border);
+}
+
+.note-drag-handle:hover {
+  color: var(--color-text-secondary);
+  background: var(--color-surface-raised);
+}
+
+.note-drag-handle:active {
+  cursor: grabbing;
 }
 
 .note-display {
@@ -933,6 +1125,7 @@ body {
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0.625rem 0.75rem;
+  flex: 1;
 }
 
 .note-text {

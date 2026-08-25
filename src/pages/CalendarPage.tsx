@@ -5,7 +5,7 @@ import { CalendarHeader } from '@/components/calendar/CalendarHeader'
 import { WeekdayRow } from '@/components/calendar/WeekdayRow'
 import { CalendarGrid } from '@/components/calendar/CalendarGrid'
 import { NoteEditorModal } from '@/components/calendar/NoteEditorModal'
-import type { MarkType } from '@/services/storage'
+import type { MarkType, DayColor } from '@/services/storage'
 
 /** Format a YYYY-MM-DD key into a human-readable label like "August 25, 2026" */
 function formatDateKey(dateKey: string): string {
@@ -31,11 +31,13 @@ export function CalendarPage() {
     goToYear,
   } = useCalendar()
 
-  const dayEntries = useAppStore((s) => s.data.days)
-  const setMark    = useAppStore((s) => s.setMark)
-  const addNote    = useAppStore((s) => s.addNote)
-  const updateNote = useAppStore((s) => s.updateNote)
-  const deleteNote = useAppStore((s) => s.deleteNote)
+  const dayEntries  = useAppStore((s) => s.data.days)
+  const setMark      = useAppStore((s) => s.setMark)
+  const setDayColor  = useAppStore((s) => s.setDayColor)
+  const addNote      = useAppStore((s) => s.addNote)
+  const updateNote   = useAppStore((s) => s.updateNote)
+  const deleteNote   = useAppStore((s) => s.deleteNote)
+  const reorderNotes = useAppStore((s) => s.reorderNotes)
 
   // Which day's note modal is open (YYYY-MM-DD or null)
   const [openNoteDateKey, setOpenNoteDateKey] = useState<string | null>(null)
@@ -43,6 +45,11 @@ export function CalendarPage() {
   const handleMarkChange = useCallback(
     (dateKey: string, mark: MarkType | null) => setMark(dateKey, mark),
     [setMark]
+  )
+
+  const handleColorChange = useCallback(
+    (dateKey: string, color: DayColor | null) => setDayColor(dateKey, color),
+    [setDayColor]
   )
 
   const handleOpenNotes = useCallback(
@@ -75,6 +82,7 @@ export function CalendarPage() {
             days={days}
             dayEntries={dayEntries}
             onMarkChange={handleMarkChange}
+            onColorChange={handleColorChange}
             onOpenNotes={handleOpenNotes}
           />
         </div>
@@ -89,6 +97,7 @@ export function CalendarPage() {
           onAdd={(text) => addNote(openNoteDateKey, text)}
           onUpdate={(id, text) => updateNote(openNoteDateKey, id, text)}
           onDelete={(id) => deleteNote(openNoteDateKey, id)}
+          onReorder={(from, to) => reorderNotes(openNoteDateKey, from, to)}
           onClose={handleCloseNotes}
         />
       )}

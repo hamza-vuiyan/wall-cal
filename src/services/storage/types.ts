@@ -20,6 +20,23 @@ export interface Note {
   updatedAt: number
 }
 
+/** Token representing a highlight colour for a calendar day */
+export type DayColor =
+  | 'yellow' | 'orange' | 'red' | 'pink'
+  | 'purple' | 'blue'   | 'cyan' | 'green'
+
+/** Ordered colour palette shown in the colour picker */
+export const DAY_COLOR_PALETTE: { id: DayColor; label: string }[] = [
+  { id: 'yellow', label: 'Yellow'  },
+  { id: 'orange', label: 'Orange'  },
+  { id: 'red',    label: 'Red'     },
+  { id: 'pink',   label: 'Pink'    },
+  { id: 'purple', label: 'Purple'  },
+  { id: 'blue',   label: 'Blue'    },
+  { id: 'cyan',   label: 'Teal'    },
+  { id: 'green',  label: 'Green'   },
+]
+
 /** Per-day data entry. Future phases add optional fields here. */
 export interface DayEntry {
   /** ISO date key: "YYYY-MM-DD" */
@@ -30,7 +47,9 @@ export interface DayEntry {
   mark?: MarkType
   /** Notes written on this day, ordered by creation time */
   notes?: Note[]
-  // Future phases: color, taskIds, drawingRef, etc.
+  /** Optional highlight colour for this day */
+  color?: DayColor
+  // Future phases: drawing, taskIds, etc.
 }
 
 /** User-level preferences */

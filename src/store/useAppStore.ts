@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type { User } from 'firebase/auth'
 import { signInWithGoogle, signOut, onAuthStateChange } from '@/services/auth'
 import { persistenceService } from '@/services/storage'
-import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note } from '@/services/storage'
+import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor } from '@/services/storage'
 import { createEmptyData } from '@/services/storage'
 
 // ── Auth state ────────────────────────────────────────────────────
@@ -42,6 +42,10 @@ interface AppState {
   updateNote: (dateKey: string, noteId: string, text: string) => void
   /** Delete a note from a date. */
   deleteNote: (dateKey: string, noteId: string) => void
+  /** Set or remove the highlight colour on a date. Pass null to clear. */
+  setDayColor: (dateKey: string, color: DayColor | null) => void
+  /** Reorder notes on a date by moving fromIndex to toIndex. */
+  reorderNotes: (dateKey: string, fromIndex: number, toIndex: number) => void
 
   // Internal
   _setData: (data: WallCalData) => void
@@ -234,6 +238,59 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ data: updated })
     persistenceService.save(updated).catch((err) =>
       console.error('[WallCal] Failed to delete note:', err)
+    )
+  },
+
+  setDayColor: (dateKey, color) => {
+    const current = get().data
+    const existing = current.days[dateKey]
+    const now = Date.now()
+    let updatedDays: Record<string, DayEntry>
+
+    if (color === null) {
+      if (!existing) return
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { color: _removed, ...rest } = existing
+      const hasOtherData = rest.mark || (rest.notes?.length ?? 0) > 0
+      if (!hasOtherData) {
+        const { [dateKey]: _, ...remaining } = current.days
+        updatedDays = remaining
+      } else {
+        updatedDays = { ...current.days, [dateKey]: { ...rest, updatedAt: now } }
+      }
+    } else {
+      updatedDays = {
+        ...current.days,
+        [dateKey]: { ...existing, key: dateKey, color, updatedAt: now },
+      }
+    }
+
+    const updated: WallCalData = { ...current, days: updatedDays, updatedAt: now }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to save colour:', err)
+    )
+  },
+
+  reorderNotes: (dateKey, fromIndex, toIndex) => {
+    const current = get().data
+    const existing = current.days[dateKey]
+    if (!existing?.notes || fromIndex === toIndex) return
+    const now = Date.now()
+    const reordered = [...existing.notes]
+    const [moved] = reordered.splice(fromIndex, 1)
+    reordered.splice(toIndex, 0, moved)
+    const updated: WallCalData = {
+      ...current,
+      days: {
+        ...current.days,
+        [dateKey]: { ...existing, notes: reordered, updatedAt: now },
+      },
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to reorder notes:', err)
     )
   },
 
