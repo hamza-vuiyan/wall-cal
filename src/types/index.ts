@@ -26,3 +26,7 @@ export interface CalendarDay {
   /** Unique stable key for React lists: "YYYY-MM-DD" */
   key: string
 }
+
+// ── Storage / Persistence (re-exported for convenience) ──────────
+export type { WallCalData, DayEntry, UserSettings, MigrationResult } from '@/services/storage'
+

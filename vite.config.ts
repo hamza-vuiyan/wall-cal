@@ -10,4 +10,9 @@ export default defineConfig({
       '@': `${import.meta.dirname}/src`,
     },
   },
+  build: {
+    // Firebase Auth + Firestore SDK exceeds the default 500 kB warning.
+    // This is expected for a Firebase-powered app with modular imports.
+    chunkSizeWarningLimit: 900,
+  },
 })

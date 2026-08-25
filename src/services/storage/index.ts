@@ -1,0 +1,6 @@
+export type { StorageAdapter } from './StorageAdapter'
+export type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType } from './types'
+export { createEmptyData, mergeData } from './types'
+export { LocalStorageAdapter, localStorageAdapter } from './LocalStorageAdapter'
+export { FirestoreAdapter } from './FirestoreAdapter'
+export { persistenceService } from './PersistenceService'

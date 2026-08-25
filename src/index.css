@@ -398,6 +398,297 @@ body {
 .cal-day-content {
   flex: 1;
   padding: 0.25rem 0.5rem 0.4rem;
-  /* Ready for Phase 3+ content */
 }
 
+/* ── Interactive day cell ─────────────────────────────────────── */
+
+.cal-day-cell--interactive {
+  cursor: pointer;
+  position: relative; /* positioning context for the picker */
+}
+
+.cal-day-cell--interactive:hover {
+  background: var(--color-paper-hover, rgba(255 255 255 / 0.06));
+}
+
+.cal-day-cell--picker-open {
+  z-index: 10; /* lift above sibling cells when picker is showing */
+}
+
+/* ── Day Mark ─────────────────────────────────────────────────── */
+
+.day-mark-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.5rem 0.125rem;
+  pointer-events: none; /* clicks fall through to the cell */
+}
+
+.day-mark {
+  width: clamp(2rem, 5vw, 3rem);
+  height: clamp(2rem, 5vw, 3rem);
+  filter: drop-shadow(0 1px 2px rgba(0 0 0 / 0.35));
+  animation: mark-in 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes mark-in {
+  from { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* X — warm red, like a red marker */
+.day-mark--x {
+  color: oklch(62% 0.22 20);
+}
+
+/* Check — natural green */
+.day-mark--check {
+  color: oklch(68% 0.2 145);
+}
+
+/* Circle — soft amber/orange */
+.day-mark--circle {
+  color: oklch(72% 0.18 55);
+}
+
+/* ── Mark Picker Popover ──────────────────────────────────────── */
+
+.mark-picker {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 200;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 0.625rem;
+  box-shadow: 0 8px 24px rgba(0 0 0 / 0.5), 0 2px 6px rgba(0 0 0 / 0.2);
+  padding: 0.375rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 9rem;
+  animation: picker-in 120ms ease;
+  /* Stop clicks from propagating to the cell behind */
+  pointer-events: all;
+}
+
+.mark-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.45rem 0.6rem;
+  border: none;
+  border-radius: 0.4rem;
+  background: none;
+  cursor: pointer;
+  transition: background 100ms ease;
+  text-align: left;
+  width: 100%;
+}
+
+.mark-picker-item:hover {
+  background: var(--color-surface-overlay);
+}
+
+.mark-picker-item--active {
+  background: var(--color-surface-overlay);
+}
+
+.mark-picker-item--remove {
+  margin-top: 2px;
+  border-top: 1px solid var(--color-surface-border);
+  padding-top: 0.5rem;
+}
+
+.mark-picker-symbol {
+  font-size: 1rem;
+  line-height: 1;
+  width: 1.25rem;
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+/* Colour the symbol to match the mark colour */
+.mark-picker-item:nth-child(1) .mark-picker-symbol { color: oklch(62% 0.22 20); }
+.mark-picker-item:nth-child(2) .mark-picker-symbol { color: oklch(68% 0.2 145); }
+.mark-picker-item:nth-child(3) .mark-picker-symbol { color: oklch(72% 0.18 55); }
+.mark-picker-item--remove .mark-picker-symbol       { color: var(--color-text-muted); }
+
+.mark-picker-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+/* ── Auth Area ────────────────────────────────────────────────── */
+
+.auth-area {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.auth-area--signed-in {
+  gap: 0.625rem;
+}
+
+/* Google sign-in button */
+.auth-signin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.875rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-surface-border);
+  background: var(--color-surface-raised);
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.auth-signin-btn:hover {
+  background: var(--color-surface-overlay);
+  color: var(--color-text-primary);
+  border-color: var(--color-surface-overlay);
+}
+
+/* User avatar */
+.auth-avatar {
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--color-surface-border);
+  flex-shrink: 0;
+}
+
+.auth-avatar--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-brand-700);
+  color: var(--color-brand-100);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Display name */
+.auth-username {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  max-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Sign out button */
+.auth-signout-btn {
+  padding: 0.3rem 0.7rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--color-surface-border);
+  background: none;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+  white-space: nowrap;
+}
+
+.auth-signout-btn:hover {
+  background: var(--color-surface-raised);
+  color: var(--color-text-secondary);
+}
+
+/* Auth error inline message */
+.auth-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--color-accent-rose);
+  background: oklch(65% 0.22 15 / 0.1);
+  border: 1px solid oklch(65% 0.22 15 / 0.25);
+  border-radius: 0.4rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.auth-error-dismiss {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+  opacity: 0.7;
+}
+
+.auth-error-dismiss:hover {
+  opacity: 1;
+}
+
+/* Auth loading spinner */
+.auth-spinner {
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  border: 2px solid var(--color-surface-border);
+  border-top-color: var(--color-brand-400);
+  animation: auth-spin 0.7s linear infinite;
+}
+
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Migration Banner ─────────────────────────────────────────── */
+
+.migration-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0.75rem 1.5rem 0;
+  padding: 0.625rem 1rem;
+  border-radius: 0.625rem;
+  background: oklch(70% 0.18 185 / 0.12);
+  border: 1px solid oklch(70% 0.18 185 / 0.3);
+  color: var(--color-accent-teal);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  max-width: max-content;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 250ms ease, transform 250ms ease;
+  pointer-events: none;
+}
+
+.migration-banner--visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.migration-banner-close {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0;
+  margin-left: 0.25rem;
+  opacity: 0.7;
+}
+
+.migration-banner-close:hover {
+  opacity: 1;
+}

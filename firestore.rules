@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── User Data ────────────────────────────────────────────────
+    // Each authenticated user can only read and write their own data.
+    // The path users/{uid}/... ensures complete isolation between users.
+    // Unauthenticated requests are denied by default (no fallback rule).
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── Default Deny ─────────────────────────────────────────────
+    // Any path not matched above is implicitly denied.
+    // Explicit default deny shown here for clarity:
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+  }
+}
