@@ -9,6 +9,7 @@ interface CalendarGridProps {
   onMarkChange?: (dateKey: string, mark: MarkType | null) => void
   onOpenNotes?: (dateKey: string) => void
   onColorChange?: (dateKey: string, color: DayColor | null) => void
+  onOpenTasks?: (dateKey: string) => void
   renderDayContent?: (day: CalendarDay) => ReactNode
 }
 
@@ -18,6 +19,7 @@ export function CalendarGrid({
   onMarkChange,
   onOpenNotes,
   onColorChange,
+  onOpenTasks,
   renderDayContent,
 }: CalendarGridProps) {
   return (
@@ -29,9 +31,11 @@ export function CalendarGrid({
           mark={dayEntries?.[day.key]?.mark}
           notes={dayEntries?.[day.key]?.notes}
           color={dayEntries?.[day.key]?.color}
+          tasks={dayEntries?.[day.key]?.tasks}
           onMarkChange={onMarkChange}
           onOpenNotes={onOpenNotes}
           onColorChange={onColorChange}
+          onOpenTasks={onOpenTasks}
         >
           {renderDayContent?.(day)}
         </DayCell>

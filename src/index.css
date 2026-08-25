@@ -1283,3 +1283,434 @@ body {
   opacity: 0.35;
   cursor: not-allowed;
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   TASK SYSTEM
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Task action button (in day header) ───────────────────────── */
+
+.cal-day-action-btn--task {
+  color: var(--color-text-muted);
+}
+
+.cal-day-action-btn--has-tasks {
+  color: var(--color-brand-400);
+}
+
+/* ── Task chips inside calendar cells ─────────────────────────── */
+
+.cal-day-task-list {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.1rem 0.45rem 0.25rem;
+}
+
+.cal-task-chip {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  min-width: 0;
+  border-left: 2px solid var(--color-brand-700);
+  padding-left: 0.3rem;
+  border-radius: 0 2px 2px 0;
+  background: oklch(55% 0.25 260 / 0.07);
+}
+
+.cal-task-chip--completed {
+  opacity: 0.5;
+  border-left-color: var(--color-text-muted);
+}
+
+.cal-task-chip--completed .cal-task-chip-title {
+  text-decoration: line-through;
+}
+
+/* Colour accent left border */
+.cal-task-chip--color-yellow  { border-left-color: oklch(82% 0.18 95); }
+.cal-task-chip--color-orange  { border-left-color: oklch(75% 0.20 55); }
+.cal-task-chip--color-red     { border-left-color: oklch(65% 0.18 20); }
+.cal-task-chip--color-pink    { border-left-color: oklch(72% 0.18 345); }
+.cal-task-chip--color-purple  { border-left-color: oklch(68% 0.16 300); }
+.cal-task-chip--color-blue    { border-left-color: oklch(68% 0.15 250); }
+.cal-task-chip--color-cyan    { border-left-color: oklch(70% 0.15 200); }
+.cal-task-chip--color-green   { border-left-color: oklch(68% 0.17 145); }
+
+.cal-task-chip-time {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-sans);
+}
+
+.cal-task-chip-title {
+  font-size: 0.7rem;
+  font-family: var(--font-handwriting);
+  color: var(--color-paper-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+/* ── Task list modal ──────────────────────────────────────────── */
+
+.task-list-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 301;
+  width: min(480px, calc(100vw - 2rem));
+  max-height: min(80vh, 600px);
+  overflow-y: auto;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 1rem;
+  box-shadow: 0 20px 60px rgba(0 0 0 / 0.6), 0 4px 12px rgba(0 0 0 / 0.3);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: modal-in 180ms cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.task-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.task-list-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-surface-border);
+  background: var(--color-surface-base);
+  transition: border-color 120ms ease;
+  border-left-width: 3px;
+  border-left-color: var(--color-brand-700);
+}
+
+.task-list-item--completed {
+  opacity: 0.6;
+  border-left-color: var(--color-text-muted);
+}
+
+/* Task item colour accents */
+.task-list-item--color-yellow  { border-left-color: oklch(82% 0.18 95); }
+.task-list-item--color-orange  { border-left-color: oklch(75% 0.20 55); }
+.task-list-item--color-red     { border-left-color: oklch(65% 0.18 20); }
+.task-list-item--color-pink    { border-left-color: oklch(72% 0.18 345); }
+.task-list-item--color-purple  { border-left-color: oklch(68% 0.16 300); }
+.task-list-item--color-blue    { border-left-color: oklch(68% 0.15 250); }
+.task-list-item--color-cyan    { border-left-color: oklch(70% 0.15 200); }
+.task-list-item--color-green   { border-left-color: oklch(68% 0.17 145); }
+
+.task-check-btn {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-surface-border);
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 120ms ease, background 120ms ease;
+  margin-top: 0.1rem;
+}
+
+.task-check-btn:hover {
+  border-color: var(--color-brand-400);
+}
+
+.task-check-btn--done {
+  background: var(--color-brand-600);
+  border-color: var(--color-brand-600);
+  color: white;
+}
+
+.task-list-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.task-time {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-brand-400);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+.task-list-item--completed .task-time {
+  color: var(--color-text-muted);
+}
+
+.task-title {
+  font-size: 0.9375rem;
+  font-family: var(--font-handwriting);
+  color: var(--color-text-secondary);
+  line-height: 1.3;
+}
+
+.task-list-item--completed .task-title {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.task-description {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.task-list-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.task-list-item:hover .task-list-actions {
+  opacity: 1;
+}
+
+/* Delete confirmation overlay */
+.task-delete-confirm {
+  position: absolute;
+  inset: 0;
+  background: var(--color-surface-overlay);
+  border-radius: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  z-index: 10;
+  padding: 0 0.75rem;
+  backdrop-filter: blur(2px);
+}
+
+/* ── Task editor modal ────────────────────────────────────────── */
+
+.task-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 302;
+  width: min(480px, calc(100vw - 2rem));
+  max-height: min(90vh, 680px);
+  overflow-y: auto;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 1rem;
+  box-shadow: 0 20px 60px rgba(0 0 0 / 0.6), 0 4px 12px rgba(0 0 0 / 0.3);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: modal-in 180ms cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+/* ── Task form ────────────────────────────────────────────────── */
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.task-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.task-form-field--row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.task-form-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.task-form-required {
+  color: var(--color-accent-rose);
+  margin-left: 0.1rem;
+}
+
+.task-form-optional {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.task-form-input {
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 0.5rem;
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  padding: 0.5rem 0.75rem;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.task-form-input--time {
+  width: auto;
+  color-scheme: dark;
+}
+
+.task-form-input:focus {
+  border-color: var(--color-brand-500);
+  box-shadow: 0 0 0 3px oklch(55% 0.25 260 / 0.2);
+}
+
+.task-form-textarea {
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 0.5rem;
+  color: var(--color-text-primary);
+  font-family: var(--font-handwriting);
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  resize: vertical;
+  min-height: 4rem;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 120ms ease;
+}
+
+.task-form-textarea:focus {
+  border-color: var(--color-brand-500);
+  box-shadow: 0 0 0 3px oklch(55% 0.25 260 / 0.2);
+}
+
+.task-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding-top: 0.25rem;
+}
+
+/* ── Task color swatches (in form) ────────────────────────────── */
+
+.task-color-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.task-color-swatch {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+}
+
+.task-color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.task-color-swatch--active {
+  border-color: white;
+  box-shadow: 0 0 0 1px rgba(255 255 255 / 0.5);
+}
+
+.task-color-swatch--none {
+  background: var(--color-surface-base);
+  border-color: var(--color-surface-border);
+  color: var(--color-text-muted);
+}
+
+.task-color-swatch--yellow  { background: oklch(85% 0.22 90); }
+.task-color-swatch--orange  { background: oklch(75% 0.24 55); }
+.task-color-swatch--red     { background: oklch(60% 0.26 20); }
+.task-color-swatch--pink    { background: oklch(70% 0.22 355); }
+.task-color-swatch--purple  { background: oklch(55% 0.24 300); }
+.task-color-swatch--blue    { background: oklch(55% 0.22 250); }
+.task-color-swatch--cyan    { background: oklch(68% 0.20 200); }
+.task-color-swatch--green   { background: oklch(62% 0.22 145); }
+
+/* ── Toggle switch (completed in edit mode) ───────────────────── */
+
+.task-toggle {
+  position: relative;
+  width: 2.5rem;
+  height: 1.375rem;
+  border-radius: 0.75rem;
+  background: var(--color-surface-border);
+  border: none;
+  cursor: pointer;
+  transition: background 200ms ease;
+  flex-shrink: 0;
+}
+
+.task-toggle--on {
+  background: var(--color-brand-600);
+}
+
+.task-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: white;
+  transition: transform 200ms ease;
+  display: block;
+  box-shadow: 0 1px 3px rgba(0 0 0 / 0.3);
+}
+
+.task-toggle--on .task-toggle-thumb {
+  transform: translateX(1.125rem);
+}

@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type { User } from 'firebase/auth'
 import { signInWithGoogle, signOut, onAuthStateChange } from '@/services/auth'
 import { persistenceService } from '@/services/storage'
-import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor } from '@/services/storage'
+import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task } from '@/services/storage'
 import { createEmptyData } from '@/services/storage'
 
 // ── Auth state ────────────────────────────────────────────────────
@@ -46,10 +46,28 @@ interface AppState {
   setDayColor: (dateKey: string, color: DayColor | null) => void
   /** Reorder notes on a date by moving fromIndex to toIndex. */
   reorderNotes: (dateKey: string, fromIndex: number, toIndex: number) => void
+  /** Add a new task to a date. Returns the generated task ID. */
+  addTask: (dateKey: string, task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => string
+  /** Update fields of an existing task. */
+  updateTask: (dateKey: string, taskId: string, changes: Partial<Omit<Task, 'id' | 'date' | 'createdAt'>>) => void
+  /** Toggle a task's completed status. */
+  toggleTask: (dateKey: string, taskId: string) => void
+  /** Delete a task from a date. */
+  deleteTask: (dateKey: string, taskId: string) => void
 
   // Internal
   _setData: (data: WallCalData) => void
   _initAuth: () => () => void
+}
+
+// ── Helpers ───────────────────────────────────────────────────────
+
+/** Sorts tasks: timed tasks ascending by time, then untimed tasks by createdAt */
+function sortTasks(a: Task, b: Task): number {
+  if (a.time && b.time) return a.time.localeCompare(b.time)
+  if (a.time && !b.time) return -1
+  if (!a.time && b.time) return 1
+  return a.createdAt - b.createdAt
 }
 
 // ── Store ─────────────────────────────────────────────────────────
@@ -291,6 +309,100 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ data: updated })
     persistenceService.save(updated).catch((err) =>
       console.error('[WallCal] Failed to reorder notes:', err)
+    )
+  },
+
+  // ── Task actions ───────────────────────────────────────────
+
+  addTask: (dateKey, taskData) => {
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
+    const now = Date.now()
+    const newTask: Task = { ...taskData, id, date: dateKey, createdAt: now, updatedAt: now }
+    const current = get().data
+    const existing = current.days[dateKey]
+    // Sort by time after adding: timed tasks first (ascending), then untimed
+    const allTasks = [...(existing?.tasks ?? []), newTask].sort(sortTasks)
+    const updated: WallCalData = {
+      ...current,
+      days: {
+        ...current.days,
+        [dateKey]: { ...existing, key: dateKey, tasks: allTasks, updatedAt: now },
+      },
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to save task:', err)
+    )
+    return id
+  },
+
+  updateTask: (dateKey, taskId, changes) => {
+    const current = get().data
+    const existing = current.days[dateKey]
+    if (!existing?.tasks) return
+    const now = Date.now()
+    const updatedTasks = existing.tasks
+      .map((t) => t.id === taskId ? { ...t, ...changes, updatedAt: now } : t)
+      .sort(sortTasks)
+    const updated: WallCalData = {
+      ...current,
+      days: {
+        ...current.days,
+        [dateKey]: { ...existing, tasks: updatedTasks, updatedAt: now },
+      },
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to update task:', err)
+    )
+  },
+
+  toggleTask: (dateKey, taskId) => {
+    const current = get().data
+    const existing = current.days[dateKey]
+    if (!existing?.tasks) return
+    const now = Date.now()
+    const updatedTasks = existing.tasks.map((t) =>
+      t.id === taskId ? { ...t, completed: !t.completed, updatedAt: now } : t
+    )
+    const updated: WallCalData = {
+      ...current,
+      days: {
+        ...current.days,
+        [dateKey]: { ...existing, tasks: updatedTasks, updatedAt: now },
+      },
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to toggle task:', err)
+    )
+  },
+
+  deleteTask: (dateKey, taskId) => {
+    const current = get().data
+    const existing = current.days[dateKey]
+    if (!existing) return
+    const now = Date.now()
+    const remaining = (existing.tasks ?? []).filter((t) => t.id !== taskId)
+    // Prune day entry if completely empty
+    const isEmpty = remaining.length === 0 && !existing.mark && !existing.notes?.length && !existing.color
+    let updatedDays: Record<string, DayEntry>
+    if (isEmpty) {
+      const { [dateKey]: _, ...rest } = current.days
+      updatedDays = rest
+    } else {
+      updatedDays = {
+        ...current.days,
+        [dateKey]: { ...existing, tasks: remaining.length ? remaining : undefined, updatedAt: now },
+      }
+    }
+    const updated: WallCalData = { ...current, days: updatedDays, updatedAt: now }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to delete task:', err)
     )
   },
 

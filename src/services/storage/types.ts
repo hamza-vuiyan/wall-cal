@@ -37,6 +37,28 @@ export const DAY_COLOR_PALETTE: { id: DayColor; label: string }[] = [
   { id: 'green',  label: 'Green'   },
 ]
 
+/** A task associated with a specific calendar day */
+export interface Task {
+  /** Unique ID: base-36 timestamp + random suffix */
+  id: string
+  /** Required task title */
+  title: string
+  /** ISO date key the task belongs to: "YYYY-MM-DD" */
+  date: string
+  /** Optional time string in "HH:MM" 24-hour format */
+  time?: string
+  /** Optional longer description */
+  description?: string
+  /** Whether the task has been completed */
+  completed: boolean
+  /** Optional colour accent for this task */
+  color?: DayColor
+  /** Unix timestamp (ms) when the task was created */
+  createdAt: number
+  /** Unix timestamp (ms) when the task was last edited */
+  updatedAt: number
+}
+
 /** Per-day data entry. Future phases add optional fields here. */
 export interface DayEntry {
   /** ISO date key: "YYYY-MM-DD" */
@@ -49,7 +71,9 @@ export interface DayEntry {
   notes?: Note[]
   /** Optional highlight colour for this day */
   color?: DayColor
-  // Future phases: drawing, taskIds, etc.
+  /** Tasks associated with this day */
+  tasks?: Task[]
+  // Future phases: drawing, etc.
 }
 
 /** User-level preferences */
