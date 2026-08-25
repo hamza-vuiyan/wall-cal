@@ -56,21 +56,16 @@ export function HomePage({ onNavigate }: HomePageProps) {
           }}
         />
 
-        {/* Eyebrow badge */}
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--color-surface-border)] bg-[var(--color-surface-raised)] px-4 py-1.5">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-accent-amber)]" />
-          <span className="text-xs font-medium uppercase tracking-widest text-[var(--color-text-secondary)]">
-            Coming Soon
-          </span>
-        </div>
-
         {/* Heading */}
         <h1
           id="hero-heading"
-          className="mb-4 max-w-3xl text-5xl font-extrabold tracking-tight text-[var(--color-text-primary)] sm:text-6xl lg:text-7xl"
+          className="mb-4 max-w-3xl text-5xl font-extrabold tracking-tight text-[var(--color-text-primary)] sm:text-6xl lg:text-7xl flex items-center justify-center gap-4"
           style={{ fontFamily: 'var(--font-display)' }}
         >
           WallCal
+          <span className="text-sm sm:text-base tracking-widest font-sans font-bold uppercase bg-[var(--color-brand-500)] text-white px-3 py-1 rounded-full align-middle mt-2">
+            Beta
+          </span>
         </h1>
 
         {/* Tagline */}

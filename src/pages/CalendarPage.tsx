@@ -8,6 +8,8 @@ import { NoteEditorModal } from '@/components/calendar/NoteEditorModal'
 import { TaskListModal } from '@/components/calendar/TaskListModal'
 import type { MarkType, DayColor, Task } from '@/services/storage'
 
+import type { AppView } from '@/types'
+
 /** Format a YYYY-MM-DD key into a human-readable label like "August 25, 2026" */
 function formatDateKey(dateKey: string): string {
   const [y, m, d] = dateKey.split('-').map(Number)
@@ -18,7 +20,11 @@ function formatDateKey(dateKey: string): string {
   })
 }
 
-export function CalendarPage() {
+interface CalendarPageProps {
+  onNavigate?: (view: AppView) => void
+}
+
+export function CalendarPage({ onNavigate }: CalendarPageProps) {
   const {
     year,
     month,
@@ -43,6 +49,8 @@ export function CalendarPage() {
   const updateTask   = useAppStore((s) => s.updateTask)
   const toggleTask   = useAppStore((s) => s.toggleTask)
   const deleteTask   = useAppStore((s) => s.deleteTask)
+  const challengesData = useAppStore((s) => s.data.challenges)
+  const challenges   = challengesData ?? []
 
   // Which day's note modal is open (YYYY-MM-DD or null)
   const [openNoteDateKey, setOpenNoteDateKey] = useState<string | null>(null)
@@ -73,6 +81,12 @@ export function CalendarPage() {
 
   const handleCloseTasks = useCallback(() => setOpenTaskDateKey(null), [])
 
+  const handleChallengeDotClick = useCallback(() => {
+    if (onNavigate) {
+      onNavigate('challenges')
+    }
+  }, [onNavigate])
+
   const activeNotes = openNoteDateKey
     ? (dayEntries[openNoteDateKey]?.notes ?? [])
     : []
@@ -99,10 +113,12 @@ export function CalendarPage() {
           <CalendarGrid
             days={days}
             dayEntries={dayEntries}
+            challenges={challenges}
             onMarkChange={handleMarkChange}
             onColorChange={handleColorChange}
             onOpenNotes={handleOpenNotes}
             onOpenTasks={handleOpenTasks}
+            onChallengeClick={handleChallengeDotClick}
           />
         </div>
       </div>

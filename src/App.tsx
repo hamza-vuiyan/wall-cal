@@ -4,24 +4,25 @@ import { Footer } from '@/components/Footer'
 import { MigrationBanner } from '@/components/auth/MigrationBanner'
 import { HomePage } from '@/pages/HomePage'
 import { CalendarPage } from '@/pages/CalendarPage'
+import { ChallengesPage } from '@/pages/ChallengesPage'
+import { ChallengeDetailPage } from '@/pages/ChallengeDetailPage'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { useAppStore } from '@/store/useAppStore'
 import type { AppView } from '@/types'
 
 // ── Hash-based view routing ───────────────────────────────────────
-// Maps URL hash → AppView so refresh / browser back-forward work.
-// e.g. http://localhost:5173/#calendar stays on the calendar after refresh.
-
 const HASH_TO_VIEW: Record<string, AppView> = {
-  '#calendar': 'calendar',
-  '#settings': 'settings',
-  '#home': 'home',
+  '#calendar':   'calendar',
+  '#settings':   'settings',
+  '#home':       'home',
+  '#challenges': 'challenges',
 }
 
 const VIEW_TO_HASH: Record<AppView, string> = {
-  home: '#home',
-  calendar: '#calendar',
-  settings: '#settings',
+  home:       '#home',
+  calendar:   '#calendar',
+  settings:   '#settings',
+  challenges: '#challenges',
 }
 
 function getViewFromHash(): AppView {
@@ -31,21 +32,21 @@ function getViewFromHash(): AppView {
 
 export default function App() {
   const [currentView, setCurrentViewState] = useState<AppView>(getViewFromHash)
+  const [openChallengeId, setOpenChallengeId] = useState<string | null>(null)
   const initAuth = useAppStore((s) => s._initAuth)
 
-  // Wire Firebase auth listener once on mount.
   useEffect(() => {
     const cleanup = initAuth()
     return cleanup
   }, [initAuth])
 
-  // Keep URL hash in sync when view changes
   const navigateTo = useCallback((view: AppView) => {
     window.location.hash = VIEW_TO_HASH[view]
     setCurrentViewState(view)
+    // Clear challenge detail when navigating away
+    if (view !== 'challenges') setOpenChallengeId(null)
   }, [])
 
-  // Sync view if user manually changes the hash or uses browser back/forward
   useEffect(() => {
     function onHashChange() {
       setCurrentViewState(getViewFromHash())
@@ -54,10 +55,28 @@ export default function App() {
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
 
+  const handleOpenChallenge = useCallback((id: string) => {
+    setOpenChallengeId(id)
+  }, [])
+
+  const handleBackToChallenges = useCallback(() => {
+    setOpenChallengeId(null)
+  }, [])
+
   const renderPage = () => {
     switch (currentView) {
       case 'calendar':
-        return <CalendarPage />
+        return <CalendarPage onNavigate={navigateTo} />
+      case 'challenges':
+        if (openChallengeId) {
+          return (
+            <ChallengeDetailPage
+              challengeId={openChallengeId}
+              onBack={handleBackToChallenges}
+            />
+          )
+        }
+        return <ChallengesPage onOpenChallenge={handleOpenChallenge} />
       case 'settings':
         return <SettingsPage />
       default:

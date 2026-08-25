@@ -1,7 +1,7 @@
 // Global application types for WallCal
 
 /** Represents the current view/route in the app */
-export type AppView = 'home' | 'calendar' | 'settings'
+export type AppView = 'home' | 'calendar' | 'settings' | 'challenges'
 
 /** Generic status type for async operations */
 export type AsyncStatus = 'idle' | 'loading' | 'success' | 'error'
