@@ -609,8 +609,16 @@ export const useAppStore = create<AppState>((set, get) => ({
         }
 
         // 4. Subscribe to real-time updates
-        dataUnsub = persistenceService.subscribe((data) => {
-          get()._setData(data)
+        dataUnsub = persistenceService.subscribe((incoming) => {
+          // Preserve in-memory fields that may not yet be in Firestore
+          // (e.g., challenges written before the schema fix)
+          const current = get().data
+          const merged: WallCalData = {
+            ...incoming,
+            challenges: incoming.challenges ?? current.challenges,
+            habits: incoming.habits ?? current.habits,
+          }
+          get()._setData(merged)
         })
 
         set({

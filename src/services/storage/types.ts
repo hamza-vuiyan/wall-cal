@@ -182,6 +182,16 @@ export function mergeData(local: WallCalData, remote: WallCalData): WallCalData 
     }
   }
 
+  // Challenges: merge by id, newest updatedAt wins on conflict
+  const mergedChallenges = [...(local.challenges ?? []), ...(remote.challenges ?? [])]
+    .sort((a, b) => a.updatedAt - b.updatedAt)
+    .reduce<Challenge[]>((acc, c) => {
+      const i = acc.findIndex((x) => x.id === c.id)
+      if (i >= 0) acc[i] = c
+      else acc.push(c)
+      return acc
+    }, [])
+
   // Habits: merge by id, newest updatedAt wins on conflict
   const mergedHabits = [...(local.habits ?? []), ...(remote.habits ?? [])]
     .sort((a, b) => a.updatedAt - b.updatedAt)
@@ -198,7 +208,8 @@ export function mergeData(local: WallCalData, remote: WallCalData): WallCalData 
   return {
     version: Math.max(local.version, remote.version),
     days: mergedDays,
-    habits: mergedHabits,
+    challenges: mergedChallenges.length > 0 ? mergedChallenges : undefined,
+    habits: mergedHabits.length > 0 ? mergedHabits : undefined,
     settings,
     updatedAt: Date.now(),
   }

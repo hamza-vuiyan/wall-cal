@@ -71,7 +71,8 @@ class PersistenceService {
 
     // Nothing in localStorage — skip
     const hasGuestContent =
-      Object.keys(guestData.days).length > 0
+      Object.keys(guestData.days).length > 0 ||
+      (guestData.challenges?.length ?? 0) > 0
 
     if (!hasGuestContent) {
       return { status: 'empty', message: '' }
