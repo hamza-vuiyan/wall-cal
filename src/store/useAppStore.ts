@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type { User } from 'firebase/auth'
 import { signInWithGoogle, signOut, onAuthStateChange } from '@/services/auth'
 import { persistenceService } from '@/services/storage'
-import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task, Challenge } from '@/services/storage'
+import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task, Challenge, Habit } from '@/services/storage'
 import { createEmptyData } from '@/services/storage'
 
 // ── Auth state ────────────────────────────────────────────────────
@@ -62,6 +62,16 @@ interface AppState {
   deleteChallenge: (id: string) => void
   /** Toggle completion of a specific date within a challenge. */
   toggleChallengeDate: (challengeId: string, dateKey: string) => void
+
+  // Actions — Habits
+  /** Add a new habit. Returns the generated habit ID. */
+  addHabit: (data: Omit<Habit, 'id' | 'createdAt' | 'updatedAt' | 'completedDates'>) => string
+  /** Update fields of an existing habit. */
+  updateHabit: (id: string, changes: Partial<Omit<Habit, 'id' | 'createdAt'>>) => void
+  /** Delete a habit and all its completion data. */
+  deleteHabit: (id: string) => void
+  /** Toggle completion of a habit for a specific date. */
+  toggleHabitCompletion: (habitId: string, dateKey: string) => void
 
   // Internal
   _setData: (data: WallCalData) => void
@@ -487,6 +497,79 @@ export const useAppStore = create<AppState>((set, get) => ({
     )
   },
 
+  // ── Habit actions ───────────────────────────────────────────
+
+  addHabit: (data) => {
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
+    const now = Date.now()
+    const newHabit: Habit = { ...data, id, completedDates: [], createdAt: now, updatedAt: now }
+    const current = get().data
+    const updated: WallCalData = {
+      ...current,
+      habits: [...(current.habits ?? []), newHabit],
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to save habit:', err)
+    )
+    return id
+  },
+
+  updateHabit: (id, changes) => {
+    const current = get().data
+    const now = Date.now()
+    const updated: WallCalData = {
+      ...current,
+      habits: (current.habits ?? []).map((h) =>
+        h.id === id ? { ...h, ...changes, updatedAt: now } : h
+      ),
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to update habit:', err)
+    )
+  },
+
+  deleteHabit: (id) => {
+    const current = get().data
+    const now = Date.now()
+    const updated: WallCalData = {
+      ...current,
+      habits: (current.habits ?? []).filter((h) => h.id !== id),
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to delete habit:', err)
+    )
+  },
+
+  toggleHabitCompletion: (habitId, dateKey) => {
+    const current = get().data
+    const now = Date.now()
+    const updated: WallCalData = {
+      ...current,
+      habits: (current.habits ?? []).map((h) => {
+        if (h.id !== habitId) return h
+        const isComplete = h.completedDates.includes(dateKey)
+        return {
+          ...h,
+          completedDates: isComplete
+            ? h.completedDates.filter((d) => d !== dateKey)
+            : [...h.completedDates, dateKey].sort(),
+          updatedAt: now,
+        }
+      }),
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to toggle habit completion:', err)
+    )
+  },
+
   // ── Auth initialisation ────────────────────────────────────────
   // Called once from App.tsx on mount. Returns the Firebase unsubscribe fn.
 
@@ -533,6 +616,7 @@ export const useAppStore = create<AppState>((set, get) => ({
           const merged: WallCalData = {
             ...incoming,
             challenges: incoming.challenges ?? current.challenges,
+            habits: incoming.habits ?? current.habits,
           }
           get()._setData(merged)
         })

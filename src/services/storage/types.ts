@@ -59,6 +59,29 @@ export interface Task {
   updatedAt: number
 }
 
+/** How often a habit recurs. Only 'daily' is implemented in this phase. */
+export type HabitFrequency = 'daily' // Future phases: 'weekly' | 'custom'
+
+/** A recurring habit tracked in WallCal */
+export interface Habit {
+  /** Unique stable ID */
+  id: string
+  /** Display name of the habit */
+  name: string
+  /** Optional colour accent (reuses the day-colour palette) */
+  color?: DayColor
+  /** Start date in YYYY-MM-DD format — the habit is scheduled from this day onward */
+  startDate: string
+  /** Recurrence frequency. Only 'daily' is supported in this phase. */
+  frequency: HabitFrequency
+  /** YYYY-MM-DD keys of days the habit was marked complete */
+  completedDates: string[]
+  /** Unix timestamp (ms) of creation */
+  createdAt: number
+  /** Unix timestamp (ms) of last edit */
+  updatedAt: number
+}
+
 /** Per-day data entry. Future phases add optional fields here. */
 export interface DayEntry {
   /** ISO date key: "YYYY-MM-DD" */
@@ -114,6 +137,8 @@ export interface WallCalData {
   days: Record<string, DayEntry>
   /** User-level challenges (multi-day goals) */
   challenges?: Challenge[]
+  /** User-defined recurring habits */
+  habits?: Habit[]
   /** User preferences */
   settings: UserSettings
   /** Unix timestamp (ms) of the last write */
@@ -167,6 +192,16 @@ export function mergeData(local: WallCalData, remote: WallCalData): WallCalData 
       return acc
     }, [])
 
+  // Habits: merge by id, newest updatedAt wins on conflict
+  const mergedHabits = [...(local.habits ?? []), ...(remote.habits ?? [])]
+    .sort((a, b) => a.updatedAt - b.updatedAt)
+    .reduce<Habit[]>((acc, h) => {
+      const i = acc.findIndex((x) => x.id === h.id)
+      if (i >= 0) acc[i] = h
+      else acc.push(h)
+      return acc
+    }, [])
+
   // Settings: whichever data is overall newer wins
   const settings = local.updatedAt > remote.updatedAt ? local.settings : remote.settings
 
@@ -174,6 +209,7 @@ export function mergeData(local: WallCalData, remote: WallCalData): WallCalData 
     version: Math.max(local.version, remote.version),
     days: mergedDays,
     challenges: mergedChallenges.length > 0 ? mergedChallenges : undefined,
+    habits: mergedHabits.length > 0 ? mergedHabits : undefined,
     settings,
     updatedAt: Date.now(),
   }

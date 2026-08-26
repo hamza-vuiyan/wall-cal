@@ -6,6 +6,7 @@ import { WeekdayRow } from '@/components/calendar/WeekdayRow'
 import { CalendarGrid } from '@/components/calendar/CalendarGrid'
 import { NoteEditorModal } from '@/components/calendar/NoteEditorModal'
 import { TaskListModal } from '@/components/calendar/TaskListModal'
+import { HabitManagerModal, HabitDayModal } from '@/components/habits'
 import type { MarkType, DayColor, Task } from '@/services/storage'
 
 import type { AppView } from '@/types'
@@ -52,10 +53,20 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
   const challengesData = useAppStore((s) => s.data.challenges)
   const challenges   = challengesData ?? []
 
+  const habitsData   = useAppStore((s) => s.data.habits)
+  const habits       = habitsData ?? []
+  const addHabit     = useAppStore((s) => s.addHabit)
+  const updateHabit  = useAppStore((s) => s.updateHabit)
+  const deleteHabit  = useAppStore((s) => s.deleteHabit)
+
   // Which day's note modal is open (YYYY-MM-DD or null)
   const [openNoteDateKey, setOpenNoteDateKey] = useState<string | null>(null)
   // Which day's task modal is open
   const [openTaskDateKey, setOpenTaskDateKey] = useState<string | null>(null)
+  // Habit manager modal open flag
+  const [habitManagerOpen, setHabitManagerOpen] = useState(false)
+  // Which day's habit modal is open
+  const [openHabitDateKey, setOpenHabitDateKey] = useState<string | null>(null)
 
   const handleMarkChange = useCallback(
     (dateKey: string, mark: MarkType | null) => setMark(dateKey, mark),
@@ -87,6 +98,15 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
     }
   }, [onNavigate])
 
+  const handleOpenHabitsManager = useCallback(() => setHabitManagerOpen(true), [])
+  const handleCloseHabitsManager = useCallback(() => setHabitManagerOpen(false), [])
+
+  const handleOpenHabits = useCallback(
+    (dateKey: string) => setOpenHabitDateKey(dateKey),
+    []
+  )
+  const handleCloseHabits = useCallback(() => setOpenHabitDateKey(null), [])
+
   const activeNotes = openNoteDateKey
     ? (dayEntries[openNoteDateKey]?.notes ?? [])
     : []
@@ -107,6 +127,7 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
           onToday={goToToday}
           onMonthSelect={goToMonth}
           onYearSelect={goToYear}
+          onOpenHabits={handleOpenHabitsManager}
         />
         <div className="calendar-body" role="grid" aria-label={`Calendar for ${displayLabel}`}>
           <WeekdayRow />
@@ -114,11 +135,13 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
             days={days}
             dayEntries={dayEntries}
             challenges={challenges}
+            habits={habits}
             onMarkChange={handleMarkChange}
             onColorChange={handleColorChange}
             onOpenNotes={handleOpenNotes}
             onOpenTasks={handleOpenTasks}
             onChallengeClick={handleChallengeDotClick}
+            onOpenHabits={handleOpenHabits}
           />
         </div>
       </div>
@@ -148,6 +171,26 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
           onUpdate={(id, changes) => updateTask(openTaskDateKey, id, changes)}
           onAdd={(data) => addTask(openTaskDateKey, data as Omit<Task, 'id' | 'createdAt' | 'updatedAt'>)}
           onClose={handleCloseTasks}
+        />
+      )}
+
+      {/* Habit manager modal */}
+      {habitManagerOpen && (
+        <HabitManagerModal
+          habits={habits}
+          onAdd={(data) => addHabit(data)}
+          onUpdate={(id, changes) => updateHabit(id, changes)}
+          onDelete={(id) => deleteHabit(id)}
+          onClose={handleCloseHabitsManager}
+        />
+      )}
+
+      {/* Per-date habit modal */}
+      {openHabitDateKey && (
+        <HabitDayModal
+          dateKey={openHabitDateKey}
+          dateLabel={formatDateKey(openHabitDateKey)}
+          onClose={handleCloseHabits}
         />
       )}
     </main>
