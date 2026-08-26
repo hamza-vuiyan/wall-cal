@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import type { ReactNode } from 'react'
-import type { CalendarDay } from '@/types'
+import type { CalendarDay, HabitDaySummary } from '@/types'
 import type { MarkType, Note, DayColor, Task } from '@/services/storage'
 import { DayMark } from './DayMark'
 import { MarkPicker } from './MarkPicker'
@@ -16,17 +16,19 @@ interface DayCellProps {
   color?: DayColor
   tasks?: Task[]
   challengeDots?: { challengeId: string; color?: DayColor }[]
+  habits?: HabitDaySummary[]
   onMarkChange?: (dateKey: string, mark: MarkType | null) => void
   onOpenNotes?: (dateKey: string) => void
   onColorChange?: (dateKey: string, color: DayColor | null) => void
   onOpenTasks?: (dateKey: string) => void
   onChallengeClick?: () => void
+  onOpenHabits?: (dateKey: string) => void
   children?: ReactNode
 }
 
 export function DayCell({
-  day, mark, notes, color, tasks, challengeDots,
-  onMarkChange, onOpenNotes, onColorChange, onOpenTasks, onChallengeClick,
+  day, mark, notes, color, tasks, challengeDots, habits,
+  onMarkChange, onOpenNotes, onColorChange, onOpenTasks, onChallengeClick, onOpenHabits,
   children,
 }: DayCellProps) {
   const { dayNumber, isCurrentMonth, isToday, isWeekend } = day
@@ -36,6 +38,7 @@ export function DayCell({
   const isInteractive = isCurrentMonth
   const hasNotes      = isCurrentMonth && (notes?.length ?? 0) > 0
   const hasTasks      = isCurrentMonth && (tasks?.length ?? 0) > 0
+  const showHabits    = isCurrentMonth && (habits?.length ?? 0) > 0
 
   // ── Mark button ───────────────────────────────────────────────
   const handleMarkBtnClick = useCallback((e: React.MouseEvent) => {
@@ -68,6 +71,14 @@ export function DayCell({
     setColorPickerOpen(false)
     onOpenNotes?.(day.key)
   }, [day.key, onOpenNotes])
+
+  // ── Habit strip button ───────────────────────────────────────
+  const handleHabitOpen = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    setPickerOpen(false)
+    setColorPickerOpen(false)
+    onOpenHabits?.(day.key)
+  }, [day.key, onOpenHabits])
 
   // ── Task button ─────────────────────────────────────────────────
   const handleTaskOpen = useCallback((e: React.MouseEvent) => {
@@ -228,6 +239,34 @@ export function DayCell({
         'cal-day-content',
         hasNotes ? 'cal-day-content--has-notes' : '',
       ].filter(Boolean).join(' ')}>
+        {/* Habit completion strip — compact indicators */}
+        {showHabits && (
+          <div
+            className="cal-habit-strip"
+            onClick={handleHabitOpen}
+            role="button"
+            tabIndex={-1}
+            aria-label="Open habits"
+            title="Habits"
+          >
+            {habits!.slice(0, 5).map((h) => (
+              <span
+                key={h.habitId}
+                className={[
+                  'cal-habit-dot',
+                  h.completed ? 'cal-habit-dot--done' : '',
+                  h.color ? `cal-habit-dot--${h.color}` : '',
+                ].filter(Boolean).join(' ')}
+                title={`${h.name}${h.completed ? ' ✓' : ''}`}
+                aria-label={`${h.name}${h.completed ? ' completed' : ' not completed'}`}
+              />
+            ))}
+            {habits!.length > 5 && (
+              <span className="cal-habit-more">+{habits!.length - 5}</span>
+            )}
+          </div>
+        )}
+
         {/* Task chips — shown first (most actionable) */}
         {hasTasks && (
           <div

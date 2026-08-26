@@ -24,6 +24,7 @@ interface CalendarHeaderProps {
   onToday: () => void
   onMonthSelect: (month: number) => void
   onYearSelect: (year: number) => void
+  onOpenHabits?: () => void
 }
 
 type ActivePicker = 'month' | 'year' | null
@@ -37,6 +38,7 @@ export function CalendarHeader({
   onToday,
   onMonthSelect,
   onYearSelect,
+  onOpenHabits,
 }: CalendarHeaderProps) {
   const [activePicker, setActivePicker] = useState<ActivePicker>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -181,6 +183,23 @@ export function CalendarHeader({
 
       {/* Spacer */}
       <div className="flex-1" />
+
+      {/* Habits manager */}
+      {onOpenHabits && (
+        <button
+          id="calendar-habits-btn"
+          onClick={onOpenHabits}
+          aria-label="Manage habits"
+          className="cal-habits-btn"
+          title="Manage habits"
+        >
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M8 1.5l1.6 3.3 3.6.5-2.6 2.5.6 3.6L8 9.9 4.8 11.9l.6-3.6L2.8 5.3l3.6-.5L8 1.5Z"
+              stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
+          </svg>
+          Habits
+        </button>
+      )}
 
       {/* Today button */}
       <button
