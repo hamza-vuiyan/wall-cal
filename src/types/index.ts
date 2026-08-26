@@ -28,5 +28,20 @@ export interface CalendarDay {
 }
 
 // ── Storage / Persistence (re-exported for convenience) ──────────
-export type { WallCalData, DayEntry, UserSettings, MigrationResult } from '@/services/storage'
+import type { DayColor } from '@/services/storage'
+export type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task, Challenge, Habit, HabitFrequency } from '@/services/storage'
+
+// ── Habits ───────────────────────────────────────────────────────
+
+/** Compact per-day summary of a habit's state, used for calendar rendering. */
+export interface HabitDaySummary {
+  /** The habit this summary refers to */
+  habitId: string
+  /** Display name of the habit */
+  name: string
+  /** Optional colour accent */
+  color?: DayColor
+  /** Whether the habit is completed on the relevant date */
+  completed: boolean
+}
 

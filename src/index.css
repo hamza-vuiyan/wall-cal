@@ -1433,7 +1433,7 @@ body {
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 50%;
-  border: 1.5px solid var(--color-surface-border);
+  border: 1.5px solid oklch(50% 0.04 260);
   background: none;
   cursor: pointer;
   display: flex;
@@ -1767,6 +1767,197 @@ body {
 .cal-challenge-dot--blue   { background: oklch(68% 0.15 250); }
 .cal-challenge-dot--cyan   { background: oklch(70% 0.15 200); }
 .cal-challenge-dot--green  { background: oklch(68% 0.17 145); }
+
+/* ── Habit strip in day cell ──────────────────────────────────── */
+
+.cal-habit-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+  margin-top: 3px;
+  cursor: pointer;
+}
+
+.cal-habit-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-text-muted);
+  background: transparent;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.cal-habit-dot--done {
+  border-color: transparent;
+  background: var(--color-brand-400);
+}
+
+.cal-habit-dot--done.cal-habit-dot--yellow { background: oklch(82% 0.18 95); }
+.cal-habit-dot--done.cal-habit-dot--orange { background: oklch(75% 0.20 55); }
+.cal-habit-dot--done.cal-habit-dot--red    { background: oklch(65% 0.18 20); }
+.cal-habit-dot--done.cal-habit-dot--pink   { background: oklch(72% 0.18 345); }
+.cal-habit-dot--done.cal-habit-dot--purple { background: oklch(68% 0.16 300); }
+.cal-habit-dot--done.cal-habit-dot--blue   { background: oklch(68% 0.15 250); }
+.cal-habit-dot--done.cal-habit-dot--cyan   { background: oklch(70% 0.15 200); }
+.cal-habit-dot--done.cal-habit-dot--green  { background: oklch(68% 0.17 145); }
+
+/* Uncompleted coloured dots tint their border with the habit colour */
+.cal-habit-dot--yellow { border-color: oklch(82% 0.18 95); }
+.cal-habit-dot--orange { border-color: oklch(75% 0.20 55); }
+.cal-habit-dot--red    { border-color: oklch(65% 0.18 20); }
+.cal-habit-dot--pink   { border-color: oklch(72% 0.18 345); }
+.cal-habit-dot--purple { border-color: oklch(68% 0.16 300); }
+.cal-habit-dot--blue   { border-color: oklch(68% 0.15 250); }
+.cal-habit-dot--cyan   { border-color: oklch(70% 0.15 200); }
+.cal-habit-dot--green  { border-color: oklch(68% 0.17 145); }
+
+.cal-habit-more {
+  font-size: 0.55rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+/* ── Habits header button ─────────────────────────────────────── */
+
+.cal-habits-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-surface-border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cal-habits-btn:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-surface-overlay);
+  background: var(--color-surface-overlay);
+}
+
+/* ── Habit Manager modal ──────────────────────────────────────── */
+
+.habit-manager-modal {
+  max-width: 540px;
+}
+
+.habit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.5rem 0.25rem 0.25rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.habit-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem 1rem;
+  color: var(--color-text-muted);
+}
+
+.habit-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.75rem;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-surface-border);
+}
+
+.habit-card--yellow { border-left: 3px solid oklch(82% 0.18 95); }
+.habit-card--orange { border-left: 3px solid oklch(75% 0.20 55); }
+.habit-card--red    { border-left: 3px solid oklch(65% 0.18 20); }
+.habit-card--pink   { border-left: 3px solid oklch(72% 0.18 345); }
+.habit-card--purple { border-left: 3px solid oklch(68% 0.16 300); }
+.habit-card--blue   { border-left: 3px solid oklch(68% 0.15 250); }
+.habit-card--cyan   { border-left: 3px solid oklch(70% 0.15 200); }
+.habit-card--green  { border-left: 3px solid oklch(68% 0.17 145); }
+
+.habit-card-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.habit-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.habit-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.habit-swatch--yellow { background: oklch(82% 0.18 95); }
+.habit-swatch--orange { background: oklch(75% 0.20 55); }
+.habit-swatch--red    { background: oklch(65% 0.18 20); }
+.habit-swatch--pink   { background: oklch(72% 0.18 345); }
+.habit-swatch--purple { background: oklch(68% 0.16 300); }
+.habit-swatch--blue   { background: oklch(68% 0.15 250); }
+.habit-swatch--cyan   { background: oklch(70% 0.15 200); }
+.habit-swatch--green  { background: oklch(68% 0.17 145); }
+
+.habit-card-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.habit-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.habit-stat {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.habit-stat-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-brand-300);
+}
+
+.habit-stat-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.habit-card-actions {
+  display: flex;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
 
 /* ── Challenges Page Layout ───────────────────────────────────── */
 
