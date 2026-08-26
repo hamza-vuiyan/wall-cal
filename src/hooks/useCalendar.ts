@@ -73,6 +73,8 @@ export interface UseCalendarReturn {
   goToMonth: (month: number) => void
   /** Jump directly to a specific year, keeping current month */
   goToYear: (year: number) => void
+  /** Navigate to the month containing the given YYYY-MM-DD date */
+  goToDate: (dateKey: string) => void
 }
 
 const MONTH_NAMES = [
@@ -121,6 +123,13 @@ export function useCalendar(initialDate?: Date): UseCalendarReturn {
   const goToYear = (y: number) =>
     setViewDate(({ month }) => ({ year: y, month }))
 
+  const goToDate = (dateKey: string) => {
+    const [y, m] = dateKey.split('-').map(Number)
+    if (Number.isFinite(y) && Number.isFinite(m)) {
+      setViewDate({ year: y, month: m - 1 })
+    }
+  }
+
   return {
     year,
     month,
@@ -132,5 +141,6 @@ export function useCalendar(initialDate?: Date): UseCalendarReturn {
     goToToday,
     goToMonth,
     goToYear,
+    goToDate,
   }
 }
