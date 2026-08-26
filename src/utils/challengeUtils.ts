@@ -34,10 +34,10 @@ export type ChallengeStatus = 'upcoming' | 'active' | 'completed' | 'expired'
 export function getChallengeStatus(challenge: Challenge): ChallengeStatus {
   const today = todayKey()
   if (today < challenge.startDate) return 'upcoming'
-  if (today > challenge.endDate) {
-    const total = getTotalDays(challenge)
-    return getCompletedCount(challenge) >= total ? 'completed' : 'expired'
-  }
+  // Completed: all scheduled days have been checked off
+  const total = getTotalDays(challenge)
+  if (total > 0 && getCompletedCount(challenge) >= total) return 'completed'
+  if (today > challenge.endDate) return 'expired'
   return 'active'
 }
 

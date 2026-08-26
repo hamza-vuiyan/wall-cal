@@ -157,12 +157,23 @@ export function mergeData(local: WallCalData, remote: WallCalData): WallCalData 
     }
   }
 
+  // Challenges: merge by id, newest updatedAt wins on conflict
+  const mergedChallenges = [...(local.challenges ?? []), ...(remote.challenges ?? [])]
+    .sort((a, b) => a.updatedAt - b.updatedAt)
+    .reduce<Challenge[]>((acc, c) => {
+      const i = acc.findIndex((x) => x.id === c.id)
+      if (i >= 0) acc[i] = c
+      else acc.push(c)
+      return acc
+    }, [])
+
   // Settings: whichever data is overall newer wins
   const settings = local.updatedAt > remote.updatedAt ? local.settings : remote.settings
 
   return {
     version: Math.max(local.version, remote.version),
     days: mergedDays,
+    challenges: mergedChallenges.length > 0 ? mergedChallenges : undefined,
     settings,
     updatedAt: Date.now(),
   }
