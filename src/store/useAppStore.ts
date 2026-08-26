@@ -3,7 +3,7 @@ import type { User } from 'firebase/auth'
 import { signInWithGoogle, signOut, onAuthStateChange } from '@/services/auth'
 import { persistenceService } from '@/services/storage'
 import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task, Challenge, Habit, ImportantDate } from '@/services/storage'
-import { createEmptyData } from '@/services/storage'
+import { createEmptyData, mergeData } from '@/services/storage'
 
 // ── Auth state ────────────────────────────────────────────────────
 
@@ -72,6 +72,12 @@ interface AppState {
   deleteHabit: (id: string) => void
   /** Toggle completion of a habit for a specific date. */
   toggleHabitCompletion: (habitId: string, dateKey: string) => void
+
+  // Actions — Backup / Restore
+  /** Replace the entire data envelope with the provided one (import: replace). */
+  replaceData: (data: WallCalData) => void
+  /** Merge the provided envelope into the current one (import: merge). */
+  mergeImportedData: (incoming: WallCalData) => void
 
   // Actions — Important Dates
   /** Add a new important date. Returns the generated ID. */
@@ -624,6 +630,24 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ data: updated })
     persistenceService.save(updated).catch((err) =>
       console.error('[WallCal] Failed to delete important date:', err)
+    )
+  },
+
+  // ── Backup / Restore actions ──────────────────────────────────
+
+  replaceData: (data) => {
+    set({ data })
+    persistenceService.save(data).catch((err) =>
+      console.error('[WallCal] Failed to replace data:', err)
+    )
+  },
+
+  mergeImportedData: (incoming) => {
+    const current = get().data
+    const merged = mergeData(current, incoming)
+    set({ data: merged })
+    persistenceService.save(merged).catch((err) =>
+      console.error('[WallCal] Failed to merge imported data:', err)
     )
   },
 
