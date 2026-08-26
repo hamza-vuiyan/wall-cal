@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
+import { CalendarSearch } from './CalendarSearch'
+import type { SearchResult } from '@/utils/searchUtils'
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April',
@@ -25,6 +27,8 @@ interface CalendarHeaderProps {
   onMonthSelect: (month: number) => void
   onYearSelect: (year: number) => void
   onOpenHabits?: () => void
+  onOpenImportantDates?: () => void
+  onSearchSelect?: (result: SearchResult) => void
 }
 
 type ActivePicker = 'month' | 'year' | null
@@ -39,6 +43,8 @@ export function CalendarHeader({
   onMonthSelect,
   onYearSelect,
   onOpenHabits,
+  onOpenImportantDates,
+  onSearchSelect,
 }: CalendarHeaderProps) {
   const [activePicker, setActivePicker] = useState<ActivePicker>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -184,6 +190,9 @@ export function CalendarHeader({
       {/* Spacer */}
       <div className="flex-1" />
 
+      {/* Search */}
+      {onSearchSelect && <CalendarSearch onSelect={onSearchSelect} />}
+
       {/* Habits manager */}
       {onOpenHabits && (
         <button
@@ -198,6 +207,23 @@ export function CalendarHeader({
               stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
           </svg>
           Habits
+        </button>
+      )}
+
+      {/* Important dates manager */}
+      {onOpenImportantDates && (
+        <button
+          id="calendar-dates-btn"
+          onClick={onOpenImportantDates}
+          aria-label="Manage important dates"
+          className="cal-dates-btn"
+          title="Manage important dates"
+        >
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M8 1.5l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.4 4.2 13.3l.7-4.3-3.1-3 4.3-.6L8 1.5Z"
+              stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" />
+          </svg>
+          Dates
         </button>
       )}
 

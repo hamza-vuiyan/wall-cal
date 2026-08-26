@@ -121,6 +121,40 @@ export interface Challenge {
   updatedAt: number
 }
 
+/** Preset optional icon tokens for an important date (decorative only). */
+export type ImportantDateIcon =
+  | 'birthday'
+  | 'exam'
+  | 'deadline'
+  | 'interview'
+  | 'travel'
+  | 'celebration'
+  | 'health'
+  | 'money'
+  | 'star'
+
+/** A user-defined important date (birthday, exam, deadline, etc.) */
+export interface ImportantDate {
+  /** Unique stable ID */
+  id: string
+  /** Required title shown on the calendar and in search */
+  title: string
+  /** The date in YYYY-MM-DD format */
+  date: string
+  /** Optional longer description (also searchable) */
+  description?: string
+  /** Optional colour accent (reuses the day-colour palette) */
+  color?: DayColor
+  /** Optional preset icon token (decorative + searchable by label) */
+  icon?: ImportantDateIcon
+  /** Optional free-text category (also searchable) */
+  category?: string
+  /** Unix timestamp (ms) of creation */
+  createdAt: number
+  /** Unix timestamp (ms) of last edit */
+  updatedAt: number
+}
+
 /** User-level preferences */
 export interface UserSettings {
   /** First day of the week */
@@ -139,6 +173,8 @@ export interface WallCalData {
   challenges?: Challenge[]
   /** User-defined recurring habits */
   habits?: Habit[]
+  /** User-defined important dates (birthdays, exams, deadlines, etc.) */
+  importantDates?: ImportantDate[]
   /** User preferences */
   settings: UserSettings
   /** Unix timestamp (ms) of the last write */
@@ -202,6 +238,16 @@ export function mergeData(local: WallCalData, remote: WallCalData): WallCalData 
       return acc
     }, [])
 
+  // Important dates: merge by id, newest updatedAt wins on conflict
+  const mergedImportantDates = [...(local.importantDates ?? []), ...(remote.importantDates ?? [])]
+    .sort((a, b) => a.updatedAt - b.updatedAt)
+    .reduce<ImportantDate[]>((acc, d) => {
+      const i = acc.findIndex((x) => x.id === d.id)
+      if (i >= 0) acc[i] = d
+      else acc.push(d)
+      return acc
+    }, [])
+
   // Settings: whichever data is overall newer wins
   const settings = local.updatedAt > remote.updatedAt ? local.settings : remote.settings
 
@@ -210,6 +256,7 @@ export function mergeData(local: WallCalData, remote: WallCalData): WallCalData 
     days: mergedDays,
     challenges: mergedChallenges.length > 0 ? mergedChallenges : undefined,
     habits: mergedHabits.length > 0 ? mergedHabits : undefined,
+    importantDates: mergedImportantDates.length > 0 ? mergedImportantDates : undefined,
     settings,
     updatedAt: Date.now(),
   }

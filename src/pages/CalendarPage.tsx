@@ -7,7 +7,9 @@ import { CalendarGrid } from '@/components/calendar/CalendarGrid'
 import { NoteEditorModal } from '@/components/calendar/NoteEditorModal'
 import { TaskListModal } from '@/components/calendar/TaskListModal'
 import { HabitManagerModal, HabitDayModal } from '@/components/habits'
+import { ImportantDateManagerModal, ImportantDateListModal } from '@/components/importantdates'
 import type { MarkType, DayColor, Task } from '@/services/storage'
+import type { SearchResult } from '@/utils/searchUtils'
 
 import type { AppView } from '@/types'
 
@@ -37,6 +39,7 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
     goToToday,
     goToMonth,
     goToYear,
+    goToDate,
   } = useCalendar()
 
   const dayEntries   = useAppStore((s) => s.data.days)
@@ -59,6 +62,12 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
   const updateHabit  = useAppStore((s) => s.updateHabit)
   const deleteHabit  = useAppStore((s) => s.deleteHabit)
 
+  const importantDatesData = useAppStore((s) => s.data.importantDates)
+  const importantDates     = importantDatesData ?? []
+  const addImportantDate   = useAppStore((s) => s.addImportantDate)
+  const updateImportantDate = useAppStore((s) => s.updateImportantDate)
+  const deleteImportantDate = useAppStore((s) => s.deleteImportantDate)
+
   // Which day's note modal is open (YYYY-MM-DD or null)
   const [openNoteDateKey, setOpenNoteDateKey] = useState<string | null>(null)
   // Which day's task modal is open
@@ -67,6 +76,11 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
   const [habitManagerOpen, setHabitManagerOpen] = useState(false)
   // Which day's habit modal is open
   const [openHabitDateKey, setOpenHabitDateKey] = useState<string | null>(null)
+  // Important-date manager + per-day modals
+  const [impManagerOpen, setImpManagerOpen] = useState(false)
+  const [openImpDateKey, setOpenImpDateKey] = useState<string | null>(null)
+  // Date highlighted after a search navigation (persistent ring)
+  const [foundDateKey, setFoundDateKey] = useState<string | null>(null)
 
   const handleMarkChange = useCallback(
     (dateKey: string, mark: MarkType | null) => setMark(dateKey, mark),
@@ -107,6 +121,30 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
   )
   const handleCloseHabits = useCallback(() => setOpenHabitDateKey(null), [])
 
+  const handleOpenImpManager = useCallback(() => setImpManagerOpen(true), [])
+  const handleCloseImpManager = useCallback(() => setImpManagerOpen(false), [])
+
+  const handleOpenImportantDates = useCallback(
+    (dateKey: string) => setOpenImpDateKey(dateKey),
+    []
+  )
+  const handleCloseImportantDates = useCallback(() => setOpenImpDateKey(null), [])
+
+  // Search result → jump to month + highlight the date (persistent until next interaction)
+  const handleSearchSelect = useCallback((result: SearchResult) => {
+    goToDate(result.dateKey)
+    setFoundDateKey(result.dateKey)
+  }, [goToDate])
+
+  // Clear the found ring whenever the user navigates months/years or interacts with a cell
+  const clearFound = useCallback(() => setFoundDateKey(null), [])
+  const handleCellInteract = useCallback(() => setFoundDateKey(null), [])
+  const handlePrev = useCallback(() => { clearFound(); goToPrevMonth() }, [clearFound, goToPrevMonth])
+  const handleNext = useCallback(() => { clearFound(); goToNextMonth() }, [clearFound, goToNextMonth])
+  const handleToday = useCallback(() => { clearFound(); goToToday() }, [clearFound, goToToday])
+  const handleMonth = useCallback((m: number) => { clearFound(); goToMonth(m) }, [clearFound, goToMonth])
+  const handleYear = useCallback((y: number) => { clearFound(); goToYear(y) }, [clearFound, goToYear])
+
   const activeNotes = openNoteDateKey
     ? (dayEntries[openNoteDateKey]?.notes ?? [])
     : []
@@ -122,12 +160,14 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
           year={year}
           month={month}
           isCurrentMonth={isCurrentMonth}
-          onPrev={goToPrevMonth}
-          onNext={goToNextMonth}
-          onToday={goToToday}
-          onMonthSelect={goToMonth}
-          onYearSelect={goToYear}
+          onPrev={handlePrev}
+          onNext={handleNext}
+          onToday={handleToday}
+          onMonthSelect={handleMonth}
+          onYearSelect={handleYear}
           onOpenHabits={handleOpenHabitsManager}
+          onOpenImportantDates={handleOpenImpManager}
+          onSearchSelect={handleSearchSelect}
         />
         <div className="calendar-body" role="grid" aria-label={`Calendar for ${displayLabel}`}>
           <WeekdayRow />
@@ -136,12 +176,16 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
             dayEntries={dayEntries}
             challenges={challenges}
             habits={habits}
+            importantDates={importantDates}
+            foundDateKey={foundDateKey}
             onMarkChange={handleMarkChange}
             onColorChange={handleColorChange}
             onOpenNotes={handleOpenNotes}
             onOpenTasks={handleOpenTasks}
             onChallengeClick={handleChallengeDotClick}
             onOpenHabits={handleOpenHabits}
+            onOpenImportantDates={handleOpenImportantDates}
+            onCellInteract={handleCellInteract}
           />
         </div>
       </div>
@@ -185,12 +229,32 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
         />
       )}
 
+      {/* Important dates manager modal */}
+      {impManagerOpen && (
+        <ImportantDateManagerModal
+          importantDates={importantDates}
+          onAdd={(data) => addImportantDate(data)}
+          onUpdate={(id, changes) => updateImportantDate(id, changes)}
+          onDelete={(id) => deleteImportantDate(id)}
+          onClose={handleCloseImpManager}
+        />
+      )}
+
       {/* Per-date habit modal */}
       {openHabitDateKey && (
         <HabitDayModal
           dateKey={openHabitDateKey}
           dateLabel={formatDateKey(openHabitDateKey)}
           onClose={handleCloseHabits}
+        />
+      )}
+
+      {/* Per-date important dates modal */}
+      {openImpDateKey && (
+        <ImportantDateListModal
+          dateKey={openImpDateKey}
+          dateLabel={formatDateKey(openImpDateKey)}
+          onClose={handleCloseImportantDates}
         />
       )}
     </main>

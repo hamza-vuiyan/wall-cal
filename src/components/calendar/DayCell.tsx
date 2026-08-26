@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react'
 import type { ReactNode } from 'react'
 import type { CalendarDay, HabitDaySummary } from '@/types'
-import type { MarkType, Note, DayColor, Task } from '@/services/storage'
+import type { MarkType, Note, DayColor, Task, ImportantDate } from '@/services/storage'
+import { iconEmoji } from '@/utils/importantDateUtils'
 import { DayMark } from './DayMark'
 import { MarkPicker } from './MarkPicker'
 import { ColorPicker } from './ColorPicker'
@@ -17,18 +18,23 @@ interface DayCellProps {
   tasks?: Task[]
   challengeDots?: { challengeId: string; color?: DayColor }[]
   habits?: HabitDaySummary[]
+  importantDates?: ImportantDate[]
+  found?: boolean
   onMarkChange?: (dateKey: string, mark: MarkType | null) => void
   onOpenNotes?: (dateKey: string) => void
   onColorChange?: (dateKey: string, color: DayColor | null) => void
   onOpenTasks?: (dateKey: string) => void
   onChallengeClick?: () => void
   onOpenHabits?: (dateKey: string) => void
+  onOpenImportantDates?: (dateKey: string) => void
+  onCellInteract?: (dateKey: string) => void
   children?: ReactNode
 }
 
 export function DayCell({
-  day, mark, notes, color, tasks, challengeDots, habits,
+  day, mark, notes, color, tasks, challengeDots, habits, importantDates, found = false,
   onMarkChange, onOpenNotes, onColorChange, onOpenTasks, onChallengeClick, onOpenHabits,
+  onOpenImportantDates, onCellInteract,
   children,
 }: DayCellProps) {
   const { dayNumber, isCurrentMonth, isToday, isWeekend } = day
@@ -39,6 +45,7 @@ export function DayCell({
   const hasNotes      = isCurrentMonth && (notes?.length ?? 0) > 0
   const hasTasks      = isCurrentMonth && (tasks?.length ?? 0) > 0
   const showHabits    = isCurrentMonth && (habits?.length ?? 0) > 0
+  const showImportant = isCurrentMonth && (importantDates?.length ?? 0) > 0
 
   // ── Mark button ───────────────────────────────────────────────
   const handleMarkBtnClick = useCallback((e: React.MouseEvent) => {
@@ -80,6 +87,14 @@ export function DayCell({
     onOpenHabits?.(day.key)
   }, [day.key, onOpenHabits])
 
+  // ── Important dates strip button ───────────────────────────────
+  const handleImportantOpen = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    setPickerOpen(false)
+    setColorPickerOpen(false)
+    onOpenImportantDates?.(day.key)
+  }, [day.key, onOpenImportantDates])
+
   // ── Task button ─────────────────────────────────────────────────
   const handleTaskOpen = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
@@ -92,7 +107,8 @@ export function DayCell({
   const handleCellClick = useCallback(() => {
     if (pickerOpen) setPickerOpen(false)
     if (colorPickerOpen) setColorPickerOpen(false)
-  }, [pickerOpen, colorPickerOpen])
+    onCellInteract?.(day.key)
+  }, [pickerOpen, colorPickerOpen, day.key, onCellInteract])
 
   return (
     <div
@@ -110,6 +126,7 @@ export function DayCell({
         isToday ? 'cal-day-cell--today' : '',
         isInteractive ? 'cal-day-cell--interactive' : '',
         pickerOpen || colorPickerOpen ? 'cal-day-cell--picker-open' : '',
+        found ? 'cal-day-cell--found' : '',
         color && isCurrentMonth ? `cal-day-cell--color-${color}` : '',
       ].filter(Boolean).join(' ')}
     >
@@ -227,6 +244,25 @@ export function DayCell({
               {hasNotes && <span className="cal-note-count">{notes!.length}</span>}
             </button>
 
+            {/* Important date button */}
+            <button
+              className={[
+                'cal-day-action-btn cal-day-action-btn--important',
+                showImportant ? 'cal-day-action-btn--has-important' : '',
+              ].filter(Boolean).join(' ')}
+              onClick={handleImportantOpen}
+              aria-label={showImportant
+                ? `${importantDates!.length} important date${importantDates!.length > 1 ? 's' : ''}. Click to view`
+                : 'Add an important date'}
+              title={showImportant ? 'View / manage important dates' : 'Add important date'}
+            >
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M8 1.6l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.4 4.2 13.3l.7-4.3-3.1-3 4.3-.6L8 1.6Z"
+                  stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" />
+              </svg>
+              {showImportant && <span className="cal-note-count">{importantDates!.length}</span>}
+            </button>
+
           </div>
         )}
       </div>
@@ -239,6 +275,36 @@ export function DayCell({
         'cal-day-content',
         hasNotes ? 'cal-day-content--has-notes' : '',
       ].filter(Boolean).join(' ')}>
+        {/* Important date chips — compact, at the very top */}
+        {showImportant && (
+          <div
+            className="cal-imp-strip"
+            onClick={handleImportantOpen}
+            role="button"
+            tabIndex={-1}
+            aria-label="Open important dates"
+            title="Important dates"
+          >
+            {importantDates!.slice(0, 2).map((imp) => (
+              <span
+                key={imp.id}
+                className={[
+                  'cal-imp-chip',
+                  imp.color ? `cal-imp-chip--${imp.color}` : '',
+                ].filter(Boolean).join(' ')}
+                title={`${imp.title}${imp.category ? ` · ${imp.category}` : ''}`}
+                aria-label={imp.title}
+              >
+                <span className="cal-imp-chip-icon" aria-hidden="true">{iconEmoji(imp.icon)}</span>
+                <span className="cal-imp-chip-title">{imp.title}</span>
+              </span>
+            ))}
+            {importantDates!.length > 2 && (
+              <span className="cal-imp-more">+{importantDates!.length - 2}</span>
+            )}
+          </div>
+        )}
+
         {/* Habit completion strip — compact indicators */}
         {showHabits && (
           <div

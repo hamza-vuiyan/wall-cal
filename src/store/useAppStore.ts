@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type { User } from 'firebase/auth'
 import { signInWithGoogle, signOut, onAuthStateChange } from '@/services/auth'
 import { persistenceService } from '@/services/storage'
-import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task, Challenge, Habit } from '@/services/storage'
+import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task, Challenge, Habit, ImportantDate } from '@/services/storage'
 import { createEmptyData } from '@/services/storage'
 
 // ── Auth state ────────────────────────────────────────────────────
@@ -72,6 +72,14 @@ interface AppState {
   deleteHabit: (id: string) => void
   /** Toggle completion of a habit for a specific date. */
   toggleHabitCompletion: (habitId: string, dateKey: string) => void
+
+  // Actions — Important Dates
+  /** Add a new important date. Returns the generated ID. */
+  addImportantDate: (data: Omit<ImportantDate, 'id' | 'createdAt' | 'updatedAt'>) => string
+  /** Update fields of an existing important date. */
+  updateImportantDate: (id: string, changes: Partial<Omit<ImportantDate, 'id' | 'createdAt'>>) => void
+  /** Delete an important date. */
+  deleteImportantDate: (id: string) => void
 
   // Internal
   _setData: (data: WallCalData) => void
@@ -570,6 +578,55 @@ export const useAppStore = create<AppState>((set, get) => ({
     )
   },
 
+  // ── Important Date actions ────────────────────────────────────
+
+  addImportantDate: (data) => {
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
+    const now = Date.now()
+    const newDate: ImportantDate = { ...data, id, createdAt: now, updatedAt: now }
+    const current = get().data
+    const updated: WallCalData = {
+      ...current,
+      importantDates: [...(current.importantDates ?? []), newDate],
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to save important date:', err)
+    )
+    return id
+  },
+
+  updateImportantDate: (id, changes) => {
+    const current = get().data
+    const now = Date.now()
+    const updated: WallCalData = {
+      ...current,
+      importantDates: (current.importantDates ?? []).map((d) =>
+        d.id === id ? { ...d, ...changes, updatedAt: now } : d
+      ),
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to update important date:', err)
+    )
+  },
+
+  deleteImportantDate: (id) => {
+    const current = get().data
+    const now = Date.now()
+    const updated: WallCalData = {
+      ...current,
+      importantDates: (current.importantDates ?? []).filter((d) => d.id !== id),
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to delete important date:', err)
+    )
+  },
+
   // ── Auth initialisation ────────────────────────────────────────
   // Called once from App.tsx on mount. Returns the Firebase unsubscribe fn.
 
@@ -617,6 +674,7 @@ export const useAppStore = create<AppState>((set, get) => ({
             ...incoming,
             challenges: incoming.challenges ?? current.challenges,
             habits: incoming.habits ?? current.habits,
+            importantDates: incoming.importantDates ?? current.importantDates,
           }
           get()._setData(merged)
         })

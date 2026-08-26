@@ -2441,3 +2441,363 @@ body {
   color: var(--color-text-secondary);
   line-height: 1.4;
 }
+
+/* ── Calendar Search ────────────────────────────────────────────── */
+
+.cal-search {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.cal-search-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 2.25rem;
+  width: 13rem;
+  padding: 0 0.55rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-surface-border);
+  background: var(--color-surface-raised);
+  color: var(--color-text-secondary);
+  transition: border-color 120ms ease, background 120ms ease;
+}
+
+.cal-search-input-wrap:focus-within {
+  border-color: var(--color-brand-500);
+  background: var(--color-surface-overlay);
+}
+
+.cal-search-icon {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.cal-search-input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--color-text-primary);
+  font-size: 0.8125rem;
+  font-family: var(--font-sans);
+}
+
+.cal-search-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.cal-search-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-surface-border);
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.cal-search-clear:hover {
+  background: var(--color-brand-500);
+  color: white;
+}
+
+.cal-search-dropdown {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 60;
+  width: min(26rem, calc(100vw - 2rem));
+  max-height: 22rem;
+  overflow-y: auto;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 16px 48px rgba(0 0 0 / 0.5);
+  padding: 0.4rem;
+}
+
+.cal-search-empty {
+  padding: 1rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.cal-search-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.cal-search-result {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  grid-template-areas:
+    "date type text"
+    "date type detail";
+  align-items: center;
+  column-gap: 0.5rem;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.55rem;
+  cursor: pointer;
+  color: var(--color-text-primary);
+}
+
+.cal-search-result--active {
+  background: var(--color-surface-overlay);
+}
+
+.cal-search-date {
+  grid-area: date;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  border-right: 1px solid var(--color-surface-border);
+  padding-right: 0.5rem;
+}
+
+.cal-search-type {
+  grid-area: type;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  background: var(--color-surface-border);
+  color: var(--color-text-secondary);
+}
+
+.cal-search-type--note          { background: oklch(72% 0.12 250 / 0.3); color: oklch(78% 0.12 250); }
+.cal-search-type--task          { background: oklch(68% 0.16 145 / 0.3); color: oklch(75% 0.16 145); }
+.cal-search-type--challenge     { background: oklch(72% 0.16 300 / 0.3); color: oklch(78% 0.16 300); }
+.cal-search-type--habit         { background: oklch(75% 0.16 95 / 0.3);  color: oklch(80% 0.16 95); }
+.cal-search-type--importantDate { background: oklch(70% 0.18 20 / 0.3);  color: oklch(76% 0.18 20); }
+
+.cal-search-text {
+  grid-area: text;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cal-search-detail {
+  grid-area: detail;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cal-search-result--color-yellow { box-shadow: inset 3px 0 0 oklch(80% 0.20 95); }
+.cal-search-result--color-orange { box-shadow: inset 3px 0 0 oklch(75% 0.20 55); }
+.cal-search-result--color-red    { box-shadow: inset 3px 0 0 oklch(70% 0.18 20); }
+.cal-search-result--color-pink   { box-shadow: inset 3px 0 0 oklch(72% 0.18 345); }
+.cal-search-result--color-purple { box-shadow: inset 3px 0 0 oklch(72% 0.16 300); }
+.cal-search-result--color-blue   { box-shadow: inset 3px 0 0 oklch(72% 0.15 250); }
+.cal-search-result--color-cyan   { box-shadow: inset 3px 0 0 oklch(72% 0.15 200); }
+.cal-search-result--color-green  { box-shadow: inset 3px 0 0 oklch(72% 0.17 145); }
+
+.cal-search-more {
+  padding: 0.5rem 0.55rem 0.25rem;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .cal-search-input-wrap { width: 9rem; }
+}
+
+@media (max-width: 480px) {
+  .cal-search { order: 5; width: 100%; }
+  .cal-search-input-wrap { width: 100%; }
+}
+
+/* ── Important Dates button (calendar header) ───────────────────── */
+
+.cal-dates-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 2.25rem;
+  padding: 0 0.7rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-surface-border);
+  background: var(--color-surface-raised);
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  flex-shrink: 0;
+}
+
+.cal-dates-btn:hover {
+  background: var(--color-surface-overlay);
+  color: var(--color-text-primary);
+  border-color: var(--color-surface-overlay);
+}
+
+/* ── Important date chips inside day cell ───────────────────────── */
+
+.cal-imp-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  padding: 0 0.45rem 0.2rem;
+  cursor: pointer;
+}
+
+.cal-imp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  max-width: 100%;
+  padding: 0.05rem 0.35rem;
+  border-radius: 0.3rem;
+  background: var(--color-surface-border);
+  font-size: 0.62rem;
+  line-height: 1.2;
+  color: var(--color-paper-text);
+  overflow: hidden;
+}
+
+.cal-imp-chip-icon { font-size: 0.7rem; line-height: 1; flex-shrink: 0; }
+
+.cal-imp-chip-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cal-imp-chip--yellow { background: oklch(82% 0.18 95); }
+.cal-imp-chip--orange { background: oklch(75% 0.20 55); }
+.cal-imp-chip--red    { background: oklch(65% 0.18 20); color: white; }
+.cal-imp-chip--pink   { background: oklch(72% 0.18 345); }
+.cal-imp-chip--purple { background: oklch(68% 0.16 300); color: white; }
+.cal-imp-chip--blue   { background: oklch(68% 0.15 250); color: white; }
+.cal-imp-chip--cyan   { background: oklch(70% 0.15 200); }
+.cal-imp-chip--green  { background: oklch(68% 0.17 145); }
+
+.cal-imp-more {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  padding: 0 0.15rem;
+}
+
+/* ── Important date star button (day cell) ──────────────────────── */
+
+.cal-day-action-btn--important { color: oklch(78% 0.18 75); }
+
+.cal-day-action-btn--has-important { color: oklch(78% 0.18 75); }
+
+/* ── Found (search target) ring ────────────────────────────────── */
+
+.cal-day-cell--found {
+  border-color: var(--color-brand-500) !important;
+  border-width: 2px;
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.65),
+    0 0 0 2px var(--color-brand-500),
+    0 0 16px oklch(55% 0.25 260 / 0.6);
+  animation: found-pulse 900ms ease-out 1;
+  z-index: 5;
+}
+
+@keyframes found-pulse {
+  0%   { box-shadow: 0 0 0 2px var(--color-brand-500), 0 0 0 0 oklch(55% 0.25 260 / 0.7); }
+  100% { box-shadow: 0 0 0 2px var(--color-brand-500), 0 0 16px oklch(55% 0.25 260 / 0.6); }
+}
+
+/* ── Important date icon swatch row (editor) ───────────────────── */
+
+.imp-icon-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.imp-icon-swatch {
+  width: 1.9rem;
+  height: 1.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--color-surface-border);
+  background: var(--color-surface-raised);
+  cursor: pointer;
+  transition: border-color 100ms ease, background 100ms ease;
+}
+
+.imp-icon-swatch:hover {
+  background: var(--color-surface-overlay);
+}
+
+.imp-icon-swatch--active {
+  border-color: var(--color-brand-500);
+  background: var(--color-brand-500);
+}
+
+/* ── Important date list/manager extras ────────────────────────── */
+
+.imp-list-emoji {
+  font-size: 1.1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.task-subtitle {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  margin-top: 0.1rem;
+}
+
+.imp-card-text { display: flex; flex-direction: column; min-width: 0; }
+.imp-card-meta { font-size: 0.72rem; color: var(--color-text-muted); margin-top: 0.1rem; }
+
+.imp-group { margin-bottom: 0.75rem; }
+
+.imp-group-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin: 0 0 0.4rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--color-surface-border);
+}
+
+.task-list-footer {
+  padding: 0.75rem 0.5rem 0.25rem;
+  display: flex;
+  justify-content: flex-end;
+}
+

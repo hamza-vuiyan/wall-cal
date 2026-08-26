@@ -29,7 +29,7 @@ export interface CalendarDay {
 
 // ── Storage / Persistence (re-exported for convenience) ──────────
 import type { DayColor } from '@/services/storage'
-export type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task, Challenge, Habit, HabitFrequency } from '@/services/storage'
+export type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task, Challenge, Habit, HabitFrequency, ImportantDate, ImportantDateIcon } from '@/services/storage'
 
 // ── Habits ───────────────────────────────────────────────────────
 
