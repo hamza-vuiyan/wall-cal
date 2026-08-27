@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { MigrationBanner } from '@/components/auth/MigrationBanner'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { HomePage } from '@/pages/HomePage'
 import { CalendarPage } from '@/pages/CalendarPage'
 import { ChallengesPage } from '@/pages/ChallengesPage'
@@ -34,11 +35,23 @@ export default function App() {
   const [currentView, setCurrentViewState] = useState<AppView>(getViewFromHash)
   const [openChallengeId, setOpenChallengeId] = useState<string | null>(null)
   const initAuth = useAppStore((s) => s._initAuth)
+  const setOnline = useAppStore((s) => s.setOnline)
 
   useEffect(() => {
     const cleanup = initAuth()
     return cleanup
   }, [initAuth])
+
+  useEffect(() => {
+    const handleOnline = () => setOnline(true)
+    const handleOffline = () => setOnline(false)
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [setOnline])
 
   const navigateTo = useCallback((view: AppView) => {
     window.location.hash = VIEW_TO_HASH[view]
@@ -90,6 +103,7 @@ export default function App() {
       <MigrationBanner />
       {renderPage()}
       <Footer />
+      <OfflineBanner />
     </>
   )
 }

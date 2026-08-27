@@ -22,6 +22,10 @@ interface AppState {
   isDataLoading: boolean
   dataError: string | null
 
+  // Connectivity
+  isOnline: boolean
+  cloudSyncError: boolean
+
   // Migration
   migrationResult: MigrationResult | null
 
@@ -87,6 +91,10 @@ interface AppState {
   /** Delete an important date. */
   deleteImportantDate: (id: string) => void
 
+  // Actions — Connectivity
+  setOnline: (online: boolean) => void
+  setCloudSyncError: (value: boolean) => void
+
   // Internal
   _setData: (data: WallCalData) => void
   _initAuth: () => () => void
@@ -114,10 +122,17 @@ export const useAppStore = create<AppState>((set, get) => ({
   isDataLoading: true,
   dataError: null,
 
+  isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
+  cloudSyncError: false,
+
   migrationResult: null,
 
   // ── Internal setter (used by persistence subscription) ─────────
   _setData: (data) => set({ data, isDataLoading: false }),
+
+  // ── Connectivity ───────────────────────────────────────────────
+  setOnline: (online) => set({ isOnline: online }),
+  setCloudSyncError: (value) => set({ cloudSyncError: value }),
 
   // ── Auth actions ───────────────────────────────────────────────
 
