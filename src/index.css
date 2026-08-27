@@ -3,48 +3,104 @@
 
 /* ── Design Tokens ────────────────────────────────────────────── */
 @theme {
+  /* Fonts (unchanged) */
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Playfair Display', ui-serif, Georgia, serif;
   --font-handwriting: 'Caveat', cursive;
 
-  /* Brand palette */
-  --color-brand-50: oklch(97% 0.02 260);
-  --color-brand-100: oklch(93% 0.05 260);
-  --color-brand-200: oklch(85% 0.10 260);
-  --color-brand-300: oklch(74% 0.16 260);
-  --color-brand-400: oklch(63% 0.22 260);
-  --color-brand-500: oklch(55% 0.25 260);
-  --color-brand-600: oklch(47% 0.26 260);
-  --color-brand-700: oklch(39% 0.24 260);
-  --color-brand-800: oklch(30% 0.20 260);
-  --color-brand-900: oklch(22% 0.14 260);
+  /* ── Neutral gray "wall" + surfaces ─────────────────────────── */
+  --color-background:        oklch(18% 0.004 260);  /* subtle neutral gray (NOT warm, NOT black) */
+  --color-surface:           oklch(22% 0.005 260);
+  --color-surface-elevated:  oklch(26% 0.006 260);
+  --color-border:            oklch(34% 0.006 260);
 
-  /* Surface / neutral palette */
-  --color-surface-base: oklch(8% 0.02 260);
-  --color-surface-raised: oklch(11% 0.025 260);
-  --color-surface-overlay: oklch(14% 0.03 260);
-  --color-surface-border: oklch(20% 0.04 260);
+  /* ── Text ────────────────────────────────────────────────────── */
+  --color-text-primary:   oklch(95% 0.005 260);
+  --color-text-secondary: oklch(73% 0.008 260);
+  --color-text-muted:     oklch(54% 0.006 260);
 
-  /* Text */
-  --color-text-primary: oklch(96% 0.008 260);
-  --color-text-secondary: oklch(72% 0.015 260);
-  --color-text-muted: oklch(50% 0.012 260);
+  /* ── Accent (blue-violet, restored) ─────────────────────────── */
+  --color-accent:          oklch(62% 0.21 260);
+  --color-accent-hover:    oklch(68% 0.22 258);
+  --color-accent-soft:     oklch(62% 0.21 260 / 0.16);
+  --color-accent-contrast: oklch(100% 0 0);        /* white — blue needs light text */
 
-  /* Accent */
-  --color-accent-amber: oklch(78% 0.18 75);
-  --color-accent-rose: oklch(65% 0.22 15);
-  --color-accent-teal: oklch(70% 0.18 185);
+  /* ── Semantic status colors ──────────────────────────────────── */
+  --color-success:      oklch(72% 0.150 150);
+  --color-warning:      oklch(76% 0.150 85);
+  --color-destructive:  oklch(64% 0.190 25);
+  --color-destructive-soft: oklch(64% 0.190 25 / 0.16);
+  --color-focus-ring:   oklch(62% 0.21 260 / 0.5);   /* blue, matches accent */
 
-  /* Paper surface — for day cells */
-  --color-paper: oklch(91% 0.008 260);
-  --color-paper-hover: oklch(94% 0.006 260);
-  --color-paper-weekend: oklch(89% 0.012 270);
-  --color-paper-adjacent: oklch(91% 0.005 260);
-  --color-paper-border: oklch(78% 0.012 260);
-  --color-paper-text: oklch(18% 0.02 260);
-  --color-paper-text-muted: oklch(55% 0.015 260);
-  --color-paper-today-bg: var(--color-brand-500);
-  --color-paper-today-text: oklch(97% 0.005 260);
+  /* ── Brand ramp (blue-violet; kept for backward compat) ──────── */
+  --color-brand-50:  oklch(96% 0.020 260);
+  --color-brand-100: oklch(92% 0.050 260);
+  --color-brand-200: oklch(84% 0.110 260);
+  --color-brand-300: oklch(74% 0.170 260);
+  --color-brand-400: oklch(65% 0.210 260);
+  --color-brand-500: oklch(62% 0.220 260);  /* == --color-accent */
+  --color-brand-600: oklch(52% 0.230 260);
+  --color-brand-700: oklch(44% 0.220 260);
+  --color-brand-800: oklch(36% 0.190 260);
+  --color-brand-900: oklch(28% 0.150 260);
+
+  /* ── Warm cream "paper" (day cells) ──────────────────────────── */
+  --color-paper:            oklch(94% 0.018 85);
+  --color-paper-hover:      oklch(96% 0.015 85);
+  --color-paper-weekend:    oklch(92% 0.022 78);
+  --color-paper-adjacent:   oklch(90% 0.012 80);
+  --color-paper-border:     oklch(80% 0.020 80);
+  --color-paper-text:       oklch(28% 0.020 70);
+  --color-paper-text-muted: oklch(50% 0.015 70);
+  --color-paper-today-bg:   var(--color-accent);
+  --color-paper-today-text: var(--color-accent-contrast);
+
+  /* ── Radius ──────────────────────────────────────────────────── */
+  --radius-sm:  0.375rem;
+  --radius-md:  0.5rem;
+  --radius-lg:  0.75rem;
+  --radius-xl:  1rem;
+  --radius-2xl: 1.25rem;
+  --radius-full: 999px;
+
+  /* ── Shadows (warm-tinted, layered) ──────────────────────────── */
+  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.25);
+  --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.30), 0 1px 3px oklch(0% 0 0 / 0.22);
+  --shadow-lg: 0 12px 32px oklch(0% 0 0 / 0.38), 0 4px 10px oklch(0% 0 0 / 0.26);
+  --shadow-xl: 0 20px 60px oklch(0% 0 0 / 0.50), 0 6px 16px oklch(0% 0 0 / 0.30);
+
+  /* ── Spacing scale (semantic, complements Tailwind) ──────────── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+
+  /* ── Typography scale (role-based) ───────────────────────────── */
+  --text-app-title:       1.25rem;   /* logo / app name */
+  --text-page-title:      1.75rem;   /* page H1 */
+  --text-section-heading: 1.125rem;  /* section H2 */
+  --text-month-year:      1.5rem;    /* calendar month/year label */
+  --text-day-number:      0.8125rem; /* day cell number */
+  --text-body:            0.9375rem; /* body copy */
+  --text-metadata:        0.75rem;   /* captions, counts */
+  --text-button:          0.8125rem; /* buttons */
+
+  /* ── Transition duration + easing ────────────────────────────── */
+  --transition-fast: 120ms;
+  --transition-base: 180ms;
+  --transition-slow: 300ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Backward-compat aliases (old surface names → new canonical) ── */
+:root {
+  --color-surface-base:       var(--color-background);
+  --color-surface-raised:     var(--color-surface);
+  --color-surface-overlay:    var(--color-surface-elevated);
+  --color-surface-border:     var(--color-border);
 }
 
 /* ── Global Reset / Base ──────────────────────────────────────── */
@@ -105,6 +161,18 @@ body {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1.25rem;
+}
+
+/* ── Typography helper classes (opt-in) ──────────────────────── */
+.text-app-title        { font-family: var(--font-sans);     font-size: var(--text-app-title); font-weight: 600; letter-spacing: -0.01em; }
+.text-page-title       { font-family: var(--font-display); font-size: var(--text-page-title); font-weight: 700; line-height: 1.15; }
+.text-section-heading  { font-family: var(--font-sans);     font-size: var(--text-section-heading); font-weight: 600; }
+.text-metadata         { font-size: var(--text-metadata); color: var(--color-text-muted); }
+
+/* ── Shared focus-visible ring ──────────────────────────────── */
+:where(button, a, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
 }
 
 .cal-nav-btn {
@@ -186,7 +254,7 @@ body {
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
   border-radius: 0.75rem;
-  box-shadow: 0 8px 32px rgba(0 0 0 / 0.45), 0 2px 8px rgba(0 0 0 / 0.2);
+  box-shadow: var(--shadow-lg);
   padding: 0.625rem;
   animation: picker-in 120ms ease;
 }
@@ -370,7 +438,7 @@ body {
 
 .cal-day-number {
   font-size: 0.8125rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1;
   color: var(--color-paper-text);
   min-width: 1.5rem;
@@ -553,7 +621,7 @@ body {
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
   border-radius: 0.625rem;
-  box-shadow: 0 8px 24px rgba(0 0 0 / 0.5), 0 2px 6px rgba(0 0 0 / 0.2);
+  box-shadow: var(--shadow-lg);
   padding: 0.375rem;
   display: flex;
   flex-direction: column;
@@ -674,7 +742,7 @@ body {
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
   border-radius: 0.625rem;
-  box-shadow: 0 8px 24px rgba(0 0 0 / 0.5), 0 2px 6px rgba(0 0 0 / 0.2);
+  box-shadow: var(--shadow-lg);
   padding: 0.5rem;
   display: flex;
   flex-direction: column;
@@ -845,9 +913,9 @@ body {
   align-items: center;
   gap: 0.35rem;
   font-size: 0.75rem;
-  color: var(--color-accent-rose);
-  background: oklch(65% 0.22 15 / 0.1);
-  border: 1px solid oklch(65% 0.22 15 / 0.25);
+  color: var(--color-destructive);
+  background: var(--color-destructive-soft);
+  border: 1px solid var(--color-destructive-soft);
   border-radius: 0.4rem;
   padding: 0.25rem 0.5rem;
 }
@@ -890,9 +958,9 @@ body {
   margin: 0.75rem 1.5rem 0;
   padding: 0.625rem 1rem;
   border-radius: 0.625rem;
-  background: oklch(70% 0.18 185 / 0.12);
-  border: 1px solid oklch(70% 0.18 185 / 0.3);
-  color: var(--color-accent-teal);
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-accent-soft);
+  color: var(--color-accent);
   font-size: 0.8125rem;
   font-weight: 500;
   max-width: max-content;
@@ -962,7 +1030,7 @@ body {
   display: block;
   flex-shrink: 0;
   padding: 0.1rem 0.3rem;
-  background: oklch(55% 0.25 260 / 0.12);
+  background: var(--color-accent-soft);
   border-radius: 0.25rem;
   width: fit-content;
 }
@@ -1009,7 +1077,7 @@ body {
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
   border-radius: 1rem;
-  box-shadow: 0 20px 60px rgba(0 0 0 / 0.6), 0 4px 12px rgba(0 0 0 / 0.3);
+  box-shadow: var(--shadow-xl);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -1171,8 +1239,8 @@ body {
 }
 
 .note-icon-btn--delete:hover {
-  background: oklch(65% 0.22 20 / 0.15);
-  color: oklch(65% 0.22 20);
+  background: var(--color-destructive-soft);
+  color: var(--color-destructive);
 }
 
 /* Inline edit area */
@@ -1316,7 +1384,7 @@ body {
   border-left: 2px solid var(--color-brand-700);
   padding-left: 0.3rem;
   border-radius: 0 2px 2px 0;
-  background: oklch(55% 0.25 260 / 0.07);
+  background: var(--color-accent-soft);
 }
 
 .cal-task-chip--completed {
@@ -1372,7 +1440,7 @@ body {
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
   border-radius: 1rem;
-  box-shadow: 0 20px 60px rgba(0 0 0 / 0.6), 0 4px 12px rgba(0 0 0 / 0.3);
+  box-shadow: var(--shadow-xl);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -1537,7 +1605,7 @@ body {
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
   border-radius: 1rem;
-  box-shadow: 0 20px 60px rgba(0 0 0 / 0.6), 0 4px 12px rgba(0 0 0 / 0.3);
+  box-shadow: var(--shadow-xl);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -1572,7 +1640,7 @@ body {
 }
 
 .task-form-required {
-  color: var(--color-accent-rose);
+  color: var(--color-destructive);
   margin-left: 0.1rem;
 }
 
@@ -1602,7 +1670,7 @@ body {
 
 .task-form-input:focus {
   border-color: var(--color-brand-500);
-  box-shadow: 0 0 0 3px oklch(55% 0.25 260 / 0.2);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .task-form-textarea {
@@ -1623,7 +1691,7 @@ body {
 
 .task-form-textarea:focus {
   border-color: var(--color-brand-500);
-  box-shadow: 0 0 0 3px oklch(55% 0.25 260 / 0.2);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .task-form-actions {
@@ -2133,8 +2201,8 @@ body {
 }
 
 .ch-status--expired {
-  background: oklch(60% 0.26 20 / 0.15);
-  color: oklch(75% 0.15 20);
+  background: var(--color-destructive-soft);
+  color: var(--color-destructive);
 }
 
 .ch-card-range {
@@ -2426,7 +2494,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  box-shadow: 0 20px 60px rgba(0 0 0 / 0.6);
+  box-shadow: var(--shadow-xl);
 }
 
 .ch-confirm-dialog h3 {
@@ -2520,7 +2588,7 @@ body {
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
   border-radius: 0.75rem;
-  box-shadow: 0 16px 48px rgba(0 0 0 / 0.5);
+  box-shadow: var(--shadow-lg);
   padding: 0.4rem;
 }
 
@@ -2723,14 +2791,14 @@ body {
   box-shadow:
     inset 0 1px 0 rgba(255 255 255 / 0.65),
     0 0 0 2px var(--color-brand-500),
-    0 0 16px oklch(55% 0.25 260 / 0.6);
+    0 0 16px var(--color-focus-ring);
   animation: found-pulse 900ms ease-out 1;
   z-index: 5;
 }
 
 @keyframes found-pulse {
-  0%   { box-shadow: 0 0 0 2px var(--color-brand-500), 0 0 0 0 oklch(55% 0.25 260 / 0.7); }
-  100% { box-shadow: 0 0 0 2px var(--color-brand-500), 0 0 16px oklch(55% 0.25 260 / 0.6); }
+  0%   { box-shadow: 0 0 0 2px var(--color-brand-500), 0 0 0 0 var(--color-focus-ring); }
+  100% { box-shadow: 0 0 0 2px var(--color-brand-500), 0 0 16px var(--color-focus-ring); }
 }
 
 /* ── Important date icon swatch row (editor) ───────────────────── */
