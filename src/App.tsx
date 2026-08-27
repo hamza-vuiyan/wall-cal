@@ -11,6 +11,8 @@ import { SettingsPage } from '@/pages/SettingsPage'
 import { useAppStore } from '@/store/useAppStore'
 import type { AppView } from '@/types'
 
+import { BottomNav } from '@/components/BottomNav'
+
 // ── Hash-based view routing ───────────────────────────────────────
 const HASH_TO_VIEW: Record<string, AppView> = {
   '#calendar':   'calendar',
@@ -101,9 +103,12 @@ export default function App() {
     <>
       <Header currentView={currentView} onNavigate={navigateTo} />
       <MigrationBanner />
-      {renderPage()}
+      <main className="animate-in fade-in duration-300">
+        {renderPage()}
+      </main>
       <Footer />
       <OfflineBanner />
+      <BottomNav currentView={currentView} onNavigate={navigateTo} />
     </>
   )
 }
