@@ -29,7 +29,7 @@ export function Header({ currentView, onNavigate }: HeaderProps) {
           className="flex items-center gap-2.5 transition-opacity hover:opacity-80"
           aria-label="Go to WallCal home"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-brand-500)]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-brand-500)] text-[var(--color-accent-contrast)]">
             <svg
               width="18"
               height="18"
@@ -37,17 +37,17 @@ export function Header({ currentView, onNavigate }: HeaderProps) {
               fill="none"
               aria-hidden="true"
             >
-              <rect x="2" y="3" width="14" height="13" rx="2" stroke="white" strokeWidth="1.5" />
-              <line x1="2" y1="7" x2="16" y2="7" stroke="white" strokeWidth="1.5" />
-              <line x1="6" y1="1" x2="6" y2="5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-              <line x1="12" y1="1" x2="12" y2="5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-              <rect x="5" y="10" width="2" height="2" rx="0.5" fill="white" />
-              <rect x="9" y="10" width="2" height="2" rx="0.5" fill="white" />
+              <rect x="2" y="3" width="14" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="2" y1="7" x2="16" y2="7" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="6" y1="1" x2="6" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="12" y1="1" x2="12" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <rect x="5" y="10" width="2" height="2" rx="0.5" fill="currentColor" />
+              <rect x="9" y="10" width="2" height="2" rx="0.5" fill="currentColor" />
             </svg>
           </div>
           <span className="text-lg font-semibold tracking-tight text-[var(--color-text-primary)] flex items-center gap-2">
             WallCal
-            <span className="text-[0.65rem] tracking-wider font-bold uppercase bg-[var(--color-brand-500)] text-white px-2 py-0.5 rounded-md">
+            <span className="text-[0.65rem] tracking-wider font-bold uppercase bg-[var(--color-brand-500)] text-[var(--color-accent-contrast)] px-2 py-0.5 rounded-md">
               Beta
             </span>
           </span>

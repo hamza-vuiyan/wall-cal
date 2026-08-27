@@ -63,7 +63,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
           style={{ fontFamily: 'var(--font-display)' }}
         >
           WallCal
-          <span className="text-sm sm:text-base tracking-widest font-sans font-bold uppercase bg-[var(--color-brand-500)] text-white px-3 py-1 rounded-full align-middle mt-2">
+          <span className="text-sm sm:text-base tracking-widest font-sans font-bold uppercase bg-[var(--color-brand-500)] text-[var(--color-accent-contrast)] px-3 py-1 rounded-full align-middle mt-2">
             Beta
           </span>
         </h1>
@@ -79,7 +79,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
           <button
             id="hero-cta-primary"
             onClick={() => onNavigate('calendar')}
-            className="group relative overflow-hidden rounded-xl bg-[var(--color-brand-500)] px-8 py-3.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-brand-400)] hover:shadow-[0_8px_30px_var(--color-brand-500)/40%] active:translate-y-0"
+            className="group relative overflow-hidden rounded-xl bg-[var(--color-brand-500)] px-8 py-3.5 text-sm font-semibold text-[var(--color-accent-contrast)] shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-brand-400)] hover:shadow-[0_8px_30px_var(--color-brand-500)/40%] active:translate-y-0"
           >
             Open Calendar
           </button>
