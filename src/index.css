@@ -2035,7 +2035,7 @@ body {
 }
 
 .challenges-wrapper {
-  max-width: 900px;
+  max-width: 1024px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -2869,3 +2869,36 @@ body {
   justify-content: flex-end;
 }
 
+
+/* ── Phase 16: Navigation & Layout ───────────────────────────── */
+
+/* Active nav underline animation */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-accent);
+  border-radius: 2px;
+  transition: transform var(--transition-base) var(--ease-standard);
+}
+.nav-link--active::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* Mobile bottom nav safe area padding */
+body {
+  /* Provide padding on mobile so content doesn't get hidden behind bottom nav */
+  padding-bottom: 72px;
+}
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 0;
+  }
+}

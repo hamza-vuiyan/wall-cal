@@ -96,7 +96,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
       {/* ── Feature Cards ───────────────────────────────────── */}
       <section
         aria-labelledby="features-heading"
-        className="mx-auto w-full max-w-7xl px-6 pb-24"
+        className="mx-auto w-full max-w-5xl px-6 pb-24"
       >
         <h2 id="features-heading" className="sr-only">
           Features
