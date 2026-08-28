@@ -138,7 +138,13 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
 
   // Clear the found ring whenever the user navigates months/years or interacts with a cell
   const clearFound = useCallback(() => setFoundDateKey(null), [])
-  const handleCellInteract = useCallback(() => setFoundDateKey(null), [])
+  const handleCellInteract = useCallback((dateKey: string) => {
+    setFoundDateKey(null)
+    const [y, m] = dateKey.split('-').map(Number)
+    if (y !== year || m - 1 !== month) {
+      goToDate(dateKey)
+    }
+  }, [year, month, goToDate])
   const handlePrev = useCallback(() => { clearFound(); goToPrevMonth() }, [clearFound, goToPrevMonth])
   const handleNext = useCallback(() => { clearFound(); goToNextMonth() }, [clearFound, goToNextMonth])
   const handleToday = useCallback(() => { clearFound(); goToToday() }, [clearFound, goToToday])

@@ -42,10 +42,10 @@ export function DayCell({
   const [colorPickerOpen, setColorPickerOpen] = useState(false)
 
   const isInteractive = isCurrentMonth
-  const hasNotes      = isCurrentMonth && (notes?.length ?? 0) > 0
-  const hasTasks      = isCurrentMonth && (tasks?.length ?? 0) > 0
-  const showHabits    = isCurrentMonth && (habits?.length ?? 0) > 0
-  const showImportant = isCurrentMonth && (importantDates?.length ?? 0) > 0
+  const hasNotes      = (notes?.length ?? 0) > 0
+  const hasTasks      = (tasks?.length ?? 0) > 0
+  const showHabits    = (habits?.length ?? 0) > 0
+  const showImportant = (importantDates?.length ?? 0) > 0
 
   // ── Mark button ───────────────────────────────────────────────
   const handleMarkBtnClick = useCallback((e: React.MouseEvent) => {
@@ -76,32 +76,36 @@ export function DayCell({
     e.stopPropagation()
     setPickerOpen(false)
     setColorPickerOpen(false)
-    onOpenNotes?.(day.key)
-  }, [day.key, onOpenNotes])
+    if (isInteractive) onOpenNotes?.(day.key)
+    else onCellInteract?.(day.key)
+  }, [day.key, onOpenNotes, isInteractive, onCellInteract])
 
   // ── Habit strip button ───────────────────────────────────────
   const handleHabitOpen = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     setPickerOpen(false)
     setColorPickerOpen(false)
-    onOpenHabits?.(day.key)
-  }, [day.key, onOpenHabits])
+    if (isInteractive) onOpenHabits?.(day.key)
+    else onCellInteract?.(day.key)
+  }, [day.key, onOpenHabits, isInteractive, onCellInteract])
 
   // ── Important dates strip button ───────────────────────────────
   const handleImportantOpen = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     setPickerOpen(false)
     setColorPickerOpen(false)
-    onOpenImportantDates?.(day.key)
-  }, [day.key, onOpenImportantDates])
+    if (isInteractive) onOpenImportantDates?.(day.key)
+    else onCellInteract?.(day.key)
+  }, [day.key, onOpenImportantDates, isInteractive, onCellInteract])
 
   // ── Task button ─────────────────────────────────────────────────
   const handleTaskOpen = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     setPickerOpen(false)
     setColorPickerOpen(false)
-    onOpenTasks?.(day.key)
-  }, [day.key, onOpenTasks])
+    if (isInteractive) onOpenTasks?.(day.key)
+    else onCellInteract?.(day.key)
+  }, [day.key, onOpenTasks, isInteractive, onCellInteract])
 
   // Close pickers when clicking the cell background
   const handleCellClick = useCallback(() => {
@@ -131,7 +135,7 @@ export function DayCell({
       ].filter(Boolean).join(' ')}
     >
       {/* ── Background Mark ── */}
-      {mark && isCurrentMonth && <DayMark type={mark} />}
+      {mark && <DayMark type={mark} />}
 
       {/* ── Top Left: Day Number ── */}
       <div className="cal-day-top">
@@ -170,8 +174,8 @@ export function DayCell({
 
         
         {/* Challenges */}
-        {challengeDots && challengeDots.length > 0 && isCurrentMonth && (
-          <button onClick={(e) => { e.stopPropagation(); onChallengeClick?.(); }} className="cal-indicator-dots-group" title="Challenges">
+        {challengeDots && challengeDots.length > 0 && (
+          <button onClick={(e) => { e.stopPropagation(); if (isInteractive) { onChallengeClick?.(); } else { onCellInteract?.(day.key); } }} className="cal-indicator-dots-group" title="Challenges">
             {challengeDots.slice(0, 3).map((dot, i) => (
               <span key={i} className={`cal-challenge-dot${dot.color ? ` cal-challenge-dot--${dot.color}` : ''}`} />
             ))}
