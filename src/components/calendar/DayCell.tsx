@@ -167,12 +167,7 @@ export function DayCell({
 
       {/* ── Bottom Edge Indicators ── */}
       <div className="cal-day-bottom-indicators">
-        {/* Important Dates */}
-        {showImportant && (
-          <button onClick={handleImportantOpen} className="cal-indicator-dot cal-indicator-dot--important" title="Important dates">
-            {iconEmoji(importantDates![0].icon) || '📌'}
-          </button>
-        )}
+
         
         {/* Challenges */}
         {challengeDots && challengeDots.length > 0 && isCurrentMonth && (
@@ -201,9 +196,39 @@ export function DayCell({
         )}
       </div>
 
-      {/* Content Previews (Tasks + Notes) */}
-      {(hasNotes || hasTasks) && (
+      {/* Content Previews (Important + Tasks + Notes) */}
+      {(hasNotes || hasTasks || showImportant) && (
         <div className="cal-day-content-preview">
+          
+          {/* Important date chips — compact, at the very top */}
+          {showImportant && (
+            <div
+              className="cal-imp-strip"
+              onClick={handleImportantOpen}
+              role="button"
+              tabIndex={-1}
+              aria-label="Open important dates"
+              title="Important dates"
+            >
+              {importantDates!.slice(0, 2).map((imp) => (
+                <span
+                  key={imp.id}
+                  className={[
+                    'cal-imp-chip',
+                    imp.color ? `cal-imp-chip--${imp.color}` : '',
+                  ].filter(Boolean).join(' ')}
+                  title={`${imp.title}${imp.category ? ` · ${imp.category}` : ''}`}
+                  aria-label={imp.title}
+                >
+                  <span className="cal-imp-chip-icon" aria-hidden="true">{iconEmoji(imp.icon)}</span>
+                  <span className="cal-imp-chip-title">{imp.title}</span>
+                </span>
+              ))}
+              {importantDates!.length > 2 && (
+                <span className="cal-imp-more">+{importantDates!.length - 2}</span>
+              )}
+            </div>
+          )}
           
           {/* Tasks first */}
           {hasTasks && tasks!.slice(0, 3).map((task) => {
