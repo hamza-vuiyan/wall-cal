@@ -343,6 +343,14 @@ body {
   grid-template-columns: repeat(7, 1fr);
   gap: 0.25rem;
   margin-bottom: 0.25rem;
+  position: sticky;
+  top: calc(4.5rem + 1px); /* Matches exact rem-based height of Header + border */
+  z-index: 30;
+  background-color: color-mix(in srgb, var(--color-background) 80%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 40%, transparent);
+  padding-bottom: 0.2rem;
 }
 
 .cal-weekday-label {
