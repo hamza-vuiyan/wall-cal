@@ -102,7 +102,7 @@ function SortableNote({
         <div className="note-edit-area">
           <textarea
             ref={editTextareaRef}
-            className="note-textarea note-textarea--edit"
+            className={`note-textarea note-textarea--edit ${editColor ? `note-text--${editColor}` : ''}`}
             value={editText}
             onChange={(e) => onEditTextChange(e.target.value)}
             onKeyDown={onEditKeyDown}
@@ -147,7 +147,7 @@ function SortableNote({
         <div className="note-display">
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
             <span className={`cal-color-dot ${note.color ? `cal-color-dot--${note.color}` : 'cal-color-dot--gray'}`} style={{ marginTop: '0.4rem', flexShrink: 0 }} />
-            <p className="note-text" style={{ whiteSpace: 'pre-wrap' }}>{note.text}</p>
+            <p className={`note-text ${note.color ? `note-text--${note.color}` : ''}`} style={{ whiteSpace: 'pre-wrap' }}>{note.text}</p>
           </div>
           <div className="note-item-actions">
             <button
@@ -369,7 +369,7 @@ export function NoteEditorModal({
           <textarea
             ref={newTextareaRef}
             id={`note-input-${dateKey}`}
-            className="note-textarea note-textarea--new"
+            className={`note-textarea note-textarea--new ${newColor ? `note-text--${newColor}` : ''}`}
             placeholder="Write a note… (⌘↵ to save)"
             value={newText}
             onChange={(e) => setNewText(e.target.value)}
