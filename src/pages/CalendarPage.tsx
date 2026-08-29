@@ -202,8 +202,8 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
           dateKey={openNoteDateKey}
           dateLabel={formatDateKey(openNoteDateKey)}
           notes={activeNotes}
-          onAdd={(text) => addNote(openNoteDateKey, text)}
-          onUpdate={(id, text) => updateNote(openNoteDateKey, id, text)}
+          onAdd={(text, color) => addNote(openNoteDateKey, text, color)}
+          onUpdate={(id, text, color) => updateNote(openNoteDateKey, id, text, color)}
           onDelete={(id) => deleteNote(openNoteDateKey, id)}
           onReorder={(from, to) => reorderNotes(openNoteDateKey, from, to)}
           onClose={handleCloseNotes}

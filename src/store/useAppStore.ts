@@ -41,9 +41,9 @@ interface AppState {
   /** Set or remove a mark on a specific date. Pass null to clear. */
   setMark: (dateKey: string, mark: MarkType | null) => void
   /** Add a new note to a date. Returns the generated note ID. */
-  addNote: (dateKey: string, text: string) => string
+  addNote: (dateKey: string, text: string, color?: DayColor) => string
   /** Update the text of an existing note. */
-  updateNote: (dateKey: string, noteId: string, text: string) => void
+  updateNote: (dateKey: string, noteId: string, text: string, color?: DayColor) => void
   /** Delete a note from a date. */
   deleteNote: (dateKey: string, noteId: string) => void
   /** Set or remove the highlight colour on a date. Pass null to clear. */
@@ -231,10 +231,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     )
   },
 
-  addNote: (dateKey, text) => {
+  addNote: (dateKey, text, color) => {
     const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
     const now = Date.now()
-    const newNote: Note = { id, text: text.trim(), createdAt: now, updatedAt: now }
+    const newNote: Note = { id, text: text.trim(), createdAt: now, updatedAt: now, color }
     const current = get().data
     const existing = current.days[dateKey]
     const updated: WallCalData = {
@@ -257,7 +257,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     return id
   },
 
-  updateNote: (dateKey, noteId, text) => {
+  updateNote: (dateKey, noteId, text, color) => {
     const current = get().data
     const existing = current.days[dateKey]
     if (!existing?.notes) return
@@ -269,7 +269,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         [dateKey]: {
           ...existing,
           notes: existing.notes.map((n) =>
-            n.id === noteId ? { ...n, text: text.trim(), updatedAt: now } : n
+            n.id === noteId ? { ...n, text: text.trim(), updatedAt: now, color } : n
           ),
           updatedAt: now,
         },
