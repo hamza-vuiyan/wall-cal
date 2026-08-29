@@ -738,6 +738,7 @@ body {
 .cal-color-dot--blue    { background: oklch(58% 0.22 250); }
 .cal-color-dot--cyan    { background: oklch(65% 0.20 200); }
 .cal-color-dot--green   { background: oklch(65% 0.22 145); }
+.cal-color-dot--gray    { background: oklch(50% 0 0); }
 
 /* Colour button — show in muted tint when a colour is active */
 .cal-day-action-btn--colored {
@@ -802,6 +803,7 @@ body {
 }
 
 /* Swatch backgrounds */
+.color-swatch--none    { background: oklch(35% 0 0); }
 .color-swatch--yellow  { background: oklch(85% 0.22 90); }
 .color-swatch--orange  { background: oklch(75% 0.24 55); }
 .color-swatch--red     { background: oklch(60% 0.26 20); }
@@ -3032,9 +3034,21 @@ body {
   background: none;
   border: none;
   padding: 0 0.1rem;
-  white-space: nowrap;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.cal-note-text-content {
+  white-space: pre-wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  /* autoprefixer: ignore next */
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 .cal-note-text-more {

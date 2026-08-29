@@ -18,6 +18,8 @@ export interface Note {
   createdAt: number
   /** Unix timestamp (ms) when the note was last edited */
   updatedAt: number
+  /** Optional highlight colour */
+  color?: DayColor
 }
 
 /** Token representing a highlight colour for a calendar day */

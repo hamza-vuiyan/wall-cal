@@ -267,7 +267,8 @@ export function DayCell({
             <>
               {notes!.slice(0, hasTasks ? 3 : 6).map((note) => (
                 <div key={note.id} className="cal-note-text-snippet" onClick={(e) => { handleNoteOpen(e); }}>
-                  {note.text}
+                  <span className={`cal-color-dot ${note.color ? `cal-color-dot--${note.color}` : 'cal-color-dot--gray'}`} style={{ marginTop: '0.2rem', flexShrink: 0 }} />
+                  <span className="cal-note-text-content">{note.text}</span>
                 </div>
               ))}
               {notes!.length > (hasTasks ? 3 : 6) && (

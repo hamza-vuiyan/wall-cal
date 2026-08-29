@@ -15,7 +15,8 @@ import {
   useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import type { Note } from '@/services/storage'
+import type { Note, DayColor } from '@/services/storage'
+import { DAY_COLOR_PALETTE } from '@/services/storage'
 
 // ── Drag handle icon ────────────────────────────────────────────────
 function GripIcon() {
@@ -38,6 +39,8 @@ interface SortableNoteProps {
   editText: string
   editTextareaRef: React.RefObject<HTMLTextAreaElement | null>
   onEditTextChange: (text: string) => void
+  editColor: DayColor | undefined
+  onEditColorChange: (color: DayColor | undefined) => void
   onEditKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
   onCommitEdit: () => void
   onCancelEdit: () => void
@@ -51,6 +54,8 @@ function SortableNote({
   editText,
   editTextareaRef,
   onEditTextChange,
+  editColor,
+  onEditColorChange,
   onEditKeyDown,
   onCommitEdit,
   onCancelEdit,
@@ -104,6 +109,23 @@ function SortableNote({
             rows={3}
             aria-label="Edit note"
           />
+          <div className="note-edit-options" style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className={`color-swatch color-swatch--none ${!editColor ? 'color-swatch--active' : ''}`}
+              onClick={() => onEditColorChange(undefined)}
+              title="No color"
+            />
+            {DAY_COLOR_PALETTE.map(({ id, label }) => (
+              <button
+                key={id}
+                type="button"
+                className={`color-swatch color-swatch--${id} ${editColor === id ? 'color-swatch--active' : ''}`}
+                onClick={() => onEditColorChange(id)}
+                title={label}
+              />
+            ))}
+          </div>
           <div className="note-edit-actions">
             <button
               className="note-action-btn note-action-btn--save"
@@ -123,7 +145,10 @@ function SortableNote({
       ) : (
         /* Display mode */
         <div className="note-display">
-          <p className="note-text">{note.text}</p>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+            <span className={`cal-color-dot ${note.color ? `cal-color-dot--${note.color}` : 'cal-color-dot--gray'}`} style={{ marginTop: '0.4rem', flexShrink: 0 }} />
+            <p className="note-text" style={{ whiteSpace: 'pre-wrap' }}>{note.text}</p>
+          </div>
           <div className="note-item-actions">
             <button
               className="note-icon-btn"
@@ -161,8 +186,8 @@ interface NoteEditorModalProps {
   dateKey: string
   dateLabel: string
   notes: Note[]
-  onAdd: (text: string) => void
-  onUpdate: (noteId: string, text: string) => void
+  onAdd: (text: string, color?: DayColor) => void
+  onUpdate: (noteId: string, text: string, color?: DayColor) => void
   onDelete: (noteId: string) => void
   onReorder: (fromIndex: number, toIndex: number) => void
   onClose: () => void
@@ -179,8 +204,10 @@ export function NoteEditorModal({
   onClose,
 }: NoteEditorModalProps) {
   const [newText, setNewText] = useState('')
+  const [newColor, setNewColor] = useState<DayColor | undefined>(undefined)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
+  const [editColor, setEditColor] = useState<DayColor | undefined>(undefined)
   const newTextareaRef = useRef<HTMLTextAreaElement>(null)
   const editTextareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -215,10 +242,11 @@ export function NoteEditorModal({
   const handleAddNote = useCallback(() => {
     const trimmed = newText.trim()
     if (!trimmed) return
-    onAdd(trimmed)
+    onAdd(trimmed, newColor)
     setNewText('')
+    setNewColor(undefined)
     newTextareaRef.current?.focus()
-  }, [newText, onAdd])
+  }, [newText, newColor, onAdd])
 
   const handleNewKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
@@ -227,17 +255,19 @@ export function NoteEditorModal({
     }
   }
 
-  const startEdit = (note: Note) => {
-    setEditingId(note.id)
-    setEditText(note.text)
-  }
-
-  const commitEdit = () => {
+  const commitEdit = useCallback(() => {
     if (!editingId) return
     const trimmed = editText.trim()
-    if (trimmed) onUpdate(editingId, trimmed)
+    if (trimmed) onUpdate(editingId, trimmed, editColor)
+    else onDelete(editingId)
     setEditingId(null)
-  }
+  }, [editingId, editText, editColor, onUpdate, onDelete])
+
+  const startEdit = useCallback((note: Note) => {
+    setEditingId(note.id)
+    setEditText(note.text)
+    setEditColor(note.color)
+  }, [])
 
   const handleEditKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
@@ -320,6 +350,8 @@ export function NoteEditorModal({
                     editText={editText}
                     editTextareaRef={editTextareaRef}
                     onEditTextChange={setEditText}
+                    editColor={editColor}
+                    onEditColorChange={setEditColor}
                     onEditKeyDown={handleEditKeyDown}
                     onCommitEdit={commitEdit}
                     onCancelEdit={() => setEditingId(null)}
@@ -345,6 +377,23 @@ export function NoteEditorModal({
             rows={3}
             aria-label="New note"
           />
+          <div className="note-new-options" style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className={`color-swatch color-swatch--none ${!newColor ? 'color-swatch--active' : ''}`}
+              onClick={() => setNewColor(undefined)}
+              title="No color"
+            />
+            {DAY_COLOR_PALETTE.map(({ id, label }) => (
+              <button
+                key={id}
+                type="button"
+                className={`color-swatch color-swatch--${id} ${newColor === id ? 'color-swatch--active' : ''}`}
+                onClick={() => setNewColor(id)}
+                title={label}
+              />
+            ))}
+          </div>
           <button
             className="note-add-btn"
             onClick={handleAddNote}
