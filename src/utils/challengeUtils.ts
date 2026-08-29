@@ -52,7 +52,9 @@ export function getStatusLabel(challenge: Challenge): string {
   }
 
   if (status === 'active') {
-    const daysLeft = getDatesInRange(today, challenge.endDate).length - 1
+    const total = getTotalDays(challenge)
+    const completed = getCompletedCount(challenge)
+    const daysLeft = total - completed
     if (daysLeft === 0) return 'Last day!'
     return `${daysLeft} day${daysLeft === 1 ? '' : 's'} remaining`
   }
