@@ -3051,6 +3051,26 @@ body {
   word-break: break-word;
 }
 
+/* Note text colors (Day Cell, Light Mode) */
+.cal-note-text-snippet--yellow { color: oklch(50% 0.18 90); }
+.cal-note-text-snippet--orange { color: oklch(50% 0.20 55); }
+.cal-note-text-snippet--red    { color: oklch(50% 0.20 20); }
+.cal-note-text-snippet--pink   { color: oklch(50% 0.20 345); }
+.cal-note-text-snippet--purple { color: oklch(50% 0.20 300); }
+.cal-note-text-snippet--blue   { color: oklch(50% 0.15 250); }
+.cal-note-text-snippet--cyan   { color: oklch(50% 0.15 200); }
+.cal-note-text-snippet--green  { color: oklch(50% 0.17 145); }
+
+/* Note text colors (Modal, Dark Mode) */
+.note-text--yellow { color: oklch(85% 0.18 95); }
+.note-text--orange { color: oklch(80% 0.20 55); }
+.note-text--red    { color: oklch(75% 0.20 20); }
+.note-text--pink   { color: oklch(80% 0.20 345); }
+.note-text--purple { color: oklch(80% 0.20 300); }
+.note-text--blue   { color: oklch(80% 0.15 250); }
+.note-text--cyan   { color: oklch(80% 0.15 200); }
+.note-text--green  { color: oklch(80% 0.17 145); }
+
 .cal-note-text-more {
   font-size: 0.6rem;
   color: var(--color-paper-text);
