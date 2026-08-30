@@ -103,7 +103,7 @@ export default function App() {
     <>
       <Header currentView={currentView} onNavigate={navigateTo} />
       <MigrationBanner />
-      <main className="animate-in fade-in duration-300">
+      <main className="animate-in fade-in duration-300 flex-1 flex flex-col">
         {renderPage()}
       </main>
       <Footer />

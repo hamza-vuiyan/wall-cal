@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="border-t border-[var(--color-surface-border)] py-6">
       <div className="mx-auto max-w-7xl px-6">
         <p className="text-center text-sm text-[var(--color-text-muted)]">
-          © {year} WallCal. Built with care.
+          &copy; 2026 hamza@brainfreezed.org
         </p>
       </div>
     </footer>
