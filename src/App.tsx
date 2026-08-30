@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef, useLayoutEffect } from 'react'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { MigrationBanner } from '@/components/auth/MigrationBanner'
@@ -33,6 +33,8 @@ function getViewFromHash(): AppView {
   return HASH_TO_VIEW[hash] ?? 'home'
 }
 
+const scrollPositions: Partial<Record<AppView, number>> = {}
+
 export default function App() {
   const [currentView, setCurrentViewState] = useState<AppView>(getViewFromHash)
   const [openChallengeId, setOpenChallengeId] = useState<string | null>(null)
@@ -55,20 +57,33 @@ export default function App() {
     }
   }, [setOnline])
 
+  const currentViewRef = useRef(currentView)
+  useEffect(() => {
+    currentViewRef.current = currentView
+  }, [currentView])
+
   const navigateTo = useCallback((view: AppView) => {
     window.location.hash = VIEW_TO_HASH[view]
-    setCurrentViewState(view)
-    // Clear challenge detail when navigating away
-    if (view !== 'challenges') setOpenChallengeId(null)
   }, [])
 
   useEffect(() => {
     function onHashChange() {
-      setCurrentViewState(getViewFromHash())
+      scrollPositions[currentViewRef.current] = window.scrollY
+      const nextView = getViewFromHash()
+      setCurrentViewState(nextView)
+      if (nextView !== 'challenges') setOpenChallengeId(null)
     }
     window.addEventListener('hashchange', onHashChange)
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
+
+  useLayoutEffect(() => {
+    // Restore scroll position synchronously before paint to prevent flashing
+    window.scrollTo({
+      top: scrollPositions[currentView] || 0,
+      behavior: 'instant'
+    })
+  }, [currentView])
 
   const handleOpenChallenge = useCallback((id: string) => {
     setOpenChallengeId(id)

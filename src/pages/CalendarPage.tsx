@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
-import { useCalendar } from '@/hooks/useCalendar'
+import { useCalendar, globalHasScrolledToToday, setGlobalHasScrolledToToday } from '@/hooks/useCalendar'
 import { useAppStore } from '@/store/useAppStore'
 import { CalendarHeader } from '@/components/calendar/CalendarHeader'
 import { WeekdayRow } from '@/components/calendar/WeekdayRow'
@@ -159,14 +159,18 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
   }, [clearFound, goToToday])
   
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const todayCell = document.querySelector('.cal-day-cell--today')
-      if (todayCell) {
-        todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
-    }, 100)
-    return () => clearTimeout(timer)
+    if (!globalHasScrolledToToday) {
+      const timer = setTimeout(() => {
+        const todayCell = document.querySelector('.cal-day-cell--today')
+        if (todayCell) {
+          todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          setGlobalHasScrolledToToday(true)
+        }
+      }, 100)
+      return () => clearTimeout(timer)
+    }
   }, [])
+  
 
   const handleMonth = useCallback((m: number) => { clearFound(); goToMonth(m) }, [clearFound, goToMonth])
   const handleYear = useCallback((y: number) => { clearFound(); goToYear(y) }, [clearFound, goToYear])
