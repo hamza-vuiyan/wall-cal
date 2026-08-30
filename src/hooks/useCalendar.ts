@@ -82,18 +82,32 @@ const MONTH_NAMES = [
   'July', 'August', 'September', 'October', 'November', 'December',
 ]
 
+const fallbackToday = new Date()
+let globalViewDate = {
+  year: fallbackToday.getFullYear(),
+  month: fallbackToday.getMonth(),
+}
+
+export let globalHasScrolledToToday = false
+export const setGlobalHasScrolledToToday = (val: boolean) => {
+  globalHasScrolledToToday = val
+}
+
 /**
  * Core calendar state and navigation logic.
- *
- * @param initialDate - Optional starting date (defaults to today)
  */
-export function useCalendar(initialDate?: Date): UseCalendarReturn {
+export function useCalendar(): UseCalendarReturn {
   const today = useMemo(() => new Date(), [])
 
-  const [viewDate, setViewDate] = useState<{ year: number; month: number }>({
-    year: (initialDate ?? today).getFullYear(),
-    month: (initialDate ?? today).getMonth(),
-  })
+  const [viewDate, setViewDateState] = useState<{ year: number; month: number }>(globalViewDate)
+
+  const setViewDate = (val: React.SetStateAction<{ year: number; month: number }>) => {
+    setViewDateState((prev) => {
+      const next = typeof val === 'function' ? val(prev) : val
+      globalViewDate = next
+      return next
+    })
+  }
 
   const { year, month } = viewDate
 
