@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useCalendar } from '@/hooks/useCalendar'
 import { useAppStore } from '@/store/useAppStore'
 import { CalendarHeader } from '@/components/calendar/CalendarHeader'
@@ -147,7 +147,27 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
   }, [year, month, goToDate])
   const handlePrev = useCallback(() => { clearFound(); goToPrevMonth() }, [clearFound, goToPrevMonth])
   const handleNext = useCallback(() => { clearFound(); goToNextMonth() }, [clearFound, goToNextMonth])
-  const handleToday = useCallback(() => { clearFound(); goToToday() }, [clearFound, goToToday])
+  const handleToday = useCallback(() => { 
+    clearFound(); 
+    goToToday(); 
+    setTimeout(() => {
+      const todayCell = document.querySelector('.cal-day-cell--today');
+      if (todayCell) {
+        todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+  }, [clearFound, goToToday])
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const todayCell = document.querySelector('.cal-day-cell--today')
+      if (todayCell) {
+        todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [])
+
   const handleMonth = useCallback((m: number) => { clearFound(); goToMonth(m) }, [clearFound, goToMonth])
   const handleYear = useCallback((y: number) => { clearFound(); goToYear(y) }, [clearFound, goToYear])
 
