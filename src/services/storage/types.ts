@@ -143,6 +143,8 @@ export interface ImportantDate {
   title: string
   /** The date in YYYY-MM-DD format */
   date: string
+  /** Optional time string in "HH:MM" 24-hour format */
+  time?: string
   /** Optional longer description (also searchable) */
   description?: string
   /** Optional colour accent (reuses the day-colour palette) */

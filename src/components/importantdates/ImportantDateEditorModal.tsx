@@ -19,8 +19,9 @@ export function ImportantDateEditorModal({
 }: ImportantDateEditorModalProps) {
   const today = new Date().toISOString().slice(0, 10)
 
-  const [title, setTitle]           = useState(importantDate?.title ?? '')
-  const [date, setDate]             = useState(importantDate?.date ?? defaultDate ?? today)
+  const [title, setTitle]             = useState(importantDate?.title ?? '')
+  const [date, setDate]               = useState(importantDate?.date ?? defaultDate ?? today)
+  const [time, setTime]               = useState(importantDate?.time ?? '')
   const [description, setDescription] = useState(importantDate?.description ?? '')
   const [color, setColor]           = useState<DayColor | undefined>(importantDate?.color)
   const [icon, setIcon]             = useState<ImportantDateIcon | undefined>(importantDate?.icon)
@@ -43,13 +44,14 @@ export function ImportantDateEditorModal({
     onSave({
       title: trimmed,
       date,
+      time: time || undefined,
       description: description.trim() || undefined,
       color,
       icon,
       category: category.trim() || undefined,
     })
     onClose()
-  }, [title, date, description, color, icon, category, onSave, onClose])
+  }, [title, date, time, description, color, icon, category, onSave, onClose])
 
   return (
     <>
@@ -91,17 +93,27 @@ export function ImportantDateEditorModal({
             />
           </div>
 
-          {/* Date */}
           <div className="task-form-field">
             <label className="task-form-label" htmlFor="imp-date">Date</label>
-            <input
-              id="imp-date"
-              className="task-form-input"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              style={{ colorScheme: 'dark' }}
-            />
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input
+                id="imp-date"
+                className="task-form-input"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                style={{ colorScheme: 'dark', flex: 1 }}
+              />
+              <input
+                id="imp-time"
+                className="task-form-input"
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                style={{ colorScheme: 'dark', flex: 1 }}
+                aria-label="Time (optional)"
+              />
+            </div>
           </div>
 
           {/* Icon */}
