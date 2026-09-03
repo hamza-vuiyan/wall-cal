@@ -138,7 +138,7 @@ export function ChallengeDetailPage({ challengeId, onBack }: ChallengeDetailPage
                 <li key={dateKey} className={`ch-day-item${isToday ? ' ch-day-item--today' : ''}${isFuture ? ' ch-day-item--future' : ''}`}>
                   <button
                     className={`task-check-btn${isComplete ? ' task-check-btn--done' : ''}`}
-                    onClick={(e) => {
+                    onClick={() => {
                       if (!isComplete) {
                         // Independent firecrackers exploding around the window
                         for (let i = 0; i < 10; i++) {
