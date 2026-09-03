@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import confetti from 'canvas-confetti'
 import { useAppStore } from '@/store/useAppStore'
 import {
   getChallengeStatus,
@@ -137,7 +138,30 @@ export function ChallengeDetailPage({ challengeId, onBack }: ChallengeDetailPage
                 <li key={dateKey} className={`ch-day-item${isToday ? ' ch-day-item--today' : ''}${isFuture ? ' ch-day-item--future' : ''}`}>
                   <button
                     className={`task-check-btn${isComplete ? ' task-check-btn--done' : ''}`}
-                    onClick={() => toggleDate(challenge.id, dateKey)}
+                    onClick={(e) => {
+                      if (!isComplete) {
+                        // Independent firecrackers exploding around the window
+                        for (let i = 0; i < 10; i++) {
+                          setTimeout(() => {
+                            confetti({
+                              particleCount: 50,
+                              startVelocity: 25,
+                              spread: 360,
+                              ticks: 100,
+                              origin: { 
+                                x: 0.1 + Math.random() * 0.8, 
+                                y: 0.1 + Math.random() * 0.6 
+                              },
+                              colors: ['#a3be8c', '#88c0d0', '#81a1c1', '#ebcb8b', '#b48ead'],
+                              disableForReducedMotion: true,
+                              zIndex: 1000,
+                              scalar: 1.3
+                            })
+                          }, i * 180 + Math.random() * 100)
+                        }
+                      }
+                      toggleDate(challenge.id, dateKey)
+                    }}
                     aria-label={isComplete ? `Mark ${dateKey} incomplete` : `Mark ${dateKey} complete`}
                   >
                     {isComplete && (
