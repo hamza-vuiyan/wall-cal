@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { toLocalDateKey } from '@/utils/dateUtils'
 import type { Challenge, DayColor } from '@/services/storage'
 import { DAY_COLOR_PALETTE } from '@/services/storage'
 import { getDatesInRange } from '@/utils/challengeUtils'
@@ -10,7 +11,7 @@ interface ChallengeEditorModalProps {
 }
 
 export function ChallengeEditorModal({ challenge, onSave, onClose }: ChallengeEditorModalProps) {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = toLocalDateKey()
 
   const [name, setName]               = useState(challenge?.name ?? '')
   const [startDate, setStartDate]     = useState(challenge?.startDate ?? today)

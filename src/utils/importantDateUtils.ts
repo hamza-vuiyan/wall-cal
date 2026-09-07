@@ -1,4 +1,5 @@
 import type { ImportantDate, ImportantDateIcon } from '@/services/storage'
+import { toLocalDateKey } from './dateUtils'
 
 export const IMPORTANT_DATE_ICONS: {
   id: ImportantDateIcon
@@ -37,6 +38,12 @@ export function sortImportantDates(list: ImportantDate[]): ImportantDate[] {
 
 /** Returns true when the date is today or later. */
 export function isUpcoming(dateKey: string): boolean {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = toLocalDateKey()
   return dateKey >= today
+}
+
+export function getImportantDateStatus(date: ImportantDate): 'upcoming' | 'today' | 'past' {
+  const today = toLocalDateKey()
+  if (date.date === today) return 'today'
+  return date.date > today ? 'upcoming' : 'past'
 }
