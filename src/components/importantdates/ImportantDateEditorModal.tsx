@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { toLocalDateKey } from '@/utils/dateUtils'
 import type { ImportantDate, DayColor, ImportantDateIcon } from '@/services/storage'
 import { DAY_COLOR_PALETTE } from '@/services/storage'
 import { IMPORTANT_DATE_ICONS, iconEmoji } from '@/utils/importantDateUtils'
@@ -17,7 +18,7 @@ export function ImportantDateEditorModal({
   onSave,
   onClose,
 }: ImportantDateEditorModalProps) {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = toLocalDateKey()
 
   const [title, setTitle]             = useState(importantDate?.title ?? '')
   const [date, setDate]               = useState(importantDate?.date ?? defaultDate ?? today)

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { toLocalDateKey } from '@/utils/dateUtils'
 import { useAppStore } from '@/store/useAppStore'
 import { CountdownCard } from './CountdownCard'
 import { ImportantDateEditorModal } from '@/components/importantdates/ImportantDateEditorModal'
@@ -15,7 +16,7 @@ export function UpcomingCountdowns() {
   // Filter out events that are fully in the past (yesterday or older)
   // We keep events that are "Today" even if their time has passed, so the user sees "🎉 Today!"
   const upcoming = useMemo(() => {
-    const todayStr = new Date().toISOString().slice(0, 10)
+    const todayStr = toLocalDateKey()
     
     const valid = importantDates.filter(d => d.date >= todayStr)
     

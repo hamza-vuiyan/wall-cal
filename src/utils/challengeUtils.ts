@@ -1,4 +1,5 @@
 import type { Challenge } from '@/services/storage'
+import { toLocalDateKey } from './dateUtils'
 
 /** Generate all YYYY-MM-DD date strings between start and end (inclusive) */
 export function getDatesInRange(startDate: string, endDate: string): string[] {
@@ -7,7 +8,7 @@ export function getDatesInRange(startDate: string, endDate: string): string[] {
   const end   = new Date(endDate   + 'T00:00:00')
   const cur   = new Date(start)
   while (cur <= end) {
-    dates.push(cur.toISOString().slice(0, 10))
+    dates.push(toLocalDateKey(cur))
     cur.setDate(cur.getDate() + 1)
   }
   return dates
@@ -25,7 +26,7 @@ export function getCompletedCount(challenge: Challenge): number {
 
 /** Today in YYYY-MM-DD */
 export function todayKey(): string {
-  return new Date().toISOString().slice(0, 10)
+  return toLocalDateKey()
 }
 
 export type ChallengeStatus = 'upcoming' | 'active' | 'completed' | 'expired'

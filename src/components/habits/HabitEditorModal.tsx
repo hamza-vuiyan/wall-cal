@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { toLocalDateKey } from '@/utils/dateUtils'
 import type { Habit, DayColor, HabitFrequency } from '@/services/storage'
 import { DAY_COLOR_PALETTE } from '@/services/storage'
 
@@ -9,7 +10,7 @@ interface HabitEditorModalProps {
 }
 
 export function HabitEditorModal({ habit, onSave, onClose }: HabitEditorModalProps) {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = toLocalDateKey()
 
   const [name, setName]         = useState(habit?.name ?? '')
   const [color, setColor]       = useState<DayColor | undefined>(habit?.color)

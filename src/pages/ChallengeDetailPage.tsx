@@ -11,6 +11,7 @@ import {
   formatShortDate,
   getDatesInRange,
 } from '@/utils/challengeUtils'
+import { toLocalDateKey } from '@/utils/dateUtils'
 import { ChallengeEditorModal } from '@/components/challenges/ChallengeEditorModal'
 
 interface ChallengeDetailPageProps {
@@ -47,7 +48,7 @@ export function ChallengeDetailPage({ challengeId, onBack }: ChallengeDetailPage
   const done       = getCompletedCount(challenge)
   const remaining  = total - done
   const allDates   = getDatesInRange(challenge.startDate, challenge.endDate)
-  const today      = new Date().toISOString().slice(0, 10)
+  const today      = toLocalDateKey()
 
   const handleDelete = () => {
     deleteChallenge(challenge.id)
