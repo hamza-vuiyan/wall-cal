@@ -19,9 +19,11 @@ export function getTotalDays(challenge: Challenge): number {
   return getDatesInRange(challenge.startDate, challenge.endDate).length
 }
 
-/** Number of completed days */
+/** Number of completed days within the active date range */
 export function getCompletedCount(challenge: Challenge): number {
-  return challenge.completedDates.length
+  return challenge.completedDates.filter(
+    (date) => date >= challenge.startDate && date <= challenge.endDate
+  ).length
 }
 
 /** Today in YYYY-MM-DD */
