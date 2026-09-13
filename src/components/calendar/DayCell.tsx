@@ -176,7 +176,7 @@ export function DayCell({
         {/* Challenges */}
         {challengeDots && challengeDots.length > 0 && (
           <button onClick={(e) => { e.stopPropagation(); if (isInteractive) { onChallengeClick?.(); } else { onCellInteract?.(day.key); } }} className="cal-indicator-dots-group" title="Challenges">
-            {challengeDots.slice(0, 3).map((dot, i) => (
+            {challengeDots.map((dot, i) => (
               <span key={i} className={`cal-challenge-dot${dot.color ? ` cal-challenge-dot--${dot.color}` : ''}`} />
             ))}
           </button>
@@ -185,7 +185,7 @@ export function DayCell({
         {/* Habits */}
         {showHabits && (
           <button onClick={handleHabitOpen} className="cal-indicator-dots-group" title="Habits">
-            {habits!.slice(0, 3).map((h, i) => (
+            {habits!.map((h, i) => (
               <span key={i} className={['cal-habit-dot', h.completed ? 'cal-habit-dot--done' : '', h.color ? `cal-habit-dot--${h.color}` : ''].filter(Boolean).join(' ')} />
             ))}
           </button>
