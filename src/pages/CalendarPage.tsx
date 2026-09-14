@@ -8,6 +8,7 @@ import { NoteEditorModal } from '@/components/calendar/NoteEditorModal'
 import { TaskListModal } from '@/components/calendar/TaskListModal'
 import { HabitManagerModal, HabitDayModal } from '@/components/habits'
 import { ImportantDateManagerModal, ImportantDateListModal } from '@/components/importantdates'
+import { WishlistManagerModal } from '@/components/wishlist/WishlistManagerModal'
 import type { MarkType, DayColor, Task } from '@/services/storage'
 import type { SearchResult } from '@/utils/searchUtils'
 
@@ -68,6 +69,13 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
   const updateImportantDate = useAppStore((s) => s.updateImportantDate)
   const deleteImportantDate = useAppStore((s) => s.deleteImportantDate)
 
+  const wishlistData       = useAppStore((s) => s.data.wishlistItems)
+  const wishlistItems      = wishlistData ?? []
+  const addWishlistItem    = useAppStore((s) => s.addWishlistItem)
+  const updateWishlistItem = useAppStore((s) => s.updateWishlistItem)
+  const deleteWishlistItem = useAppStore((s) => s.deleteWishlistItem)
+  const toggleWishlistItem = useAppStore((s) => s.toggleWishlistItem)
+
   // Which day's note modal is open (YYYY-MM-DD or null)
   const [openNoteDateKey, setOpenNoteDateKey] = useState<string | null>(null)
   // Which day's task modal is open
@@ -79,6 +87,8 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
   // Important-date manager + per-day modals
   const [impManagerOpen, setImpManagerOpen] = useState(false)
   const [openImpDateKey, setOpenImpDateKey] = useState<string | null>(null)
+  // Wishlist manager modal open flag
+  const [wishlistManagerOpen, setWishlistManagerOpen] = useState(false)
   // Date highlighted after a search navigation (persistent ring)
   const [foundDateKey, setFoundDateKey] = useState<string | null>(null)
 
@@ -123,6 +133,9 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
 
   const handleOpenImpManager = useCallback(() => setImpManagerOpen(true), [])
   const handleCloseImpManager = useCallback(() => setImpManagerOpen(false), [])
+
+  const handleOpenWishlistManager = useCallback(() => setWishlistManagerOpen(true), [])
+  const handleCloseWishlistManager = useCallback(() => setWishlistManagerOpen(false), [])
 
   const handleOpenImportantDates = useCallback(
     (dateKey: string) => setOpenImpDateKey(dateKey),
@@ -197,6 +210,7 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
           onYearSelect={handleYear}
           onOpenHabits={handleOpenHabitsManager}
           onOpenImportantDates={handleOpenImpManager}
+          onOpenWishlist={handleOpenWishlistManager}
           onSearchSelect={handleSearchSelect}
         />
         <div className="calendar-body" role="grid" aria-label={`Calendar for ${displayLabel}`}>
@@ -267,6 +281,18 @@ export function CalendarPage({ onNavigate }: CalendarPageProps) {
           onUpdate={(id, changes) => updateImportantDate(id, changes)}
           onDelete={(id) => deleteImportantDate(id)}
           onClose={handleCloseImpManager}
+        />
+      )}
+
+      {/* Wishlist manager modal */}
+      {wishlistManagerOpen && (
+        <WishlistManagerModal
+          wishlistItems={wishlistItems}
+          onAdd={(data) => addWishlistItem(data)}
+          onUpdate={(id, changes) => updateWishlistItem(id, changes)}
+          onDelete={(id) => deleteWishlistItem(id)}
+          onToggle={(id) => toggleWishlistItem(id)}
+          onClose={handleCloseWishlistManager}
         />
       )}
 

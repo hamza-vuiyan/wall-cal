@@ -2,8 +2,9 @@ import { create } from 'zustand'
 import type { User } from 'firebase/auth'
 import { signInWithGoogle, signOut, onAuthStateChange } from '@/services/auth'
 import { persistenceService } from '@/services/storage'
-import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task, Challenge, Habit, ImportantDate } from '@/services/storage'
+import type { WallCalData, DayEntry, UserSettings, MigrationResult, MarkType, Note, DayColor, Task, Challenge, Habit, ImportantDate, WishlistItem } from '@/services/storage'
 import { createEmptyData, mergeData } from '@/services/storage'
+import { toLocalDateKey } from '@/utils/dateUtils'
 
 // ── Auth state ────────────────────────────────────────────────────
 
@@ -90,6 +91,16 @@ interface AppState {
   updateImportantDate: (id: string, changes: Partial<Omit<ImportantDate, 'id' | 'createdAt'>>) => void
   /** Delete an important date. */
   deleteImportantDate: (id: string) => void
+
+  // Actions — Wishlist
+  /** Add a new wishlist item. Returns the generated ID. */
+  addWishlistItem: (data: Omit<import('@/services/storage/types').WishlistItem, 'id' | 'createdAt' | 'updatedAt' | 'completed' | 'completedAt'>) => string
+  /** Update fields of an existing wishlist item. */
+  updateWishlistItem: (id: string, changes: Partial<Omit<import('@/services/storage/types').WishlistItem, 'id' | 'createdAt'>>) => void
+  /** Toggle completion status of a wishlist item. */
+  toggleWishlistItem: (id: string) => void
+  /** Delete a wishlist item. */
+  deleteWishlistItem: (id: string) => void
 
   // Actions — Connectivity
   setOnline: (online: boolean) => void
@@ -647,6 +658,110 @@ export const useAppStore = create<AppState>((set, get) => ({
       console.error('[WallCal] Failed to delete important date:', err)
     )
   },
+
+  // ── Wishlist Actions ──────────────────────────────────────────────
+
+  addWishlistItem: (data) => {
+    const current = get().data
+    const id = crypto.randomUUID()
+    const now = Date.now()
+    const newItem: WishlistItem = {
+      ...data,
+      id,
+      completed: false,
+      createdAt: now,
+      updatedAt: now,
+    }
+    const updated: WallCalData = {
+      ...current,
+      wishlistItems: [...(current.wishlistItems ?? []), newItem],
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to save wishlist item:', err)
+    )
+    return id
+  },
+
+  updateWishlistItem: (id, changes) => {
+    const current = get().data
+    const now = Date.now()
+    const updated: WallCalData = {
+      ...current,
+      wishlistItems: (current.wishlistItems ?? []).map((w) =>
+        w.id === id ? { ...w, ...changes, updatedAt: now } : w
+      ),
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to update wishlist item:', err)
+    )
+  },
+
+  toggleWishlistItem: (id) => {
+    const current = get().data
+    const now = Date.now()
+    const item = (current.wishlistItems ?? []).find(w => w.id === id)
+    if (!item) return
+
+    const newCompleted = !item.completed
+    const newCompletedAt = newCompleted ? now : undefined
+    
+    // Create the updated items array
+    const updatedItems = (current.wishlistItems ?? []).map((w) =>
+      w.id === id ? { ...w, completed: newCompleted, completedAt: newCompletedAt, updatedAt: now } : w
+    )
+
+    // Add a note to the calendar if completing
+    let updatedDays = current.days
+    if (newCompleted) {
+      const todayKey = toLocalDateKey()
+      const dayData = current.days[todayKey] || { key: todayKey, updatedAt: now }
+      const newNote: Note = {
+        id: crypto.randomUUID(),
+        text: `🎉 Completed wishlist: ${item.title}`,
+        createdAt: now,
+        updatedAt: now,
+      }
+      updatedDays = {
+        ...current.days,
+        [todayKey]: {
+          ...dayData,
+          notes: [...(dayData.notes ?? []), newNote],
+          updatedAt: now,
+        }
+      }
+    }
+
+    const updated: WallCalData = {
+      ...current,
+      wishlistItems: updatedItems,
+      days: updatedDays,
+      updatedAt: now,
+    }
+
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to toggle wishlist item:', err)
+    )
+  },
+
+  deleteWishlistItem: (id) => {
+    const current = get().data
+    const now = Date.now()
+    const updated: WallCalData = {
+      ...current,
+      wishlistItems: (current.wishlistItems ?? []).filter((w) => w.id !== id),
+      updatedAt: now,
+    }
+    set({ data: updated })
+    persistenceService.save(updated).catch((err) =>
+      console.error('[WallCal] Failed to delete wishlist item:', err)
+    )
+  },
+
 
   // ── Backup / Restore actions ──────────────────────────────────
 
