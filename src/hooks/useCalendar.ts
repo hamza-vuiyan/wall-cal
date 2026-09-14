@@ -19,7 +19,7 @@ function isSameDay(a: Date, b: Date): boolean {
 }
 
 /**
- * Builds the 42-cell (6-week) grid for the given year/month.
+ * Builds the grid for the given year/month, creating 4, 5, or 6 weeks depending on needs.
  * Week starts on Sunday (index 0).
  *
  * @param year  - Full calendar year (e.g. 2026)
@@ -31,8 +31,12 @@ function buildGrid(year: number, month: number, today: Date): CalendarDay[] {
   // Sunday = 0, so no adjustment needed for Sunday-first layout
   const startOffset = firstOfMonth.getDay() // 0–6
 
-  // Always generate exactly 42 cells (6 full weeks)
-  const TOTAL_CELLS = 42
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  
+  // Calculate how many weeks (rows) are actually needed
+  const totalDaysNeeded = startOffset + daysInMonth
+  const totalWeeks = Math.ceil(totalDaysNeeded / 7)
+  const TOTAL_CELLS = totalWeeks * 7
   const days: CalendarDay[] = []
 
   for (let i = 0; i < TOTAL_CELLS; i++) {
