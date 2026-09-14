@@ -159,6 +159,26 @@ export interface ImportantDate {
   updatedAt: number
 }
 
+/** An item on the user's Wishlist / Bucket List */
+export interface WishlistItem {
+  /** Unique stable ID */
+  id: string
+  /** Title of the wishlist item */
+  title: string
+  /** Optional description */
+  description?: string
+  /** Optional colour accent */
+  color?: DayColor
+  /** Whether the item has been completed */
+  completed: boolean
+  /** Unix timestamp (ms) when it was created */
+  createdAt: number
+  /** Unix timestamp (ms) when it was completed (if completed is true) */
+  completedAt?: number
+  /** Unix timestamp (ms) of last edit (for syncing) */
+  updatedAt: number
+}
+
 /** User-level preferences */
 export interface UserSettings {
   /** First day of the week */
@@ -179,6 +199,8 @@ export interface WallCalData {
   habits?: Habit[]
   /** User-defined important dates (birthdays, exams, deadlines, etc.) */
   importantDates?: ImportantDate[]
+  /** User's bucket list / wishlist items */
+  wishlistItems?: WishlistItem[]
   /** User preferences */
   settings: UserSettings
   /** Unix timestamp (ms) of the last write */
@@ -252,6 +274,16 @@ export function mergeData(local: WallCalData, remote: WallCalData): WallCalData 
       return acc
     }, [])
 
+  // Wishlist items: merge by id, newest updatedAt wins on conflict
+  const mergedWishlist = [...(local.wishlistItems ?? []), ...(remote.wishlistItems ?? [])]
+    .sort((a, b) => a.updatedAt - b.updatedAt)
+    .reduce<WishlistItem[]>((acc, w) => {
+      const i = acc.findIndex((x) => x.id === w.id)
+      if (i >= 0) acc[i] = w
+      else acc.push(w)
+      return acc
+    }, [])
+
   // Settings: whichever data is overall newer wins
   const settings = local.updatedAt > remote.updatedAt ? local.settings : remote.settings
 
@@ -261,6 +293,7 @@ export function mergeData(local: WallCalData, remote: WallCalData): WallCalData 
     challenges: mergedChallenges.length > 0 ? mergedChallenges : undefined,
     habits: mergedHabits.length > 0 ? mergedHabits : undefined,
     importantDates: mergedImportantDates.length > 0 ? mergedImportantDates : undefined,
+    wishlistItems: mergedWishlist.length > 0 ? mergedWishlist : undefined,
     settings,
     updatedAt: Date.now(),
   }

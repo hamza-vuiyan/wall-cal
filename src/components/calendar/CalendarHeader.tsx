@@ -28,6 +28,7 @@ interface CalendarHeaderProps {
   onYearSelect: (year: number) => void
   onOpenHabits?: () => void
   onOpenImportantDates?: () => void
+  onOpenWishlist?: () => void
   onSearchSelect?: (result: SearchResult) => void
 }
 
@@ -44,6 +45,7 @@ export function CalendarHeader({
   onYearSelect,
   onOpenHabits,
   onOpenImportantDates,
+  onOpenWishlist,
   onSearchSelect,
 }: CalendarHeaderProps) {
   const [activePicker, setActivePicker] = useState<ActivePicker>(null)
@@ -224,6 +226,23 @@ export function CalendarHeader({
               stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" />
           </svg>
           Dates
+        </button>
+      )}
+
+      {/* Wishlist manager */}
+      {onOpenWishlist && (
+        <button
+          id="calendar-wishlist-btn"
+          onClick={onOpenWishlist}
+          aria-label="Manage bucket list"
+          className="cal-dates-btn"
+          title="Manage bucket list"
+        >
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M8 2.5l1.6 3.3 3.6.5-2.6 2.5.6 3.6L8 10.9 4.8 12.9l.6-3.6L2.8 6.3l3.6-.5L8 2.5Z"
+              stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" />
+          </svg>
+          Wishlist
         </button>
       )}
 
