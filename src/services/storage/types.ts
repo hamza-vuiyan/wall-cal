@@ -23,9 +23,7 @@ export interface Note {
 }
 
 /** Token representing a highlight colour for a calendar day */
-export type DayColor =
-  | 'yellow' | 'orange' | 'red' | 'pink'
-  | 'purple' | 'blue'   | 'cyan' | 'green'
+export type DayColor = string
 
 /** Ordered colour palette shown in the colour picker */
 export const DAY_COLOR_PALETTE: { id: DayColor; label: string }[] = [

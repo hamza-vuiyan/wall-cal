@@ -18,21 +18,177 @@ import { CSS } from '@dnd-kit/utilities'
 import type { Note, DayColor } from '@/services/storage'
 import { DAY_COLOR_PALETTE } from '@/services/storage'
 
-// ── Drag handle icon ────────────────────────────────────────────────
+/** Hard-coded color map so Tailwind JIT doesn't need to generate dynamic classes */
+const PALETTE_COLORS: Record<string, string> = {
+  yellow: 'oklch(85% 0.20 95)',
+  orange: 'oklch(75% 0.20 55)',
+  red:    'oklch(65% 0.20 20)',
+  pink:   'oklch(72% 0.18 345)',
+  purple: 'oklch(68% 0.16 300)',
+  blue:   'oklch(68% 0.15 250)',
+  cyan:   'oklch(70% 0.15 200)',
+  green:  'oklch(68% 0.17 145)',
+}
+
+/** Resolves a palette name or custom hex to a CSS color string */
+function resolveColor(color: DayColor | undefined): string | undefined {
+  if (!color) return undefined
+  if (color.startsWith('#')) return color
+  return PALETTE_COLORS[color]
+}
+
+// ── Grip Icon ──────────────────────────────────────────────────────
 function GripIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <circle cx="4.5" cy="3.5" r="1.1" fill="currentColor" />
-      <circle cx="4.5" cy="7"   r="1.1" fill="currentColor" />
+      <circle cx="4.5" cy="3.5"  r="1.1" fill="currentColor" />
+      <circle cx="4.5" cy="7"    r="1.1" fill="currentColor" />
       <circle cx="4.5" cy="10.5" r="1.1" fill="currentColor" />
-      <circle cx="9.5" cy="3.5" r="1.1" fill="currentColor" />
-      <circle cx="9.5" cy="7"   r="1.1" fill="currentColor" />
+      <circle cx="9.5" cy="3.5"  r="1.1" fill="currentColor" />
+      <circle cx="9.5" cy="7"    r="1.1" fill="currentColor" />
       <circle cx="9.5" cy="10.5" r="1.1" fill="currentColor" />
     </svg>
   )
 }
 
-// ── Single sortable note row ─────────────────────────────────────────
+// ── Color picker row (reused in edit + new note) ───────────────────
+function ColorPickerRow({
+  selectedColor,
+  onChange,
+}: {
+  selectedColor: DayColor | undefined
+  onChange: (color: DayColor | undefined) => void
+}) {
+  return (
+    <div className="flex gap-1.5 flex-wrap items-center">
+      {/* Clear */}
+      <button
+        type="button"
+        className={
+          'w-6 h-6 rounded-full border flex items-center justify-center transition-all ' +
+          (!selectedColor
+            ? 'border-[var(--color-brand-500)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-brand-500)]'
+            : 'border-transparent hover:bg-[var(--color-surface-overlay)] text-[var(--color-text-muted)]')
+        }
+        onClick={() => onChange(undefined)}
+        title="No color"
+      >
+        <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <line x1="2" y1="2" x2="12" y2="12" />
+          <line x1="12" y1="2" x2="2" y2="12" />
+        </svg>
+      </button>
+
+      {/* Palette swatches */}
+      {DAY_COLOR_PALETTE.map(({ id, label }) => (
+        <button
+          key={id}
+          type="button"
+          className={
+            'w-6 h-6 rounded-full transition-all border-2 border-transparent ' +
+            (selectedColor === id ? 'ring-2 ring-[var(--color-focus-ring)] border-white scale-110' : 'hover:scale-110')
+          }
+          style={{ backgroundColor: PALETTE_COLORS[id] }}
+          onClick={() => onChange(id)}
+          title={label}
+        />
+      ))}
+
+      {/* Custom color wheel */}
+      <div
+        className="relative flex items-center justify-center w-6 h-6 rounded-full overflow-hidden border-2 border-transparent hover:scale-110 transition-all cursor-pointer"
+        title="Custom color"
+      >
+        <input
+          type="color"
+          className="absolute inset-[-10px] w-10 h-10 opacity-0 cursor-pointer"
+          value={selectedColor?.startsWith('#') ? selectedColor : '#ffffff'}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        <div
+          className="w-full h-full rounded-full pointer-events-none"
+          style={{
+            background: selectedColor?.startsWith('#')
+              ? selectedColor
+              : 'conic-gradient(red, yellow, green, cyan, blue, magenta, red)',
+            border: selectedColor?.startsWith('#') ? '1px solid white' : 'none',
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
+// ── Note display row (with local confirm-delete state) ─────────────
+function NoteDisplayRow({
+  note,
+  onStartEdit,
+  onDelete,
+}: {
+  note: Note
+  onStartEdit: (note: Note) => void
+  onDelete: (noteId: string) => void
+}) {
+  const [confirming, setConfirming] = useState(false)
+  const resolvedColor = resolveColor(note.color)
+
+  if (confirming) {
+    return (
+      <div className="flex flex-1 items-center justify-between gap-3 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/30">
+        <span className="text-sm font-medium text-[var(--color-text-primary)]">Delete this note?</span>
+        <div className="flex gap-2">
+          <button
+            className="px-3 py-1 text-xs font-semibold bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+            onClick={() => onDelete(note.id)}
+          >
+            Delete
+          </button>
+          <button
+            className="px-3 py-1 text-xs font-medium border border-[var(--color-surface-border)] text-[var(--color-text-secondary)] rounded hover:bg-[var(--color-surface-overlay)] transition-colors"
+            onClick={() => setConfirming(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex items-start gap-3 p-3 flex-1 pl-0">
+      <div className="flex-1 min-w-0">
+        <p
+          className="text-lg font-handwriting leading-relaxed m-0 whitespace-pre-wrap break-words"
+          style={{ color: resolvedColor ?? 'var(--color-text-secondary)' }}
+        >
+          {note.text}
+        </p>
+      </div>
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+        <button
+          className="w-7 h-7 flex items-center justify-center rounded text-[var(--color-text-muted)] hover:bg-[var(--color-surface-overlay)] hover:text-[var(--color-text-primary)] transition-colors"
+          onClick={() => onStartEdit(note)}
+          title="Edit"
+        >
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M9.5 1.5L12.5 4.5L4.5 12.5H1.5V9.5L9.5 1.5Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <button
+          className="w-7 h-7 flex items-center justify-center rounded text-[var(--color-text-muted)] hover:bg-red-500/10 hover:text-red-500 transition-colors"
+          onClick={() => setConfirming(true)}
+          title="Delete"
+        >
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M2 4h10M5 4V2.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V4M6 6.5v4M8 6.5v4M3 4l.8 7.2a.5.5 0 00.5.3h5.4a.5.5 0 00.5-.3L11 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ── Sortable note item ─────────────────────────────────────────────
 interface SortableNoteProps {
   note: Note
   isEditing: boolean
@@ -62,16 +218,10 @@ function SortableNote({
   onStartEdit,
   onDelete,
 }: SortableNoteProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: note.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: note.id })
 
-  const style = {
+  const dragStyle = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.4 : 1,
@@ -81,13 +231,18 @@ function SortableNote({
   return (
     <li
       ref={setNodeRef}
-      style={style}
-      className={`note-item${isDragging ? ' note-item--dragging' : ''}`}
+      style={dragStyle}
+      className={
+        'relative rounded-xl border flex items-stretch transition-all duration-200 group ' +
+        (isDragging
+          ? 'border-[var(--color-brand-500)] shadow-lg bg-[var(--color-surface-overlay)] scale-[1.02]'
+          : 'border-transparent hover:border-[var(--color-surface-border)] hover:bg-[var(--color-surface-hover)]')
+      }
     >
-      {/* Drag handle — only visible in display mode */}
+      {/* Drag handle – only in display mode */}
       {!isEditing && (
         <button
-          className="note-drag-handle"
+          className="w-8 flex-shrink-0 flex items-center justify-center text-[var(--color-text-muted)] cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 hover:text-[var(--color-text-secondary)] transition-opacity"
           aria-label="Drag to reorder"
           title="Drag to reorder"
           {...attributes}
@@ -99,89 +254,45 @@ function SortableNote({
 
       {isEditing ? (
         /* Edit mode */
-        <div className="note-edit-area">
+        <div className="flex flex-col gap-3 p-3 flex-1">
           <textarea
             ref={editTextareaRef}
-            className={`note-textarea note-textarea--edit ${editColor ? `note-text--${editColor}` : ''}`}
+            className="w-full bg-transparent border border-[var(--color-surface-border)] rounded-lg text-lg font-handwriting leading-relaxed px-3 py-2 resize-y outline-none focus:border-[var(--color-brand-400)] focus:ring-1 focus:ring-[var(--color-brand-400)] min-h-[5rem] transition-colors"
+            style={{ color: resolveColor(editColor) ?? 'var(--color-text-primary)' }}
             value={editText}
             onChange={(e) => onEditTextChange(e.target.value)}
             onKeyDown={onEditKeyDown}
             rows={3}
             aria-label="Edit note"
           />
-          <div className="note-edit-options" style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              className={`color-swatch color-swatch--none ${!editColor ? 'color-swatch--active' : ''}`}
-              onClick={() => onEditColorChange(undefined)}
-              title="No color"
-            />
-            {DAY_COLOR_PALETTE.map(({ id, label }) => (
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <ColorPickerRow selectedColor={editColor} onChange={onEditColorChange} />
+            <div className="flex gap-2">
               <button
-                key={id}
-                type="button"
-                className={`color-swatch color-swatch--${id} ${editColor === id ? 'color-swatch--active' : ''}`}
-                onClick={() => onEditColorChange(id)}
-                title={label}
-              />
-            ))}
-          </div>
-          <div className="note-edit-actions">
-            <button
-              className="note-action-btn note-action-btn--save"
-              onClick={onCommitEdit}
-              disabled={!editText.trim()}
-            >
-              Save
-            </button>
-            <button
-              className="note-action-btn note-action-btn--cancel"
-              onClick={onCancelEdit}
-            >
-              Cancel
-            </button>
+                className="px-3 py-1.5 text-xs font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-overlay)] hover:text-[var(--color-text-primary)] rounded transition-colors"
+                onClick={onCancelEdit}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-3 py-1.5 text-xs font-semibold bg-[var(--color-brand-600)] text-white hover:bg-[var(--color-brand-500)] rounded transition-colors disabled:opacity-50"
+                onClick={onCommitEdit}
+                disabled={!editText.trim()}
+              >
+                Save
+              </button>
+            </div>
           </div>
         </div>
       ) : (
-        /* Display mode */
-        <div className="note-display">
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
-            <span className={`cal-color-dot ${note.color ? `cal-color-dot--${note.color}` : 'cal-color-dot--gray'}`} style={{ marginTop: '0.4rem', flexShrink: 0 }} />
-            <p className={`note-text ${note.color ? `note-text--${note.color}` : ''}`} style={{ whiteSpace: 'pre-wrap' }}>{note.text}</p>
-          </div>
-          <div className="note-item-actions">
-            <button
-              className="note-icon-btn"
-              onClick={() => onStartEdit(note)}
-              aria-label="Edit note"
-              title="Edit"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M9.5 1.5L12.5 4.5L4.5 12.5H1.5V9.5L9.5 1.5Z"
-                  stroke="currentColor" strokeWidth="1.4"
-                  strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <button
-              className="note-icon-btn note-icon-btn--delete"
-              onClick={() => onDelete(note.id)}
-              aria-label="Delete note"
-              title="Delete"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M2 4h10M5 4V2.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V4M6 6.5v4M8 6.5v4M3 4l.8 7.2a.5.5 0 00.5.3h5.4a.5.5 0 00.5-.3L11 4"
-                  stroke="currentColor" strokeWidth="1.4"
-                  strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-          </div>
-        </div>
+        /* Display mode – handles its own confirm-delete */
+        <NoteDisplayRow note={note} onStartEdit={onStartEdit} onDelete={onDelete} />
       )}
     </li>
   )
 }
 
-// ── Main modal ──────────────────────────────────────────────────────
+// ── Main modal ─────────────────────────────────────────────────────
 interface NoteEditorModalProps {
   dateKey: string
   dateLabel: string
@@ -194,7 +305,6 @@ interface NoteEditorModalProps {
 }
 
 export function NoteEditorModal({
-  dateKey,
   dateLabel,
   notes,
   onAdd,
@@ -203,19 +313,17 @@ export function NoteEditorModal({
   onReorder,
   onClose,
 }: NoteEditorModalProps) {
-  const [newText, setNewText] = useState('')
-  const [newColor, setNewColor] = useState<DayColor | undefined>(undefined)
+  const [newText, setNewText]     = useState('')
+  const [newColor, setNewColor]   = useState<DayColor | undefined>(undefined)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [editText, setEditText] = useState('')
+  const [editText, setEditText]   = useState('')
   const [editColor, setEditColor] = useState<DayColor | undefined>(undefined)
-  const newTextareaRef = useRef<HTMLTextAreaElement>(null)
+  const newTextareaRef  = useRef<HTMLTextAreaElement>(null)
   const editTextareaRef = useRef<HTMLTextAreaElement>(null)
 
-  // Focus new note textarea when modal opens and there are no notes
+  // Focus new-note textarea when modal opens with no notes
   useEffect(() => {
-    if (notes.length === 0) {
-      newTextareaRef.current?.focus()
-    }
+    if (notes.length === 0) newTextareaRef.current?.focus()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Focus edit textarea when entering edit mode
@@ -227,7 +335,7 @@ export function NoteEditorModal({
     }
   }, [editingId])
 
-  // Close on Escape
+  // Escape key handling
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') {
@@ -248,160 +356,151 @@ export function NoteEditorModal({
     newTextareaRef.current?.focus()
   }, [newText, newColor, onAdd])
 
-  const handleNewKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault()
-      handleAddNote()
-    }
-  }
+  const handleNewNoteKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        handleAddNote()
+      }
+    },
+    [handleAddNote],
+  )
 
-  const commitEdit = useCallback(() => {
-    if (!editingId) return
-    const trimmed = editText.trim()
-    if (trimmed) onUpdate(editingId, trimmed, editColor)
-    else onDelete(editingId)
-    setEditingId(null)
-  }, [editingId, editText, editColor, onUpdate, onDelete])
-
-  const startEdit = useCallback((note: Note) => {
+  const handleStartEdit = useCallback((note: Note) => {
     setEditingId(note.id)
     setEditText(note.text)
     setEditColor(note.color)
   }, [])
 
-  const handleEditKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault()
-      commitEdit()
-    }
-  }
+  const handleCommitEdit = useCallback(() => {
+    if (!editingId) return
+    const trimmed = editText.trim()
+    if (!trimmed) onDelete(editingId)
+    else onUpdate(editingId, trimmed, editColor)
+    setEditingId(null)
+  }, [editingId, editText, editColor, onUpdate, onDelete])
 
-  // ── DnD setup ───────────────────────────────────────────────────
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 5 }, // require 5px move before drag starts
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
+  const handleEditKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        handleCommitEdit()
+      }
+    },
+    [handleCommitEdit],
   )
 
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event
-    if (!over || active.id === over.id) return
-    const fromIndex = notes.findIndex((n) => n.id === active.id)
-    const toIndex = notes.findIndex((n) => n.id === over.id)
-    if (fromIndex !== -1 && toIndex !== -1) {
-      onReorder(fromIndex, toIndex)
-    }
-  }
+  const handleCancelEdit = useCallback(() => setEditingId(null), [])
 
-  const noteIds = notes.map((n) => n.id)
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      if (over && active.id !== over.id) {
+        const oldIndex = notes.findIndex((n) => n.id === active.id)
+        const newIndex = notes.findIndex((n) => n.id === over.id)
+        if (oldIndex !== -1 && newIndex !== -1) onReorder(oldIndex, newIndex)
+      }
+    },
+    [notes, onReorder],
+  )
 
   return (
     <>
       {/* Backdrop */}
       <div
-        className="note-modal-backdrop"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[300] animate-in fade-in duration-200"
         aria-hidden="true"
         onClick={onClose}
       />
 
-      {/* Modal panel */}
+      {/* Modal */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label={`Notes for ${dateLabel}`}
-        className="note-modal"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[301] w-[92vw] sm:w-[460px] max-h-[85vh] overflow-y-auto bg-[var(--color-surface-raised)] border border-[var(--color-surface-border)] rounded-xl shadow-2xl p-6 flex flex-col gap-5 animate-in zoom-in-95 duration-200"
       >
         {/* Header */}
-        <div className="note-modal-header">
-          <div>
-            <h2 className="note-modal-date">{dateLabel}</h2>
-            <p className="note-modal-count">
-              {notes.length === 0
-                ? 'No notes yet'
-                : `${notes.length} note${notes.length > 1 ? 's' : ''}`}
-            </p>
-          </div>
+        <div className="flex items-start justify-between gap-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-[var(--color-text-primary)] m-0 tracking-tight font-display">
+            {dateLabel} Notes
+          </h2>
           <button
-            className="note-modal-close"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-[var(--color-text-muted)] hover:bg-[var(--color-surface-overlay)] hover:text-[var(--color-text-primary)] transition-colors -mr-2"
             onClick={onClose}
-            aria-label="Close notes"
+            aria-label="Close"
           >
-            ×
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
 
-        {/* Sortable note list */}
-        {notes.length > 0 && (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext items={noteIds} strategy={verticalListSortingStrategy}>
-              <ul className="note-list" aria-label="Notes">
-                {notes.map((note) => (
-                  <SortableNote
-                    key={note.id}
-                    note={note}
-                    isEditing={editingId === note.id}
-                    editText={editText}
-                    editTextareaRef={editTextareaRef}
-                    onEditTextChange={setEditText}
-                    editColor={editColor}
-                    onEditColorChange={setEditColor}
-                    onEditKeyDown={handleEditKeyDown}
-                    onCommitEdit={commitEdit}
-                    onCancelEdit={() => setEditingId(null)}
-                    onStartEdit={startEdit}
-                    onDelete={onDelete}
-                  />
-                ))}
-              </ul>
+        {/* Note list with drag-and-drop */}
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <ul className="flex flex-col gap-1 m-0 p-0 list-none min-h-[4rem]">
+            {notes.length === 0 && (
+              <li className="flex items-center justify-center py-6 text-[var(--color-text-muted)] text-sm">
+                No notes yet. Add one below.
+              </li>
+            )}
+            <SortableContext items={notes.map((n) => n.id)} strategy={verticalListSortingStrategy}>
+              {notes.map((note) => (
+                <SortableNote
+                  key={note.id}
+                  note={note}
+                  isEditing={editingId === note.id}
+                  editText={editText}
+                  editTextareaRef={editTextareaRef}
+                  onEditTextChange={setEditText}
+                  editColor={editColor}
+                  onEditColorChange={setEditColor}
+                  onEditKeyDown={handleEditKeyDown}
+                  onCommitEdit={handleCommitEdit}
+                  onCancelEdit={handleCancelEdit}
+                  onStartEdit={handleStartEdit}
+                  onDelete={onDelete}
+                />
+              ))}
             </SortableContext>
-          </DndContext>
-        )}
+          </ul>
+        </DndContext>
 
-        {/* New note input */}
-        <div className="note-new-area">
+        {/* New note area */}
+        <div className="flex flex-col gap-3 pt-4 border-t border-[var(--color-surface-border)]">
           <textarea
             ref={newTextareaRef}
-            id={`note-input-${dateKey}`}
-            className={`note-textarea note-textarea--new ${newColor ? `note-text--${newColor}` : ''}`}
-            placeholder="Write a note… (⌘↵ to save)"
+            className="w-full bg-[var(--color-surface-base)] border border-[var(--color-surface-border)] rounded-lg text-lg font-handwriting leading-relaxed px-3 py-2 resize-y outline-none focus:border-[var(--color-brand-400)] focus:ring-1 focus:ring-[var(--color-brand-400)] min-h-[5rem] transition-colors"
+            style={{
+              color: resolveColor(newColor) ?? 'var(--color-text-primary)',
+              ...(newColor && !newColor.startsWith('#')
+                ? {}
+                : newColor
+                ? { backgroundColor: newColor + '1a' }
+                : {}),
+            }}
             value={newText}
             onChange={(e) => setNewText(e.target.value)}
-            onKeyDown={handleNewKeyDown}
-            rows={3}
-            aria-label="New note"
+            onKeyDown={handleNewNoteKeyDown}
+            placeholder="Jot something down... (Cmd+Enter to save)"
+            rows={2}
           />
-          <div className="note-new-options" style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+          <div className="flex items-center justify-between gap-3">
+            <ColorPickerRow selectedColor={newColor} onChange={setNewColor} />
             <button
-              type="button"
-              className={`color-swatch color-swatch--none ${!newColor ? 'color-swatch--active' : ''}`}
-              onClick={() => setNewColor(undefined)}
-              title="No color"
-            />
-            {DAY_COLOR_PALETTE.map(({ id, label }) => (
-              <button
-                key={id}
-                type="button"
-                className={`color-swatch color-swatch--${id} ${newColor === id ? 'color-swatch--active' : ''}`}
-                onClick={() => setNewColor(id)}
-                title={label}
-              />
-            ))}
+              className="px-4 py-1.5 text-sm font-semibold bg-[var(--color-brand-600)] text-white hover:bg-[var(--color-brand-500)] rounded-lg transition-colors disabled:opacity-50 flex-shrink-0"
+              onClick={handleAddNote}
+              disabled={!newText.trim()}
+            >
+              Add Note
+            </button>
           </div>
-          <button
-            className="note-add-btn"
-            onClick={handleAddNote}
-            disabled={!newText.trim()}
-            aria-label="Add note"
-          >
-            Add note
-          </button>
         </div>
       </div>
     </>
