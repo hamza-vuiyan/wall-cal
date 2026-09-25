@@ -16,30 +16,35 @@ interface ChallengesPageProps {
   onOpenChallenge: (id: string) => void
 }
 
-/** Progress bar + stats row */
-function ProgressBar({ challenge }: { challenge: Challenge }) {
+/** Text-based progress bar */
+function TextProgressBar({ challenge }: { challenge: Challenge }) {
   const pct      = getPercentage(challenge)
   const total    = getTotalDays(challenge)
   const done     = getCompletedCount(challenge)
+  
+  // Create a block progress bar (e.g., 10 blocks)
+  const blocks = 10
+  const filled = Math.round((pct / 100) * blocks)
+  const empty = blocks - filled
+  
+  const barStr = '█'.repeat(filled) + '░'.repeat(empty)
 
   return (
-    <div className="ch-card-progress">
-      <div className="ch-progress-track">
-        <div
-          className={`ch-progress-fill${challenge.color ? ` ch-progress-fill--${challenge.color}` : ''}`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <div className="ch-card-stats">
-        <span>{done} / {total} days</span>
+    <div className="flex flex-col gap-1 mt-3">
+      <div className="flex items-center gap-4 text-[var(--color-brand-400)] font-mono text-sm">
+        <span>{done} / {total}</span>
+        <span className="tracking-[0.1em]">{barStr}</span>
         <span>{pct}%</span>
+      </div>
+      <div className="text-xs text-[var(--color-text-muted)] font-medium">
+        {total - done} day{total - done === 1 ? '' : 's'} remaining
       </div>
     </div>
   )
 }
 
-/** Individual challenge card */
-function ChallengeCard({
+/** Individual challenge row */
+function ChallengeRow({
   challenge,
   onClick,
 }: {
@@ -49,37 +54,50 @@ function ChallengeCard({
   const status = getChallengeStatus(challenge)
   const statusLabel = getStatusLabel(challenge)
 
-  const statusClass: Record<ChallengeStatus, string> = {
-    upcoming:  'ch-status--upcoming',
-    active:    'ch-status--active',
-    completed: 'ch-status--completed',
-    expired:   'ch-status--expired',
-  }
+  const isCompleted = status === 'completed'
+  const isExpired = status === 'expired'
+  const isUpcoming = status === 'upcoming'
+  
+  let statusColor = 'var(--color-brand-400)'
+  if (isCompleted) statusColor = 'var(--color-brand-500)'
+  if (isExpired) statusColor = 'var(--color-destructive)'
+  if (isUpcoming) statusColor = 'var(--color-text-muted)'
 
   return (
-    <button
-      className={`ch-card${challenge.color ? ` ch-card--${challenge.color}` : ''}`}
+    <div
+      className={`group flex flex-col items-start p-5 cursor-pointer border-l-2 transition-colors
+        ${isCompleted ? 'border-[var(--color-brand-500)] bg-[var(--color-surface-overlay)]' : 
+          isExpired ? 'border-[var(--color-destructive)] opacity-70' : 
+          'border-[var(--color-surface-border)] hover:border-[var(--color-brand-300)]'}`}
       onClick={onClick}
-      aria-label={`Open ${challenge.name}`}
     >
-      <div className="ch-card-header">
-        <div className="ch-card-title-row">
-          <h3 className="ch-card-name">{challenge.name}</h3>
-          <span className={`ch-status-badge ${statusClass[status]}`}>{statusLabel}</span>
-        </div>
-        <p className="ch-card-range">{formatDateRange(challenge)}</p>
-        {challenge.description && (
-          <p className="ch-card-desc">{challenge.description}</p>
-        )}
+      <div className="flex w-full justify-between items-baseline mb-1 gap-4">
+        <h3 className={`text-xl font-medium m-0 transition-colors ${isCompleted || isExpired ? 'text-[var(--color-text-secondary)]' : 'text-[var(--color-text-primary)] group-hover:text-[var(--color-brand-300)]'}`}>
+          {challenge.name}
+        </h3>
+        <span className="text-xs font-bold uppercase tracking-wider" style={{ color: statusColor }}>
+          {statusLabel}
+        </span>
       </div>
-      <ProgressBar challenge={challenge} />
-    </button>
+      
+      <p className="text-sm font-medium text-[var(--color-text-muted)] mb-2">
+        {formatDateRange(challenge)}
+      </p>
+      
+      {challenge.description && (
+        <p className="text-base text-[var(--color-text-secondary)] m-0 leading-relaxed max-w-2xl">
+          {challenge.description}
+        </p>
+      )}
+      
+      <TextProgressBar challenge={challenge} />
+    </div>
   )
 }
 
 const STATUS_ORDER: ChallengeStatus[] = ['active', 'upcoming', 'completed', 'expired']
 const STATUS_LABEL_MAP: Record<ChallengeStatus, string> = {
-  active:    'Active',
+  active:    'Active Challenges',
   upcoming:  'Upcoming',
   completed: 'Completed',
   expired:   'Ended',
@@ -91,7 +109,6 @@ export function ChallengesPage({ onOpenChallenge }: ChallengesPageProps) {
   const addChallenge   = useAppStore((s) => s.addChallenge)
   const [showEditor, setShowEditor] = useState(false)
 
-  // Group challenges by status
   const grouped = challenges.reduce<Record<ChallengeStatus, Challenge[]>>(
     (acc, ch) => {
       const s = getChallengeStatus(ch)
@@ -102,54 +119,56 @@ export function ChallengesPage({ onOpenChallenge }: ChallengesPageProps) {
   )
 
   return (
-    <main id="challenges-page" className="challenges-page">
-      <div className="challenges-wrapper">
-        {/* Page header */}
-        <div className="challenges-header">
-          <div>
-            <h1 className="challenges-title">Challenges</h1>
-            <p className="challenges-subtitle">
-              {challenges.length === 0
-                ? 'Create your first challenge to get started.'
-                : `${challenges.length} challenge${challenges.length > 1 ? 's' : ''} total`}
-            </p>
-          </div>
+    <main id="challenges-page" className="flex flex-1 flex-col px-6 pt-12 pb-12 max-w-3xl mx-auto w-full">
+      <header className="mb-12 flex justify-between items-end">
+        <div>
+          <h1 className="text-4xl sm:text-5xl font-bold text-[var(--color-text-primary)] mb-2 tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
+            Challenges.
+          </h1>
+          <p className="text-xl text-[var(--color-text-secondary)] font-medium">
+            {challenges.length === 0
+              ? 'Start building a habit today.'
+              : `${challenges.length} challenge${challenges.length > 1 ? 's' : ''} total`}
+          </p>
+        </div>
+        <button
+          className="text-sm font-medium text-[var(--color-brand-400)] hover:text-[var(--color-brand-300)] transition-colors mb-1"
+          onClick={() => setShowEditor(true)}
+          id="create-challenge-btn"
+        >
+          + Create Challenge
+        </button>
+      </header>
+
+      {/* Empty state */}
+      {challenges.length === 0 && (
+        <div className="py-8 border-l-2 border-[var(--color-surface-border)] pl-6">
+          <p className="text-[var(--color-text-secondary)] italic mb-4 text-lg">No challenges yet.</p>
+          <p className="text-[var(--color-text-muted)] mb-6 max-w-md">
+            Create a challenge to track streaks, build habits, or reach multi-day goals.
+          </p>
           <button
-            className="note-add-btn ch-create-btn"
+            className="px-5 py-2 bg-[var(--color-surface-raised)] border border-[var(--color-surface-border)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text-primary)] font-medium rounded-lg transition-colors text-sm"
             onClick={() => setShowEditor(true)}
-            id="create-challenge-btn"
           >
-            + Create Challenge
+            Create your first challenge
           </button>
         </div>
+      )}
 
-        {/* Empty state */}
-        {challenges.length === 0 && (
-          <div className="challenges-empty">
-            <div className="challenges-empty-icon" aria-hidden="true">🎯</div>
-            <p>No challenges yet.</p>
-            <p className="challenges-empty-hint">
-              Create a challenge to track streaks, habits, or multi-day goals.
-            </p>
-            <button
-              className="note-add-btn"
-              onClick={() => setShowEditor(true)}
-            >
-              + Create your first challenge
-            </button>
-          </div>
-        )}
-
-        {/* Grouped challenge sections */}
+      {/* Grouped challenge sections */}
+      <div className="flex flex-col gap-12">
         {STATUS_ORDER.map((status) => {
           const group = grouped[status]
           if (group.length === 0) return null
           return (
-            <section key={status} className="challenges-section">
-              <h2 className="challenges-section-title">{STATUS_LABEL_MAP[status]}</h2>
-              <div className="challenges-grid">
+            <section key={status} className="flex flex-col gap-4">
+              <h2 className="text-sm font-bold tracking-widest text-[var(--color-text-secondary)] uppercase m-0">
+                {STATUS_LABEL_MAP[status]}
+              </h2>
+              <div className="flex flex-col gap-6">
                 {group.map((ch) => (
-                  <ChallengeCard
+                  <ChallengeRow
                     key={ch.id}
                     challenge={ch}
                     onClick={() => onOpenChallenge(ch.id)}
