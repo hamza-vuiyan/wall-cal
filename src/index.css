@@ -346,7 +346,7 @@ body {
   gap: 0.25rem;
   margin-bottom: 0.25rem;
   position: sticky;
-  top: calc(4.5rem + 1px); /* Matches exact rem-based height of Header + border */
+  top: calc(3.5rem + 1px); /* Matches .app-header-inner height (3.5rem) + bottom border */
   z-index: 30;
   background-color: color-mix(in srgb, var(--color-background) 80%, transparent);
   backdrop-filter: blur(12px);
@@ -2889,38 +2889,279 @@ body {
 }
 
 
-/* ── Phase 16: Navigation & Layout ───────────────────────────── */
 
-/* Active nav underline animation */
-.nav-link {
+/* ══════════════════════════════════════════════════════════════
+   Phase 16 — Application Shell & Navigation
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── App Header ──────────────────────────────────────────────── */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-background);
+  border-bottom: 1px solid var(--color-calendar-grid-line);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.app-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 3.5rem;
+  gap: 1rem;
   position: relative;
 }
+
+/* ── Brand ───────────────────────────────────────────────────── */
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: opacity var(--transition-fast) var(--ease-standard);
+}
+.app-brand:hover {
+  opacity: 0.85;
+}
+
+.app-brand-icon {
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  transition: transform var(--transition-base) var(--ease-standard);
+}
+.app-brand:hover .app-brand-icon {
+  transform: rotate(-4deg) scale(1.05);
+}
+
+.app-brand-name {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1;
+}
+
+.app-brand-beta {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  border: 1px solid oklch(65% 0.14 45 / 0.3);
+  padding: 0.2rem 0.45rem;
+  border-radius: var(--radius-full);
+  line-height: 1;
+}
+
+/* ── Desktop Nav ─────────────────────────────────────────────── */
+.app-desktop-nav {
+  display: none;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+@media (min-width: 768px) {
+  .app-desktop-nav { display: block; }
+}
+
+.app-desktop-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+.app-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.875rem;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--text-button);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast) var(--ease-standard),
+    color var(--transition-fast) var(--ease-standard);
+  white-space: nowrap;
+}
+.app-nav-item-icon {
+  display: flex;
+  align-items: center;
+  opacity: 0.75;
+  transition: opacity var(--transition-fast) var(--ease-standard);
+}
+.app-nav-item:hover {
+  background: var(--color-surface-elevated);
+  color: var(--color-text-primary);
+}
+.app-nav-item:hover .app-nav-item-icon {
+  opacity: 1;
+}
+.app-nav-item--active {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-weight: 600;
+}
+.app-nav-item--active .app-nav-item-icon {
+  opacity: 1;
+}
+.app-nav-item--active:hover {
+  background: var(--color-accent-hover);
+  color: var(--color-accent-contrast);
+}
+
+/* ── Auth area ───────────────────────────────────────────────── */
+.app-header-auth {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ── Mobile Bottom Nav ───────────────────────────────────────── */
+.app-bottom-nav {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-calendar-grid-line);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+@media (min-width: 768px) {
+  .app-bottom-nav { display: none; }
+}
+
+.app-bottom-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0.5rem;
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+  gap: 0.25rem;
+}
+
+.app-bottom-nav-item {
+  flex: 1;
+  display: flex;
+}
+
+.app-bottom-nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.4rem 0.25rem 0.25rem;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-lg);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  position: relative;
+  transition:
+    background var(--transition-fast) var(--ease-standard),
+    color var(--transition-fast) var(--ease-standard);
+}
+.app-bottom-nav-btn:hover {
+  background: var(--color-surface-elevated);
+  color: var(--color-text-secondary);
+}
+.app-bottom-nav-btn--active {
+  color: var(--color-accent);
+}
+.app-bottom-nav-btn--active:hover {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.app-bottom-nav-icon {
+  display: flex;
+  align-items: center;
+  transition: transform var(--transition-fast) var(--ease-standard);
+}
+.app-bottom-nav-btn--active .app-bottom-nav-icon {
+  transform: translateY(-1px);
+}
+
+.app-bottom-nav-label {
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.app-bottom-nav-btn--active .app-bottom-nav-label {
+  font-weight: 700;
+}
+
+/* Active pip dot below icon */
+.app-bottom-nav-pip {
+  position: absolute;
+  top: 0.3rem;
+  right: 50%;
+  transform: translateX(50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+/* Mobile body padding for bottom nav */
+body {
+  padding-bottom: 72px;
+}
+@media (min-width: 768px) {
+  body { padding-bottom: 0; }
+}
+
+/* Legacy nav-link (kept for any other usage) */
+.nav-link { position: relative; }
 .nav-link::after {
   content: '';
   position: absolute;
-  bottom: 0px;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%) scaleX(0);
   width: 100%;
   height: 2px;
-  background-color: var(--color-accent);
+  background: var(--color-accent);
   border-radius: 2px;
   transition: transform var(--transition-base) var(--ease-standard);
 }
-.nav-link--active::after {
-  transform: translateX(-50%) scaleX(1);
-}
+.nav-link--active::after { transform: translateX(-50%) scaleX(1); }
 
-/* Mobile bottom nav safe area padding */
-body {
-  /* Provide padding on mobile so content doesn't get hidden behind bottom nav */
-  padding-bottom: 72px;
-}
-@media (min-width: 768px) {
-  body {
-    padding-bottom: 0;
-  }
-}
+
 
 /* ── Bottom Edge Indicators ───────────────────────────────────── */
 .cal-day-bottom-indicators {
