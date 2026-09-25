@@ -45,7 +45,7 @@
   --color-brand-800: oklch(36% 0.080 45);
   --color-brand-900: oklch(28% 0.050 45);
 
-  /* ── Warm cream "paper" (day cells) - Now dark mode ─────────── */
+/* ── Backward-compat aliases (old surface names → new canonical) ── */
   /* Re-mapping paper to match surface for true dark mode */
   --color-paper:            oklch(38% 0.01 250);  /* active month — noticeably lighter */
   --color-paper-hover:      oklch(42% 0.01 250);
@@ -95,6 +95,27 @@
   --transition-base: 180ms;
   --transition-slow: 300ms;
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root {
+  /* ── Calendar Palette Colors ──────────────────────────────────── */
+  --color-yellow-500: oklch(85% 0.20 95);
+  --color-orange-500: oklch(75% 0.20 55);
+  --color-red-500:    oklch(65% 0.20 20);
+  --color-pink-500:   oklch(72% 0.18 345);
+  --color-purple-500: oklch(68% 0.16 300);
+  --color-blue-500:   oklch(68% 0.15 250);
+  --color-cyan-500:   oklch(70% 0.15 200);
+  --color-green-500:  oklch(68% 0.17 145);
+
+  --color-yellow-600: oklch(75% 0.18 95);
+  --color-orange-600: oklch(65% 0.18 55);
+  --color-red-600:    oklch(55% 0.18 20);
+  --color-pink-600:   oklch(62% 0.16 345);
+  --color-purple-600: oklch(58% 0.14 300);
+  --color-blue-600:   oklch(58% 0.13 250);
+  --color-cyan-600:   oklch(60% 0.13 200);
+  --color-green-600:  oklch(58% 0.15 145);
 }
 
 /* ── Backward-compat aliases (old surface names → new canonical) ── */
@@ -3213,16 +3234,27 @@ body {
   font-family: var(--font-handwriting);
   font-size: 0.8rem;
   line-height: 1.1;
-  color: oklch(75% 0.05 240); /* Lighter ink for dark paper */
-  padding: 0 0.1rem;
+  color: var(--color-text-primary);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 4px;
+  padding: 0.2rem 0.35rem;
+  margin: 0.15rem 0.2rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.cal-task-text-snippet:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .cal-task-text-snippet svg {
   flex-shrink: 0;
-  color: oklch(75% 0.05 240); /* Match ink */
+  color: var(--color-text-secondary);
   width: 14px;
   height: 14px;
 }

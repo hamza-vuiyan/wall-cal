@@ -131,8 +131,9 @@ export function DayCell({
         isInteractive ? 'cal-day-cell--interactive' : '',
         pickerOpen || colorPickerOpen ? 'cal-day-cell--picker-open' : '',
         found ? 'cal-day-cell--found' : '',
-        color && isCurrentMonth ? `cal-day-cell--color-${color}` : '',
+        color && isCurrentMonth && !color.startsWith('#') ? `cal-day-cell--color-${color}` : '',
       ].filter(Boolean).join(' ')}
+      style={color && isCurrentMonth && color.startsWith('#') ? { backgroundColor: color + '1a', boxShadow: `inset 4px 0 0 ${color}` } : undefined}
     >
       {/* ── Background Mark ── */}
       {mark && <DayMark type={mark} />}
@@ -250,9 +251,10 @@ export function DayCell({
               <div 
                 key={task.id} 
                 className={['cal-task-text-snippet', task.completed ? 'cal-task-text-snippet--done' : ''].filter(Boolean).join(' ')}
+                style={task.color ? { borderLeft: `3px solid ${task.color.startsWith('#') ? task.color : `var(--color-${task.color}-500)`}`, paddingLeft: '6px' } : undefined}
                 onClick={(e) => { handleTaskOpen(e); }}
               >
-                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="1.5" y="1.5" width="9" height="9" rx="2"/>{task.completed && <path d="M3.5 6L5 7.5L8.5 4" strokeLinecap="round" strokeLinejoin="round"/>}</svg>
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" className="flex-shrink-0 mt-[2px]"><rect x="1.5" y="1.5" width="9" height="9" rx="2"/>{task.completed && <path d="M3.5 6L5 7.5L8.5 4" strokeLinecap="round" strokeLinejoin="round"/>}</svg>
                 {displayTime && <span className="cal-task-time-snippet">{displayTime}</span>}
                 <span className="cal-task-title-snippet">{task.title}</span>
               </div>
@@ -265,12 +267,23 @@ export function DayCell({
           {/* Notes second */}
           {hasNotes && (
             <>
-              {notes!.slice(0, hasTasks ? 3 : 6).map((note) => (
-                <div key={note.id} className={`cal-note-text-snippet ${note.color ? `cal-note-text-snippet--${note.color}` : ''}`} onClick={(e) => { handleNoteOpen(e); }}>
-                  <span className={`cal-color-dot ${note.color ? `cal-color-dot--${note.color}` : 'cal-color-dot--gray'}`} style={{ marginTop: '0.2rem', flexShrink: 0 }} />
-                  <span className="cal-note-text-content">{note.text}</span>
-                </div>
-              ))}
+              {notes!.slice(0, hasTasks ? 3 : 6).map((note) => {
+                const isHex = note.color?.startsWith('#')
+                return (
+                  <div 
+                    key={note.id} 
+                    className={`cal-note-text-snippet ${note.color && !isHex ? `cal-note-text-snippet--${note.color}` : ''}`} 
+                    style={isHex ? { backgroundColor: note.color + '22' } : undefined}
+                    onClick={(e) => { handleNoteOpen(e); }}
+                  >
+                    <span 
+                      className={`cal-color-dot ${note.color && !isHex ? `cal-color-dot--${note.color}` : (!note.color ? 'cal-color-dot--gray' : '')}`} 
+                      style={{ marginTop: '0.2rem', flexShrink: 0, backgroundColor: isHex ? note.color : undefined }} 
+                    />
+                    <span className="cal-note-text-content">{note.text}</span>
+                  </div>
+                )
+              })}
               {notes!.length > (hasTasks ? 3 : 6) && (
                 <div className="cal-note-text-more" onClick={(e) => { handleNoteOpen(e); }}>+{notes!.length - (hasTasks ? 3 : 6)} notes</div>
               )}
