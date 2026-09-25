@@ -137,12 +137,12 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1.5rem 2rem;
+  padding: 1rem 1rem 1.5rem;
 }
 
 @media (min-width: 640px) {
   .calendar-page {
-    padding: 2rem 2rem 3rem;
+    padding: 1.25rem 1.5rem 2rem;
   }
 }
 
@@ -151,7 +151,7 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  max-width: 1400px;
+  max-width: 1440px;
   width: 100%;
   margin: 0 auto;
 }
@@ -161,8 +161,9 @@ body {
 .calendar-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
+  gap: 0.375rem;
+  margin-bottom: 0.75rem;
+  padding: 0 0.25rem;
 }
 
 /* ── Typography helper classes (opt-in) ──────────────────────── */
@@ -177,87 +178,85 @@ body {
   outline-offset: 2px;
 }
 
+/* ── Nav buttons (prev/next) ─────────────────────────────────── */
 .cal-nav-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 0.5rem;
-  border: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
   background: transparent;
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  transition:
+    background var(--transition-fast) var(--ease-standard),
+    color var(--transition-fast) var(--ease-standard),
+    border-color var(--transition-fast) var(--ease-standard);
   flex-shrink: 0;
 }
-
 .cal-nav-btn:hover {
-  background: var(--color-surface-overlay);
+  background: var(--color-surface-elevated);
   color: var(--color-text-primary);
-  border-color: var(--color-surface-overlay);
+  border-color: var(--color-border);
 }
-
 .cal-nav-btn:active {
-  transform: scale(0.93);
+  transform: scale(0.9);
 }
 
+/* ── Month / Year typography ─────────────────────────────────── */
 .cal-month-label {
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
   font-weight: 700;
   color: var(--color-text-primary);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   line-height: 1;
 }
-
-/* ── Month / Year label group ─────────────────────────────────── */
 
 .cal-label-group {
   display: flex;
   align-items: baseline;
-  gap: 0.35rem;
-  margin: 0 0.25rem;
+  gap: 0.3rem;
+  margin: 0 0.125rem;
 }
 
-/* Wrapper that establishes the positioning context for each dropdown */
 .cal-picker-anchor {
   position: relative;
 }
 
-/* The clickable month / year button */
 .cal-label-btn {
   background: none;
   border: none;
-  padding: 0.1rem 0.3rem;
-  border-radius: 0.4rem;
+  padding: 0.15rem 0.35rem;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background 120ms ease, color 120ms ease;
+  transition: background var(--transition-fast) var(--ease-standard), color var(--transition-fast) var(--ease-standard);
+  color: inherit;
+  font: inherit;
 }
-
 .cal-label-btn:hover {
-  background: var(--color-surface-raised);
-  color: var(--color-brand-300);
+  background: var(--color-surface-elevated);
+  color: var(--color-accent);
 }
-
 .cal-label-btn--active {
-  background: var(--color-surface-overlay);
-  color: var(--color-brand-300);
+  background: var(--color-surface-elevated);
+  color: var(--color-accent);
 }
 
-/* ── Picker Dropdown ──────────────────────────────────────────── */
-
+/* ── Picker Dropdown ─────────────────────────────────────────── */
 .cal-picker-dropdown {
   position: absolute;
-  top: calc(100% + 0.5rem);
+  top: calc(100% + 0.375rem);
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
-  background: var(--color-surface-raised);
-  border: 1px solid var(--color-surface-border);
-  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  padding: 0.625rem;
+  padding: 0.5rem;
   animation: picker-in 120ms ease;
 }
 
@@ -266,30 +265,27 @@ body {
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* Month picker: 3 columns × 4 rows */
 .cal-month-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
+  gap: 3px;
   min-width: 200px;
 }
 
-/* Year picker: 4 columns */
 .cal-year-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
+  gap: 3px;
   min-width: 260px;
   max-height: 240px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: var(--color-surface-border) transparent;
+  scrollbar-color: var(--color-border) transparent;
 }
 
-/* Shared item style */
 .cal-picker-item {
-  padding: 0.45rem 0.3rem;
-  border-radius: 0.4rem;
+  padding: 0.4rem 0.3rem;
+  border-radius: var(--radius-sm);
   border: none;
   background: none;
   color: var(--color-text-secondary);
@@ -297,80 +293,75 @@ body {
   font-weight: 500;
   cursor: pointer;
   text-align: center;
-  transition: background 100ms ease, color 100ms ease;
+  transition: background var(--transition-fast) var(--ease-standard), color var(--transition-fast) var(--ease-standard);
   white-space: nowrap;
 }
-
 .cal-picker-item:hover {
-  background: var(--color-surface-overlay);
+  background: var(--color-surface-elevated);
   color: var(--color-text-primary);
 }
-
 .cal-picker-item--selected {
-  background: var(--color-brand-700);
-  color: var(--color-brand-100);
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
   font-weight: 700;
 }
-
 .cal-picker-item--selected:hover {
-  background: var(--color-brand-600);
-  color: var(--color-brand-50);
+  background: var(--color-accent-hover);
+  color: var(--color-accent-contrast);
 }
 
-/* ── Today Button ─────────────────────────────────────────────── */
-
+/* ── Today Button ────────────────────────────────────────────── */
 .cal-today-btn {
-  padding: 0.4rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-surface-border);
-  background: var(--color-surface-raised);
+  padding: 0.35rem 0.875rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
   color: var(--color-text-secondary);
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 120ms ease, color 120ms ease, opacity 200ms ease;
+  transition:
+    background var(--transition-fast) var(--ease-standard),
+    color var(--transition-fast) var(--ease-standard),
+    border-color var(--transition-fast) var(--ease-standard),
+    opacity 200ms var(--ease-standard);
   white-space: nowrap;
 }
-
 .cal-today-btn:hover {
-  background: var(--color-brand-900);
-  color: var(--color-brand-200);
-  border-color: var(--color-brand-700);
+  background: var(--color-surface-elevated);
+  color: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
-/* ── Weekday Row ──────────────────────────────────────────────── */
+/* ── Weekday Row ─────────────────────────────────────────────── */
 
 .calendar-weekday-row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 0.25rem;
-  margin-bottom: 0.25rem;
+  gap: 1px;                           /* matches grid gap */
+  margin: 0 0 0;                      /* flush — let the grid border handle spacing */
   position: sticky;
-  top: calc(3.5rem + 1px); /* Matches .app-header-inner height (3.5rem) + bottom border */
+  top: calc(3.5rem + 1px);
   z-index: 30;
-  background-color: color-mix(in srgb, var(--color-background) 80%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 40%, transparent);
-  padding-bottom: 0.2rem;
+  background: var(--color-calendar-grid-line); /* same as grid, seamless join */
 }
 
 .cal-weekday-label {
-  padding: 0.35rem 0.5rem;
+  padding: 0.45rem 0.5rem;
   text-align: center;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-text-muted);
+  background: var(--color-background); /* seal the sticky backdrop */
 }
 
 .cal-weekday-label--weekend {
-  color: var(--color-text-muted);
-  opacity: 0.7;
+  color: color-mix(in oklch, var(--color-text-muted) 65%, transparent);
 }
 
-/* ── Calendar Grid ────────────────────────────────────────────── */
+/* ── Calendar Body & Grid ────────────────────────────────────── */
 
 .calendar-body {
   flex: 1;
@@ -385,16 +376,20 @@ body {
   grid-auto-rows: minmax(0, 1fr);
   gap: 1px;
   background: var(--color-calendar-grid-line);
-  border: 1px solid var(--color-calendar-grid-line);
-  border-radius: var(--radius-lg);
+  /* No outer border or radius — flat join with weekday row */
+  border: none;
+  border-radius: 0;
   overflow: hidden;
   flex: 1;
   min-height: 0;
-  margin: 0 0.5rem 1rem 0.5rem;
+  margin: 0 0 1rem;
 }
 
-/* ── Day Cell ─────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════
+   Phase 17 — Calendar Day Cell Visual Redesign
+   ══════════════════════════════════════════════════════════════ */
 
+/* ── Day Cell base ───────────────────────────────────────────── */
 .cal-day-cell {
   position: relative;
   display: flex;
@@ -404,8 +399,11 @@ body {
   border: none;
   background: var(--color-paper);
   overflow: hidden;
-  transition: background 150ms var(--ease-standard);
-  cursor: pointer;
+  /* Subtle top-border rule gives each row a paper-stack feel */
+  box-shadow: inset 0 1px 0 oklch(0% 0 0 / 0.04);
+  transition:
+    background var(--transition-fast) var(--ease-standard);
+  cursor: default;
 }
 
 .cal-day-cell:hover {
@@ -417,29 +415,39 @@ body {
   background: var(--color-paper);
 }
 
-/* Adjacent month (prev/next) cells — dimmed */
+/* Adjacent month (prev/next) cells */
 .cal-day-cell--adjacent {
   background: var(--color-paper-adjacent);
-  opacity: 0.55; /* dim slightly so it clearly recedes */
+  opacity: 0.5;
 }
-
 .cal-day-cell--adjacent .cal-day-number {
   font-weight: 400;
   color: var(--color-text-muted);
 }
 
-/* Weekend cells — same as regular active cells */
+/* Weekend cells — same background as regular */
 .cal-day-cell--weekend {
   background: var(--color-paper);
 }
 
-/* Today cell — accent ring */
+/* ── Today cell ──────────────────────────────────────────────── */
+/* Warm left-strip + inset ring communicates "now" without dominating */
 .cal-day-cell--today {
-  box-shadow: inset 0 0 0 2px var(--color-accent);
+  box-shadow:
+    inset 0 0 0 2px var(--color-accent),
+    inset 3px 0 0 var(--color-accent);
 }
 
-/* ── Day Header (number + action buttons) ─────────────────────── */
+/* ── Interactive state ───────────────────────────────────────── */
+.cal-day-cell--interactive {
+  cursor: default;
+  position: relative;
+}
+.cal-day-cell--picker-open {
+  z-index: 10;
+}
 
+/* ── Day number strip ────────────────────────────────────────── */
 .cal-day-top {
   position: absolute;
   top: 0;
@@ -447,36 +455,38 @@ body {
   right: 0;
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem;
+  align-items: flex-start;
+  padding: 0.375rem 0.375rem 0;
   z-index: 2;
 }
 
 .cal-day-number {
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 1;
   color: var(--color-paper-text);
   min-width: 1.5rem;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-/* Today's date number — inside a filled circle */
-.cal-day-number--today {
-  display: inline-flex;
+  height: 1.5rem;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.625rem;
-  height: 1.625rem;
-  border-radius: 50%;
-  background: var(--color-paper-today-bg);
-  color: var(--color-paper-today-text);
-  font-weight: 700;
-  font-size: 0.8125rem;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  transition: background var(--transition-fast) var(--ease-standard);
 }
 
-/* ── Action buttons (mark + note) ─────────────────────────────── */
+/* Today — filled accent pill */
+.cal-day-number--today {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  width: 1.625rem;
+  height: 1.625rem;
+  font-size: 0.875rem;
+}
 
+/* ── Action buttons (top-right) ──────────────────────────────── */
 .cal-day-actions {
   position: absolute;
   top: 0.25rem;
@@ -485,7 +495,7 @@ body {
   flex-direction: column;
   gap: 2px;
   opacity: 0;
-  transition: opacity 120ms ease;
+  transition: opacity var(--transition-fast) var(--ease-standard);
   z-index: 3;
 }
 
@@ -494,84 +504,54 @@ body {
   opacity: 1;
 }
 
-/* Always show when a mark/notes already exist */
-.cal-day-cell--interactive:has(.cal-day-action-btn--marked) .cal-day-actions,
-.cal-day-cell--interactive:has(.cal-day-action-btn--has-notes) .cal-day-actions {
-  opacity: 1;
-}
+
+
 
 .cal-day-action-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 2px;
-  min-width: 1.5rem;
-  height: 1.5rem;
-  padding: 0 0.25rem;
-  border-radius: 0.3rem;
+  min-width: 1.375rem;
+  height: 1.375rem;
+  padding: 0 0.2rem;
+  border-radius: var(--radius-sm);
   border: none;
-  background: none;
+  background: oklch(0% 0 0 / 0.25);
   cursor: pointer;
-  font-size: 0.7rem;
+  font-size: 0.6875rem;
   line-height: 1;
-  transition: background 100ms ease, color 100ms ease;
-  color: var(--color-text-muted);
+  transition:
+    background var(--transition-fast) var(--ease-standard),
+    color var(--transition-fast) var(--ease-standard);
+  color: var(--color-text-secondary);
+  backdrop-filter: blur(4px);
 }
-
 .cal-day-action-btn:hover {
-  background: var(--color-surface-overlay);
+  background: oklch(0% 0 0 / 0.45);
   color: var(--color-text-primary);
 }
 
-/* Mark button — neutral state */
-.cal-day-action-btn--mark {
-  font-size: 0.75rem;
-}
+/* Mark states */
+.cal-day-action-btn--mark { font-size: 0.75rem; }
+.cal-day-action-btn--mark-x      { color: oklch(75% 0.20 20); }
+.cal-day-action-btn--mark-check  { color: oklch(75% 0.18 145); }
+.cal-day-action-btn--mark-circle { color: oklch(80% 0.16 55); }
+.cal-day-action-btn--active { background: oklch(0% 0 0 / 0.50); }
 
-/* Mark button — has a mark (show in mark colour) */
-.cal-day-action-btn--mark-x      { color: oklch(62% 0.22 20); }
-.cal-day-action-btn--mark-check  { color: oklch(68% 0.2 145); }
-.cal-day-action-btn--mark-circle { color: oklch(72% 0.18 55); }
-
-/* Mark button active (picker open) */
-.cal-day-action-btn--active {
-  background: var(--color-surface-overlay);
-}
-
-/* Note count badge */
+/* Note button */
 .cal-note-count {
   font-size: 0.6rem;
   font-weight: 700;
-  color: var(--color-brand-300);
+  color: var(--color-accent);
   line-height: 1;
 }
+.cal-day-action-btn--has-notes { color: var(--color-accent); }
+.cal-action-placeholder { color: var(--color-text-muted); font-size: 0.7rem; }
 
-/* Note button — has notes */
-.cal-day-action-btn--has-notes {
-  color: var(--color-brand-400);
-}
-
-/* Neutral placeholder icon inside mark button */
-.cal-action-placeholder {
-  color: var(--color-text-muted);
-  font-size: 0.7rem;
-}
-
-/* ── Interactive day cell ─────────────────────────────────────── */
-
-.cal-day-cell--interactive {
-  cursor: default;  /* no pointer on the background — only buttons are clickable */
-  position: relative;
-}
-
-.cal-day-cell--picker-open {
-  z-index: 10;
-}
-
-/* ── Note chip (inside cell) ──────────────────────────────────── */
-
+/* ── Note chip (inside cell) ─────────────────────────────────── */
 .cal-day-note-chip {
-  padding: 0 0.45rem 0.35rem;
+  padding: 0 0.375rem 0.35rem;
   cursor: pointer;
   flex: 1;
   min-height: 0;
@@ -583,12 +563,12 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.15rem;
 }
 
 
 
-/* ── Day Mark ─────────────────────────────────────────────────── */
+/* ── Day Mark ────────────────────────────────────────────────── */
 
 .day-mark-wrapper {
   position: absolute;
@@ -601,31 +581,23 @@ body {
 }
 
 .day-mark {
-  width: 75%;
-  height: 75%;
-  opacity: 0.1;
-  animation: mark-in 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 70%;
+  height: 70%;
+  opacity: 0.12;  /* faint enough to not overpower notes */
+  animation: mark-in 220ms cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
 @keyframes mark-in {
-  from { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+  from { opacity: 0; transform: scale(0.5) rotate(-12deg); }
   to   { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
-/* X — warm red, like a red marker */
-.day-mark--x {
-  color: oklch(62% 0.22 20);
-}
-
+/* X — warm red */
+.day-mark--x      { color: oklch(68% 0.24 20); }
 /* Check — natural green */
-.day-mark--check {
-  color: oklch(68% 0.2 145);
-}
-
-/* Circle — soft amber/orange */
-.day-mark--circle {
-  color: oklch(72% 0.18 55);
-}
+.day-mark--check  { color: oklch(70% 0.20 145); }
+/* Circle — amber/orange */
+.day-mark--circle { color: oklch(74% 0.18 55); }
 
 /* ── Mark Picker Popover ──────────────────────────────────────── */
 
@@ -699,30 +671,29 @@ body {
 
 /* ── Day Colour Backgrounds ──────────────────────────────────── */
 /*
- * Semi-transparent backgrounds at ~0.55 opacity — high enough to be
- * clearly distinguishable on the dark theme surface while keeping
- * marks and notes readable.
- * The inset box-shadow adds a left-side accent without affecting layout.
+ * Colored day cells — dark theme compatible tints.
+ * Uses a muted tint overlay + a stronger 4px left-strip accent.
+ * Light text remains readable. Notes and marks stay visible.
  */
 
-.cal-day-cell--color-yellow  { background-color: oklch(90% 0.16 95); box-shadow: inset 3px 0 0 oklch(80% 0.20 95); }
-.cal-day-cell--color-orange  { background-color: oklch(86% 0.16 55); box-shadow: inset 3px 0 0 oklch(75% 0.20 55); }
-.cal-day-cell--color-red     { background-color: oklch(84% 0.14 20); box-shadow: inset 3px 0 0 oklch(70% 0.18 20); }
-.cal-day-cell--color-pink    { background-color: oklch(86% 0.14 345); box-shadow: inset 3px 0 0 oklch(72% 0.18 345); }
-.cal-day-cell--color-purple  { background-color: oklch(86% 0.12 300); box-shadow: inset 3px 0 0 oklch(72% 0.16 300); }
-.cal-day-cell--color-blue    { background-color: oklch(86% 0.11 250); box-shadow: inset 3px 0 0 oklch(72% 0.15 250); }
-.cal-day-cell--color-cyan    { background-color: oklch(86% 0.11 200); box-shadow: inset 3px 0 0 oklch(72% 0.15 200); }
-.cal-day-cell--color-green   { background-color: oklch(86% 0.13 145); box-shadow: inset 3px 0 0 oklch(72% 0.17 145); }
+.cal-day-cell--color-yellow  { background-color: oklch(48% 0.08 90);  box-shadow: inset 4px 0 0 oklch(82% 0.20 90); }
+.cal-day-cell--color-orange  { background-color: oklch(44% 0.08 55);  box-shadow: inset 4px 0 0 oklch(78% 0.22 55); }
+.cal-day-cell--color-red     { background-color: oklch(38% 0.08 20);  box-shadow: inset 4px 0 0 oklch(68% 0.22 20); }
+.cal-day-cell--color-pink    { background-color: oklch(40% 0.08 345); box-shadow: inset 4px 0 0 oklch(75% 0.20 345); }
+.cal-day-cell--color-purple  { background-color: oklch(38% 0.08 300); box-shadow: inset 4px 0 0 oklch(72% 0.18 300); }
+.cal-day-cell--color-blue    { background-color: oklch(38% 0.07 250); box-shadow: inset 4px 0 0 oklch(72% 0.17 250); }
+.cal-day-cell--color-cyan    { background-color: oklch(38% 0.07 200); box-shadow: inset 4px 0 0 oklch(75% 0.17 200); }
+.cal-day-cell--color-green   { background-color: oklch(38% 0.08 145); box-shadow: inset 4px 0 0 oklch(72% 0.20 145); }
 
-/* Today cell: preserve the brand ring (append to existing box-shadow) */
-.cal-day-cell--color-yellow.cal-day-cell--today  { box-shadow: inset 3px 0 0 oklch(78% 0.24 90),  0 0 0 2px var(--color-brand-500); }
-.cal-day-cell--color-orange.cal-day-cell--today  { box-shadow: inset 3px 0 0 oklch(70% 0.26 55),  0 0 0 2px var(--color-brand-500); }
-.cal-day-cell--color-red.cal-day-cell--today     { box-shadow: inset 3px 0 0 oklch(60% 0.28 20),  0 0 0 2px var(--color-brand-500); }
-.cal-day-cell--color-pink.cal-day-cell--today    { box-shadow: inset 3px 0 0 oklch(66% 0.24 355), 0 0 0 2px var(--color-brand-500); }
-.cal-day-cell--color-purple.cal-day-cell--today  { box-shadow: inset 3px 0 0 oklch(54% 0.26 300), 0 0 0 2px var(--color-brand-500); }
-.cal-day-cell--color-blue.cal-day-cell--today    { box-shadow: inset 3px 0 0 oklch(54% 0.24 250), 0 0 0 2px var(--color-brand-500); }
-.cal-day-cell--color-cyan.cal-day-cell--today    { box-shadow: inset 3px 0 0 oklch(62% 0.22 200), 0 0 0 2px var(--color-brand-500); }
-.cal-day-cell--color-green.cal-day-cell--today   { box-shadow: inset 3px 0 0 oklch(60% 0.24 145), 0 0 0 2px var(--color-brand-500); }
+/* Today cell: preserve both the accent ring and the color strip */
+.cal-day-cell--color-yellow.cal-day-cell--today  { box-shadow: inset 4px 0 0 oklch(82% 0.20 90),  inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-orange.cal-day-cell--today  { box-shadow: inset 4px 0 0 oklch(78% 0.22 55),  inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-red.cal-day-cell--today     { box-shadow: inset 4px 0 0 oklch(68% 0.22 20),  inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-pink.cal-day-cell--today    { box-shadow: inset 4px 0 0 oklch(75% 0.20 345), inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-purple.cal-day-cell--today  { box-shadow: inset 4px 0 0 oklch(72% 0.18 300), inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-blue.cal-day-cell--today    { box-shadow: inset 4px 0 0 oklch(72% 0.17 250), inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-cyan.cal-day-cell--today    { box-shadow: inset 4px 0 0 oklch(75% 0.17 200), inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-green.cal-day-cell--today   { box-shadow: inset 4px 0 0 oklch(72% 0.20 145), inset 0 0 0 2px var(--color-accent); }
 
 
 /* ── Colour button indicator dot ─────────────────────────────── */
