@@ -8,66 +8,68 @@
   --font-display: 'Playfair Display', ui-serif, Georgia, serif;
   --font-handwriting: 'Caveat', cursive;
 
-  /* ── Neutral gray "wall" + surfaces ─────────────────────────── */
-  --color-background:        oklch(18% 0.004 260);  /* subtle neutral gray (NOT warm, NOT black) */
-  --color-surface:           oklch(22% 0.005 260);
-  --color-surface-elevated:  oklch(26% 0.006 260);
-  --color-border:            oklch(34% 0.006 260);
+  /* ── Neutral gray "wall" + surfaces (Charcoal) ───────────────── */
+  --color-background:        oklch(22% 0.01 250);
+  --color-surface:           oklch(26% 0.01 250);
+  --color-surface-elevated:  oklch(30% 0.01 250);
+  --color-border:            oklch(34% 0.01 250);
+  --color-calendar-grid-line: oklch(18% 0.008 250); /* dark separator between day cells */
 
   /* ── Text ────────────────────────────────────────────────────── */
-  --color-text-primary:   oklch(95% 0.005 260);
-  --color-text-secondary: oklch(73% 0.008 260);
-  --color-text-muted:     oklch(54% 0.006 260);
+  --color-text-primary:   oklch(96% 0.01 70); /* Warm off-white */
+  --color-text-secondary: oklch(75% 0.01 250); /* Muted slate */
+  --color-text-muted:     oklch(60% 0.01 250);
 
-  /* ── Accent (blue-violet, restored) ─────────────────────────── */
-  --color-accent:          oklch(62% 0.21 260);
-  --color-accent-hover:    oklch(68% 0.22 258);
-  --color-accent-soft:     oklch(62% 0.21 260 / 0.16);
-  --color-accent-contrast: oklch(100% 0 0);        /* white — blue needs light text */
+  /* ── Accent (Warm Terracotta for productivity) ──────────────── */
+  --color-accent:          oklch(65% 0.14 45);
+  --color-accent-hover:    oklch(70% 0.14 45);
+  --color-accent-soft:     oklch(65% 0.14 45 / 0.16);
+  --color-accent-contrast: oklch(98% 0.01 45);
 
   /* ── Semantic status colors ──────────────────────────────────── */
   --color-success:      oklch(72% 0.150 150);
   --color-warning:      oklch(76% 0.150 85);
   --color-destructive:  oklch(64% 0.190 25);
   --color-destructive-soft: oklch(64% 0.190 25 / 0.16);
-  --color-focus-ring:   oklch(62% 0.21 260 / 0.5);   /* blue, matches accent */
+  --color-focus-ring:   oklch(65% 0.14 45 / 0.5);   /* matches accent */
 
-  /* ── Brand ramp (blue-violet; kept for backward compat) ──────── */
-  --color-brand-50:  oklch(96% 0.020 260);
-  --color-brand-100: oklch(92% 0.050 260);
-  --color-brand-200: oklch(84% 0.110 260);
-  --color-brand-300: oklch(74% 0.170 260);
-  --color-brand-400: oklch(65% 0.210 260);
-  --color-brand-500: oklch(62% 0.220 260);  /* == --color-accent */
-  --color-brand-600: oklch(52% 0.230 260);
-  --color-brand-700: oklch(44% 0.220 260);
-  --color-brand-800: oklch(36% 0.190 260);
-  --color-brand-900: oklch(28% 0.150 260);
+  /* ── Brand ramp (kept for backward compat) ──────── */
+  --color-brand-50:  oklch(96% 0.020 45);
+  --color-brand-100: oklch(92% 0.050 45);
+  --color-brand-200: oklch(84% 0.110 45);
+  --color-brand-300: oklch(74% 0.170 45);
+  --color-brand-400: oklch(68% 0.150 45);
+  --color-brand-500: oklch(65% 0.140 45);  /* == --color-accent */
+  --color-brand-600: oklch(52% 0.120 45);
+  --color-brand-700: oklch(44% 0.100 45);
+  --color-brand-800: oklch(36% 0.080 45);
+  --color-brand-900: oklch(28% 0.050 45);
 
-  /* ── Warm cream "paper" (day cells) ──────────────────────────── */
-  --color-paper:            oklch(94% 0.018 85);
-  --color-paper-hover:      oklch(96% 0.015 85);
-  --color-paper-weekend:    oklch(92% 0.022 78);
-  --color-paper-adjacent:   oklch(90% 0.012 80);
-  --color-paper-border:     oklch(80% 0.020 80);
-  --color-paper-text:       oklch(28% 0.020 70);
-  --color-paper-text-muted: oklch(50% 0.015 70);
+  /* ── Warm cream "paper" (day cells) - Now dark mode ─────────── */
+  /* Re-mapping paper to match surface for true dark mode */
+  --color-paper:            oklch(38% 0.01 250);  /* active month — noticeably lighter */
+  --color-paper-hover:      oklch(42% 0.01 250);
+  --color-paper-weekend:    oklch(38% 0.01 250);  /* same as regular — no colour difference */
+  --color-paper-adjacent:   oklch(20% 0.008 250); /* adjacent months — clearly dark */
+  --color-paper-border:     var(--color-border);
+  --color-paper-text:       var(--color-text-primary);
+  --color-paper-text-muted: var(--color-text-secondary);
   --color-paper-today-bg:   var(--color-accent);
   --color-paper-today-text: var(--color-accent-contrast);
 
   /* ── Radius ──────────────────────────────────────────────────── */
-  --radius-sm:  0.375rem;
-  --radius-md:  0.5rem;
-  --radius-lg:  0.75rem;
-  --radius-xl:  1rem;
-  --radius-2xl: 1.25rem;
+  --radius-sm:  0.25rem;
+  --radius-md:  0.375rem;
+  --radius-lg:  0.5rem;
+  --radius-xl:  0.75rem;
+  --radius-2xl: 1rem;
   --radius-full: 999px;
 
   /* ── Shadows (warm-tinted, layered) ──────────────────────────── */
-  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.25);
-  --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.30), 0 1px 3px oklch(0% 0 0 / 0.22);
-  --shadow-lg: 0 12px 32px oklch(0% 0 0 / 0.38), 0 4px 10px oklch(0% 0 0 / 0.26);
-  --shadow-xl: 0 20px 60px oklch(0% 0 0 / 0.50), 0 6px 16px oklch(0% 0 0 / 0.30);
+  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.4);
+  --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.5), 0 1px 3px oklch(0% 0 0 / 0.3);
+  --shadow-lg: 0 12px 32px oklch(0% 0 0 / 0.6), 0 4px 10px oklch(0% 0 0 / 0.4);
+  --shadow-xl: 0 20px 60px oklch(0% 0 0 / 0.7), 0 6px 16px oklch(0% 0 0 / 0.5);
 
   /* ── Spacing scale (semantic, complements Tailwind) ──────────── */
   --space-1: 0.25rem;
@@ -79,14 +81,14 @@
   --space-8: 3rem;
 
   /* ── Typography scale (role-based) ───────────────────────────── */
-  --text-app-title:       1.25rem;   /* logo / app name */
-  --text-page-title:      1.75rem;   /* page H1 */
-  --text-section-heading: 1.125rem;  /* section H2 */
-  --text-month-year:      1.5rem;    /* calendar month/year label */
-  --text-day-number:      0.8125rem; /* day cell number */
-  --text-body:            0.9375rem; /* body copy */
-  --text-metadata:        0.75rem;   /* captions, counts */
-  --text-button:          0.8125rem; /* buttons */
+  --text-app-title:       1.5rem;    /* logo / app name */
+  --text-page-title:      2rem;      /* page H1 */
+  --text-section-heading: 1.25rem;   /* section H2 */
+  --text-month-year:      1.75rem;   /* calendar month/year label */
+  --text-day-number:      1rem;      /* day cell number */
+  --text-body:            1rem;      /* body copy */
+  --text-metadata:        0.8125rem; /* captions, counts */
+  --text-button:          0.875rem;  /* buttons */
 
   /* ── Transition duration + easing ────────────────────────────── */
   --transition-fast: 120ms;
@@ -253,7 +255,7 @@ body {
   z-index: 100;
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   padding: 0.625rem;
   animation: picker-in 120ms ease;
@@ -381,10 +383,14 @@ body {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-auto-rows: minmax(0, 1fr);
-  gap: 0.25rem;
+  gap: 1px;
+  background: var(--color-calendar-grid-line);
+  border: 1px solid var(--color-calendar-grid-line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
   flex: 1;
   min-height: 0;
-  padding: 0 0.5rem 1rem 0.5rem; /* prevent shadow clipping */
+  margin: 0 0.5rem 1rem 0.5rem;
 }
 
 /* ── Day Cell ─────────────────────────────────────────────────── */
@@ -394,18 +400,16 @@ body {
   display: flex;
   flex-direction: column;
   aspect-ratio: 1;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 0;
+  border: none;
   background: var(--color-paper);
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  transition: transform 150ms var(--ease-standard), box-shadow 150ms var(--ease-standard);
+  transition: background 150ms var(--ease-standard);
   cursor: pointer;
 }
 
 .cal-day-cell:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  background: var(--color-paper-hover);
 }
 
 /* Current-month cell */
@@ -416,22 +420,22 @@ body {
 /* Adjacent month (prev/next) cells — dimmed */
 .cal-day-cell--adjacent {
   background: var(--color-paper-adjacent);
-  opacity: 0.38;
+  opacity: 0.55; /* dim slightly so it clearly recedes */
 }
 
-/* Weekend cells — very subtle warm tint */
+.cal-day-cell--adjacent .cal-day-number {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+/* Weekend cells — same as regular active cells */
 .cal-day-cell--weekend {
-  background: var(--color-paper-weekend);
+  background: var(--color-paper);
 }
 
 /* Today cell — accent ring */
 .cal-day-cell--today {
-  border-color: var(--color-brand-500);
-  border-width: 2px;
-  box-shadow:
-    inset 0 1px 0 rgba(255 255 255 / 0.65),
-    0 0 0 1px var(--color-brand-500),
-    0 2px 10px rgba(0 0 0 / 0.1);
+  box-shadow: inset 0 0 0 2px var(--color-accent);
 }
 
 /* ── Day Header (number + action buttons) ─────────────────────── */
@@ -599,7 +603,7 @@ body {
 .day-mark {
   width: 75%;
   height: 75%;
-  opacity: 0.25;
+  opacity: 0.1;
   animation: mark-in 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -738,7 +742,7 @@ body {
 .cal-color-dot--blue    { background: oklch(58% 0.22 250); }
 .cal-color-dot--cyan    { background: oklch(65% 0.20 200); }
 .cal-color-dot--green   { background: oklch(65% 0.22 145); }
-.cal-color-dot--gray    { background: oklch(50% 0 0); }
+.cal-color-dot--gray    { background: oklch(75% 0 0); }
 
 /* Colour button — show in muted tint when a colour is active */
 .cal-day-action-btn--colored {
@@ -1091,7 +1095,7 @@ body {
   overflow-y: auto;
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
   padding: 1.25rem;
   display: flex;
@@ -1454,7 +1458,7 @@ body {
   overflow-y: auto;
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
   padding: 1.25rem;
   display: flex;
@@ -1619,7 +1623,7 @@ body {
   overflow-y: auto;
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
   padding: 1.25rem;
   display: flex;
@@ -1769,7 +1773,7 @@ body {
   position: relative;
   width: 2.5rem;
   height: 1.375rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: var(--color-surface-border);
   border: none;
   cursor: pointer;
@@ -1956,7 +1960,7 @@ body {
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.75rem 0.85rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
 }
@@ -2135,7 +2139,7 @@ body {
   gap: 1rem;
   background: var(--color-surface-base);
   border: 1px solid var(--color-surface-border);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   padding: 1.25rem;
   text-align: left;
   cursor: pointer;
@@ -2188,7 +2192,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 0.2rem 0.5rem;
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   background: var(--color-surface-raised);
   color: var(--color-text-secondary);
   white-space: nowrap;
@@ -2318,7 +2322,7 @@ body {
   padding: 2rem;
   background: var(--color-surface-base);
   border: 1px solid var(--color-surface-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   border-top-width: 6px;
   border-top-color: var(--color-brand-600);
 }
@@ -2363,7 +2367,7 @@ body {
   padding: 2rem;
   background: var(--color-surface-base);
   border: 1px solid var(--color-surface-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
 }
 
 .ch-detail-section-title {
@@ -2410,7 +2414,7 @@ body {
   padding: 2rem;
   background: var(--color-surface-base);
   border: 1px solid var(--color-surface-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
 }
 
 .ch-day-list {
@@ -2504,7 +2508,7 @@ body {
   width: min(400px, calc(100vw - 2rem));
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -2602,7 +2606,7 @@ body {
   overflow-y: auto;
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   padding: 0.4rem;
 }
@@ -3056,14 +3060,14 @@ body {
 }
 
 /* Note text colors (Day Cell, Light Mode) */
-.cal-note-text-snippet--yellow { color: oklch(50% 0.18 90); }
-.cal-note-text-snippet--orange { color: oklch(50% 0.20 55); }
-.cal-note-text-snippet--red    { color: oklch(50% 0.20 20); }
-.cal-note-text-snippet--pink   { color: oklch(50% 0.20 345); }
-.cal-note-text-snippet--purple { color: oklch(50% 0.20 300); }
-.cal-note-text-snippet--blue   { color: oklch(50% 0.15 250); }
-.cal-note-text-snippet--cyan   { color: oklch(50% 0.15 200); }
-.cal-note-text-snippet--green  { color: oklch(50% 0.17 145); }
+.cal-note-text-snippet--yellow { color: oklch(85% 0.14 90); }
+.cal-note-text-snippet--orange { color: oklch(80% 0.16 55); }
+.cal-note-text-snippet--red    { color: oklch(75% 0.16 20); }
+.cal-note-text-snippet--pink   { color: oklch(80% 0.14 345); }
+.cal-note-text-snippet--purple { color: oklch(80% 0.14 300); }
+.cal-note-text-snippet--blue   { color: oklch(80% 0.12 250); }
+.cal-note-text-snippet--cyan   { color: oklch(82% 0.12 200); }
+.cal-note-text-snippet--green  { color: oklch(78% 0.14 145); }
 
 /* Note text colors (Modal, Dark Mode) */
 .note-text--yellow { color: oklch(85% 0.18 95); }
@@ -3130,7 +3134,7 @@ body {
   padding: 3rem 1.5rem;
   background: var(--color-surface-raised);
   border: 1px dashed var(--color-surface-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   text-align: center;
 }
 
@@ -3173,7 +3177,7 @@ body {
   max-width: 220px;
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -3332,7 +3336,7 @@ body {
   margin: 1rem 1.5rem;
   padding: 1.25rem;
   background: var(--color-surface-raised);
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--color-surface-border);
   display: flex;
   flex-direction: column;
@@ -3350,7 +3354,7 @@ body {
 .wishlist-card {
   background: var(--color-surface-raised);
   border: 1px solid var(--color-surface-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   padding: 0.85rem 1rem;
   display: flex;
   flex-direction: column;
@@ -3419,7 +3423,7 @@ body {
   font-size: 0.7rem;
   font-weight: 700;
   padding: 0.25rem 0.6rem;
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
