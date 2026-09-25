@@ -577,7 +577,7 @@ body {
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  z-index: 1;
+  z-index: 3; /* Render over notes so it remains visible */
 }
 
 .day-mark {
@@ -671,29 +671,28 @@ body {
 
 /* ── Day Colour Backgrounds ──────────────────────────────────── */
 /*
- * Colored day cells — dark theme compatible tints.
- * Uses a muted tint overlay + a stronger 4px left-strip accent.
- * Light text remains readable. Notes and marks stay visible.
+ * Colored day cells — Highlighter / Calendar Sticker effect
+ * Blends vibrant color into the dark paper surface, with a distinct side strip.
  */
 
-.cal-day-cell--color-yellow  { background-color: oklch(48% 0.08 90);  box-shadow: inset 4px 0 0 oklch(82% 0.20 90); }
-.cal-day-cell--color-orange  { background-color: oklch(44% 0.08 55);  box-shadow: inset 4px 0 0 oklch(78% 0.22 55); }
-.cal-day-cell--color-red     { background-color: oklch(38% 0.08 20);  box-shadow: inset 4px 0 0 oklch(68% 0.22 20); }
-.cal-day-cell--color-pink    { background-color: oklch(40% 0.08 345); box-shadow: inset 4px 0 0 oklch(75% 0.20 345); }
-.cal-day-cell--color-purple  { background-color: oklch(38% 0.08 300); box-shadow: inset 4px 0 0 oklch(72% 0.18 300); }
-.cal-day-cell--color-blue    { background-color: oklch(38% 0.07 250); box-shadow: inset 4px 0 0 oklch(72% 0.17 250); }
-.cal-day-cell--color-cyan    { background-color: oklch(38% 0.07 200); box-shadow: inset 4px 0 0 oklch(75% 0.17 200); }
-.cal-day-cell--color-green   { background-color: oklch(38% 0.08 145); box-shadow: inset 4px 0 0 oklch(72% 0.20 145); }
+.cal-day-cell--color-yellow  { background-color: color-mix(in oklch, oklch(85% 0.20 95) 20%, var(--color-paper)); box-shadow: inset 4px 0 0 oklch(85% 0.20 95); }
+.cal-day-cell--color-orange  { background-color: color-mix(in oklch, oklch(80% 0.22 55) 20%, var(--color-paper)); box-shadow: inset 4px 0 0 oklch(80% 0.22 55); }
+.cal-day-cell--color-red     { background-color: color-mix(in oklch, oklch(75% 0.22 20) 20%, var(--color-paper)); box-shadow: inset 4px 0 0 oklch(75% 0.22 20); }
+.cal-day-cell--color-pink    { background-color: color-mix(in oklch, oklch(78% 0.20 345) 20%, var(--color-paper)); box-shadow: inset 4px 0 0 oklch(78% 0.20 345); }
+.cal-day-cell--color-purple  { background-color: color-mix(in oklch, oklch(75% 0.18 300) 20%, var(--color-paper)); box-shadow: inset 4px 0 0 oklch(75% 0.18 300); }
+.cal-day-cell--color-blue    { background-color: color-mix(in oklch, oklch(75% 0.17 250) 20%, var(--color-paper)); box-shadow: inset 4px 0 0 oklch(75% 0.17 250); }
+.cal-day-cell--color-cyan    { background-color: color-mix(in oklch, oklch(78% 0.17 200) 20%, var(--color-paper)); box-shadow: inset 4px 0 0 oklch(78% 0.17 200); }
+.cal-day-cell--color-green   { background-color: color-mix(in oklch, oklch(75% 0.20 145) 20%, var(--color-paper)); box-shadow: inset 4px 0 0 oklch(75% 0.20 145); }
 
 /* Today cell: preserve both the accent ring and the color strip */
-.cal-day-cell--color-yellow.cal-day-cell--today  { box-shadow: inset 4px 0 0 oklch(82% 0.20 90),  inset 0 0 0 2px var(--color-accent); }
-.cal-day-cell--color-orange.cal-day-cell--today  { box-shadow: inset 4px 0 0 oklch(78% 0.22 55),  inset 0 0 0 2px var(--color-accent); }
-.cal-day-cell--color-red.cal-day-cell--today     { box-shadow: inset 4px 0 0 oklch(68% 0.22 20),  inset 0 0 0 2px var(--color-accent); }
-.cal-day-cell--color-pink.cal-day-cell--today    { box-shadow: inset 4px 0 0 oklch(75% 0.20 345), inset 0 0 0 2px var(--color-accent); }
-.cal-day-cell--color-purple.cal-day-cell--today  { box-shadow: inset 4px 0 0 oklch(72% 0.18 300), inset 0 0 0 2px var(--color-accent); }
-.cal-day-cell--color-blue.cal-day-cell--today    { box-shadow: inset 4px 0 0 oklch(72% 0.17 250), inset 0 0 0 2px var(--color-accent); }
-.cal-day-cell--color-cyan.cal-day-cell--today    { box-shadow: inset 4px 0 0 oklch(75% 0.17 200), inset 0 0 0 2px var(--color-accent); }
-.cal-day-cell--color-green.cal-day-cell--today   { box-shadow: inset 4px 0 0 oklch(72% 0.20 145), inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-yellow.cal-day-cell--today  { box-shadow: inset 4px 0 0 oklch(85% 0.20 95),  inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-orange.cal-day-cell--today  { box-shadow: inset 4px 0 0 oklch(80% 0.22 55),  inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-red.cal-day-cell--today     { box-shadow: inset 4px 0 0 oklch(75% 0.22 20),  inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-pink.cal-day-cell--today    { box-shadow: inset 4px 0 0 oklch(78% 0.20 345), inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-purple.cal-day-cell--today  { box-shadow: inset 4px 0 0 oklch(75% 0.18 300), inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-blue.cal-day-cell--today    { box-shadow: inset 4px 0 0 oklch(75% 0.17 250), inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-cyan.cal-day-cell--today    { box-shadow: inset 4px 0 0 oklch(78% 0.17 200), inset 0 0 0 2px var(--color-accent); }
+.cal-day-cell--color-green.cal-day-cell--today   { box-shadow: inset 4px 0 0 oklch(75% 0.20 145), inset 0 0 0 2px var(--color-accent); }
 
 
 /* ── Colour button indicator dot ─────────────────────────────── */
@@ -3211,11 +3210,10 @@ body {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  line-height: 1.2;
-  color: var(--color-paper-text);
-  font-weight: 500;
+  font-family: var(--font-handwriting);
+  font-size: 0.8rem;
+  line-height: 1.1;
+  color: oklch(75% 0.05 240); /* Lighter ink for dark paper */
   padding: 0 0.1rem;
   white-space: nowrap;
   overflow: hidden;
@@ -3224,14 +3222,17 @@ body {
 
 .cal-task-text-snippet svg {
   flex-shrink: 0;
-  color: var(--color-brand-600);
+  color: oklch(75% 0.05 240); /* Match ink */
+  width: 14px;
+  height: 14px;
 }
 
 .cal-task-time-snippet {
+  font-family: var(--font-mono);
   font-size: 0.55rem;
   font-weight: 700;
-  color: var(--color-brand-700);
-  background: rgba(0, 0, 0, 0.08);
+  color: var(--color-brand-300);
+  background: rgba(255, 255, 255, 0.08);
   padding: 0 0.2rem;
   border-radius: 3px;
 }
@@ -3243,21 +3244,55 @@ body {
 
 .cal-task-text-snippet--done {
   text-decoration: line-through;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .cal-note-text-snippet {
   font-family: var(--font-handwriting);
-  font-size: 0.85rem;
-  line-height: 1.1;
-  color: oklch(35% 0.1 240); /* Ink blue/black */
-  background: none;
-  border: none;
-  padding: 0 0.1rem;
+  font-size: 0.8rem;
+  line-height: 1.15;
+  color: oklch(20% 0.02 240); /* Dark ink */
+  background: oklch(88% 0.05 90); /* Default pale paper */
+  border-radius: 1px;
+  padding: 0.35rem 0.35rem 0.25rem;
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
   display: flex;
   align-items: flex-start;
   gap: 0.25rem;
-  margin-bottom: 0.25rem;
+  margin: 0.15rem 0.2rem 0.25rem;
+  position: relative;
+  transform: rotate(-1deg);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  z-index: 1;
+}
+
+.cal-note-text-snippet:nth-child(even) {
+  transform: rotate(1.5deg);
+}
+
+.cal-note-text-snippet:hover {
+  transform: scale(1.03) rotate(0deg);
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  z-index: 5;
+}
+
+/* Tape effect */
+.cal-note-text-snippet::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 16px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+  transform: translateX(-50%) rotate(-3deg);
+  backdrop-filter: blur(1px);
+}
+
+/* Hide the old indicator dot since the whole background is colored now */
+.cal-note-text-snippet .cal-color-dot {
+  display: none;
 }
 
 .cal-note-text-content {
@@ -3271,15 +3306,15 @@ body {
   word-break: break-word;
 }
 
-/* Note text colors (Day Cell, Light Mode) */
-.cal-note-text-snippet--yellow { color: oklch(85% 0.14 90); }
-.cal-note-text-snippet--orange { color: oklch(80% 0.16 55); }
-.cal-note-text-snippet--red    { color: oklch(75% 0.16 20); }
-.cal-note-text-snippet--pink   { color: oklch(80% 0.14 345); }
-.cal-note-text-snippet--purple { color: oklch(80% 0.14 300); }
-.cal-note-text-snippet--blue   { color: oklch(80% 0.12 250); }
-.cal-note-text-snippet--cyan   { color: oklch(82% 0.12 200); }
-.cal-note-text-snippet--green  { color: oklch(78% 0.14 145); }
+/* Note text colors (Sticky notes) */
+.cal-note-text-snippet--yellow { background: oklch(88% 0.12 95); }
+.cal-note-text-snippet--orange { background: oklch(85% 0.14 55); }
+.cal-note-text-snippet--red    { background: oklch(85% 0.11 20); }
+.cal-note-text-snippet--pink   { background: oklch(85% 0.11 345); }
+.cal-note-text-snippet--purple { background: oklch(86% 0.10 300); }
+.cal-note-text-snippet--blue   { background: oklch(85% 0.09 250); }
+.cal-note-text-snippet--cyan   { background: oklch(86% 0.09 200); }
+.cal-note-text-snippet--green  { background: oklch(86% 0.12 145); }
 
 /* Note text colors (Modal, Dark Mode) */
 .note-text--yellow { color: oklch(85% 0.18 95); }
