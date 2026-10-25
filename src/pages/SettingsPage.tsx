@@ -1,4 +1,6 @@
 import { useRef, useState } from 'react'
+import { useTheme } from '@/hooks/useTheme'
+import type { ThemePreference } from '@/hooks/useTheme'
 import { useAppStore } from '@/store/useAppStore'
 import { downloadBackup, parseBackup } from '@/utils/backupUtils'
 import type { WallCalBackup } from '@/utils/backupUtils'
@@ -24,6 +26,7 @@ function summarize(backup: WallCalBackup) {
 }
 
 export function SettingsPage() {
+  const { preference, setTheme } = useTheme()
   const data = useAppStore((s) => s.data)
   const authStatus = useAppStore((s) => s.authStatus)
   const user = useAppStore((s) => s.user)
@@ -108,23 +111,30 @@ export function SettingsPage() {
         <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-raised)] p-6">
           <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-4">Theme</h3>
           <div className="grid grid-cols-3 gap-3">
-            {['Dark', 'Light', 'System'].map((mode) => (
+            {(
+              [
+                { id: 'light' as ThemePreference, label: 'Light', icon: '☀️' },
+                { id: 'dark' as ThemePreference, label: 'Dark', icon: '🌙' },
+                { id: 'system' as ThemePreference, label: 'System', icon: '💻' },
+              ]
+            ).map(({ id, label, icon }) => (
               <button
-                key={mode}
+                key={id}
+                id={`theme-btn-${id}`}
+                onClick={() => setTheme(id)}
+                aria-pressed={preference === id}
                 className={`py-2.5 px-3 rounded-lg border text-sm font-semibold transition-colors ${
-                  mode === 'Dark'
+                  preference === id
                     ? 'border-[var(--color-brand-500)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] ring-1 ring-[var(--color-brand-500)]'
-                    : 'border-[var(--color-surface-border)] text-[var(--color-text-muted)] cursor-not-allowed opacity-50 bg-[var(--color-surface-base)]'
+                    : 'border-[var(--color-surface-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-overlay)] bg-[var(--color-surface-base)]'
                 }`}
-                disabled={mode !== 'Dark'}
-                title={mode !== 'Dark' ? 'Coming soon' : ''}
               >
-                {mode}
+                <span className="mr-1.5">{icon}</span>{label}
               </button>
             ))}
           </div>
-          <p className="mt-4 text-xs text-[var(--color-text-muted)] font-medium">
-            Additional themes are currently in development.
+          <p className="mt-3 text-xs text-[var(--color-text-muted)] font-medium">
+            System follows your device's appearance setting automatically.
           </p>
         </div>
       </section>

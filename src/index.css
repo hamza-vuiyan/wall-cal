@@ -98,7 +98,7 @@
 }
 
 :root {
-  /* ── Calendar Palette Colors ──────────────────────────────────── */
+  color-scheme: dark;
   --color-yellow-500: oklch(85% 0.20 95);
   --color-orange-500: oklch(75% 0.20 55);
   --color-red-500:    oklch(65% 0.20 20);
@@ -124,6 +124,161 @@
   --color-surface-raised:     var(--color-surface);
   --color-surface-overlay:    var(--color-surface-elevated);
   --color-surface-border:     var(--color-border);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Light / Day Theme Token Overrides
+   Applied via [data-theme="light"] on <html>
+   ══════════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* ── Neutral warm "paper wall" surfaces ───────────────────────── */
+  --color-background:        oklch(96% 0.015 75);
+  --color-surface:           oklch(98% 0.010 75);
+  --color-surface-elevated:  oklch(94% 0.018 75);
+  --color-border:            oklch(82% 0.010 75);
+  --color-calendar-grid-line: oklch(78% 0.012 75);
+
+  /* ── Text ─────────────────────────────────────────────────────── */
+  --color-text-primary:   oklch(18% 0.010 250);
+  --color-text-secondary: oklch(40% 0.010 250);
+  --color-text-muted:     oklch(58% 0.010 250);
+
+  /* ── Accent — slightly deeper terracotta for light backgrounds ── */
+  --color-accent:          oklch(58% 0.140 45);
+  --color-accent-hover:    oklch(63% 0.140 45);
+  --color-accent-soft:     oklch(58% 0.140 45 / 0.12);
+  --color-accent-contrast: oklch(99% 0.005 45);
+  --color-focus-ring:      oklch(58% 0.14 45 / 0.4);
+
+  /* ── Paper calendar cells ─────────────────────────────────────── */
+  --color-paper:            oklch(99% 0.008 75);
+  --color-paper-hover:      oklch(95% 0.015 75);
+  --color-paper-weekend:    oklch(98% 0.010 75);
+  --color-paper-adjacent:   oklch(92% 0.008 75);
+  --color-paper-border:     var(--color-border);
+  --color-paper-text:       var(--color-text-primary);
+  --color-paper-text-muted: var(--color-text-secondary);
+  --color-paper-today-bg:   var(--color-accent);
+  --color-paper-today-text: var(--color-accent-contrast);
+
+  /* ── Backward-compat surface aliases ─────────────────────────── */
+  --color-surface-base:       var(--color-background);
+  --color-surface-raised:     var(--color-surface);
+  --color-surface-overlay:    var(--color-surface-elevated);
+  --color-surface-border:     var(--color-border);
+
+  /* ── Shadows — much softer in daylight ───────────────────────── */
+  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.08);
+  --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.10), 0 1px 3px oklch(0% 0 0 / 0.07);
+  --shadow-lg: 0 12px 32px oklch(0% 0 0 / 0.12), 0 4px 10px oklch(0% 0 0 / 0.08);
+  --shadow-xl: 0 20px 60px oklch(0% 0 0 / 0.15), 0 6px 16px oklch(0% 0 0 / 0.10);
+}
+
+/* ── Light-mode component overrides ──────────────────────────────
+   These target classes that hardcode dark-specific values that
+   cannot be captured purely by token re-declaration.
+   ─────────────────────────────────────────────────────────────── */
+
+/* Cal day action buttons — use lighter semi-transparent overlay */
+[data-theme="light"] .cal-day-action-btn {
+  background: oklch(50% 0 0 / 0.10);
+  color: var(--color-text-secondary);
+}
+[data-theme="light"] .cal-day-action-btn:hover {
+  background: oklch(50% 0 0 / 0.20);
+  color: var(--color-text-primary);
+}
+[data-theme="light"] .cal-day-action-btn--active {
+  background: oklch(50% 0 0 / 0.25);
+}
+
+/* Task time snippet inside calendar cell */
+[data-theme="light"] .cal-task-time-snippet {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--color-accent);
+}
+
+/* Date/time input color-scheme */
+[data-theme="light"] .task-form-input--time {
+  color-scheme: light;
+}
+
+/* Color swatch "none" option */
+[data-theme="light"] .color-swatch--none {
+  background: oklch(85% 0 0);
+}
+
+/* Swatch active states — use dark border on light bg */
+[data-theme="light"] .color-swatch--active {
+  border-color: oklch(20% 0 0);
+  box-shadow: 0 0 0 1px oklch(20% 0 0 / 0.4), 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+[data-theme="light"] .task-color-swatch--active {
+  border-color: oklch(20% 0 0);
+  box-shadow: 0 0 0 1px oklch(20% 0 0 / 0.4);
+}
+
+/* Note modal backdrop — lighter in light mode */
+[data-theme="light"] .note-modal-backdrop {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+/* Note drag shadow — lighter in light mode */
+[data-theme="light"] .note-item--dragging {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.20), 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Note textarea focus ring */
+[data-theme="light"] .note-textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-focus-ring);
+}
+
+/* Note text colors in modal — darkened for light background readability */
+[data-theme="light"] .note-text--yellow { color: oklch(50% 0.16 95); }
+[data-theme="light"] .note-text--orange { color: oklch(46% 0.18 55); }
+[data-theme="light"] .note-text--red    { color: oklch(44% 0.18 20); }
+[data-theme="light"] .note-text--pink   { color: oklch(46% 0.18 345); }
+[data-theme="light"] .note-text--purple { color: oklch(44% 0.18 300); }
+[data-theme="light"] .note-text--blue   { color: oklch(44% 0.14 250); }
+[data-theme="light"] .note-text--cyan   { color: oklch(42% 0.14 200); }
+[data-theme="light"] .note-text--green  { color: oklch(42% 0.16 145); }
+
+/* Challenge card hover — lighter shadow */
+[data-theme="light"] .ch-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Countdown card hover */
+[data-theme="light"] .countdown-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Task text snippet box-shadow in light mode */
+[data-theme="light"] .cal-task-text-snippet {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+[data-theme="light"] .cal-task-text-snippet:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.16);
+}
+
+/* Wishlist badge */
+[data-theme="light"] .wishlist-badge {
+  background: oklch(92% 0.08 145);
+  color: oklch(35% 0.12 145);
+}
+
+/* Challenge day today badge */
+[data-theme="light"] .ch-day-today-badge {
+  background: var(--color-accent);
+}
+
+/* Challenge progress track background */
+[data-theme="light"] .ch-progress-track {
+  background: var(--color-border);
 }
 
 /* ── Global Reset / Base ──────────────────────────────────────── */

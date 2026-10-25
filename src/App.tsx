@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef, useLayoutEffect } from 'react'
+import { useTheme } from '@/hooks/useTheme'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { MigrationBanner } from '@/components/auth/MigrationBanner'
@@ -36,6 +37,7 @@ function getViewFromHash(): AppView {
 const scrollPositions: Partial<Record<AppView, number>> = {}
 
 export default function App() {
+  useTheme() // initializes theme persistence and OS listener
   const [currentView, setCurrentViewState] = useState<AppView>(getViewFromHash)
   const [openChallengeId, setOpenChallengeId] = useState<string | null>(null)
   const initAuth = useAppStore((s) => s._initAuth)
